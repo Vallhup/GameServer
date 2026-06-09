@@ -52,6 +52,7 @@ namespace WITH_ServerDataTool.Cli
 			CapsuleTemplateDocument template = builder.Build(
 				preset.ObjectName,
 				preset.MeshDirectory,
+				preset.AnimationDirectory,
 				preset.ExtremeTrimFraction);
 			writer.Save(preset.CapsuleTemplateOutputPath, template);
 
@@ -68,7 +69,14 @@ namespace WITH_ServerDataTool.Cli
 
 			var templateStore = new CapsuleTemplateJsonStore();
 			var template = templateStore.Load(preset.CapsuleTemplateOutputPath);
+			ExecutePrebakeAnimation(preset, clip, template);
+		}
 
+		private static void ExecutePrebakeAnimation(
+			AnimationPipelinePreset preset,
+			AnimationClipPreset clip,
+			CapsuleTemplateDocument template)
+		{
 			var bonePath = Path.Combine(preset.AnimationDirectory, clip.Source);
 			var animation = new BoneAnimationReader().Read(bonePath);
 			var document = new AnimationClipBuilder().Build(
@@ -96,9 +104,11 @@ namespace WITH_ServerDataTool.Cli
 			var preset = new PresetLoader().Load(presetArgument);
 			EnsureCapsuleTemplateExists(preset);
 
+			var templateStore = new CapsuleTemplateJsonStore();
+			var template = templateStore.Load(preset.CapsuleTemplateOutputPath);
 			foreach (var clip in EnumerateClips(preset))
 			{
-				ExecutePrebakeAnimation(presetArgument, clip.Name);
+				ExecutePrebakeAnimation(preset, clip, template);
 			}
 		}
 
@@ -107,6 +117,7 @@ namespace WITH_ServerDataTool.Cli
 			var store = new CapsuleTemplateJsonStore();
 			string expectedSignature = CapsuleTemplateBuilder.ComputeBuildSignature(
 				preset.MeshDirectory,
+				preset.AnimationDirectory,
 				preset.ExtremeTrimFraction);
 
 			if (File.Exists(preset.CapsuleTemplateOutputPath) && !string.IsNullOrEmpty(expectedSignature))
@@ -131,6 +142,7 @@ namespace WITH_ServerDataTool.Cli
 			CapsuleTemplateDocument template = builder.Build(
 				preset.ObjectName,
 				preset.MeshDirectory,
+				preset.AnimationDirectory,
 				preset.ExtremeTrimFraction);
 			store.Save(preset.CapsuleTemplateOutputPath, template);
 		}

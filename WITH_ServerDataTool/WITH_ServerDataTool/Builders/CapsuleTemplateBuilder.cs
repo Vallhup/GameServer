@@ -18,6 +18,7 @@ namespace WITH_ServerDataTool.Builders
 		public CapsuleTemplateDocument Build(
 			string objectName,
 			string meshDirectory,
+			string animationDirectory,
 			float extremeTrimFraction = 0.0f)
 		{
 			if (!Directory.Exists(meshDirectory))
@@ -90,12 +91,18 @@ namespace WITH_ServerDataTool.Builders
 			return new CapsuleTemplateDocument
 			{
 				ObjectName = objectName,
-				BuildSignature = ComputeBuildSignature(meshDirectory, extremeTrimFraction),
+				BuildSignature = ComputeBuildSignature(
+					meshDirectory,
+					animationDirectory,
+					extremeTrimFraction),
 				Capsules = entries
 			};
 		}
 
-		public static string ComputeBuildSignature(string meshDirectory, float extremeTrimFraction)
+		public static string ComputeBuildSignature(
+			string meshDirectory,
+			string animationDirectory,
+			float extremeTrimFraction)
 		{
 			if (!Directory.Exists(meshDirectory))
 			{
@@ -105,28 +112,61 @@ namespace WITH_ServerDataTool.Builders
 			float normalizedTrim = ClampTrimFraction(extremeTrimFraction);
 
 			var payload = new StringBuilder();
+			payload.Append("signatureVersion=2|");
 			payload.Append("trimFraction=");
 			payload.Append(normalizedTrim.ToString("R", CultureInfo.InvariantCulture));
 			payload.Append('|');
 
-			var meshFiles = Directory.GetFiles(meshDirectory, "*.mesh")
-				.OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
-				.ToList();
-
-			foreach (string meshFile in meshFiles)
-			{
-				var info = new FileInfo(meshFile);
-				payload.Append(Path.GetFileName(meshFile));
-				payload.Append(':');
-				payload.Append(info.LastWriteTimeUtc.Ticks.ToString(CultureInfo.InvariantCulture));
-				payload.Append(':');
-				payload.Append(info.Length.ToString(CultureInfo.InvariantCulture));
-				payload.Append('|');
-			}
+			AppendFileSignatures(payload, "mesh", meshDirectory, "*.mesh");
+			AppendFileSignatures(payload, "animation", animationDirectory, "*.bone");
 
 			using (var sha = SHA256.Create())
 			{
 				byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(payload.ToString()));
+				var hex = new StringBuilder(hash.Length * 2);
+				foreach (byte value in hash)
+				{
+					hex.Append(value.ToString("x2", CultureInfo.InvariantCulture));
+				}
+
+				return hex.ToString();
+			}
+		}
+
+		private static void AppendFileSignatures(
+			StringBuilder payload,
+			string inputType,
+			string directory,
+			string searchPattern)
+		{
+			payload.Append(inputType);
+			payload.Append('=');
+
+			if (!Directory.Exists(directory))
+			{
+				payload.Append("<missing>|");
+				return;
+			}
+
+			var files = Directory.GetFiles(directory, searchPattern)
+				.OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+				.ToList();
+
+			foreach (string file in files)
+			{
+				payload.Append(Path.GetFileName(file));
+				payload.Append(':');
+				payload.Append(ComputeFileHash(file));
+				payload.Append('|');
+			}
+		}
+
+		private static string ComputeFileHash(string path)
+		{
+			using (var sha = SHA256.Create())
+			using (var stream = File.OpenRead(path))
+			{
+				byte[] hash = sha.ComputeHash(stream);
 				var hex = new StringBuilder(hash.Length * 2);
 				foreach (byte value in hash)
 				{
