@@ -124,6 +124,13 @@ namespace
 		stats->currentHp = 0;
 		MarkDirtyIfPresent(ctx, victim, WorldDirtyType::Stat);
 
+		if (PendingFinalBossDefeatedEventComp* const finalBossDefeated =
+			ctx.ecs.GetMutableComponent<PendingFinalBossDefeatedEventComp>(
+				victim))
+		{
+			finalBossDefeated->pending = true;
+		}
+
 		if (AbilityInterruptQueueComp* const interruptQueue =
 			ctx.ecs.GetMutableComponent<AbilityInterruptQueueComp>(victim))
 		{
@@ -487,11 +494,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<18> BossGimmickSystem::kMetaStorage =
+const StaticSystemMetaStorage<19> BossGimmickSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<BossGimmickSystem>(),
 		"BossGimmickSystem",
-		std::array<AccessSpec, 18>
+		std::array<AccessSpec, 19>
 	{
 		WriteImmediate(ComponentRes<BossGimmickStateComp>()),
 		WriteImmediate(ComponentRes<AIActionRuntimeComp>()),
@@ -507,6 +514,7 @@ const StaticSystemMetaStorage<18> BossGimmickSystem::kMetaStorage =
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 		WriteImmediate(ComponentRes<PendingBossGimmickReplicationComp>()),
+		WriteImmediate(ComponentRes<PendingFinalBossDefeatedEventComp>()),
 		WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),

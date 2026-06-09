@@ -5,7 +5,7 @@
 #include "SystemMetaStorage.h"
 
 class BossGimmickSystem final : public System {
-	static const StaticSystemMetaStorage<18> kMetaStorage;
+	static const StaticSystemMetaStorage<19> kMetaStorage;
 	static constexpr float kLockRefreshSec{ 0.25f };
 
 public:
