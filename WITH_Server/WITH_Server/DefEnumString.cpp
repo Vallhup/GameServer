@@ -154,6 +154,7 @@ bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexce
 		{ "Imp_Melee_4", AnimationId::Imp_Melee_4 },
 		{ "Imp_Melee_5", AnimationId::Imp_Melee_5 },
 		{ "Imp_Walk_Forward", AnimationId::Imp_Walk_Forward },
+		{ "Imp_Run", AnimationId::Imp_Run },
 		{ "Imp_Jump_1", AnimationId::Imp_Jump_1 },
 		{ "Imp_Stun", AnimationId::Imp_Stun },
 		{ "Imp_React_Front", AnimationId::Imp_React_Front },

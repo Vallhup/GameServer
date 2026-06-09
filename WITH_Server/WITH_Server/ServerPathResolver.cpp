@@ -263,6 +263,7 @@ std::vector<std::filesystem::path> ServerPathResolver::GetBootAnimationCandidate
 		root / "Imp" / "imp_animation_walk_forward.json",
 		root / "Imp" / "imp_animation_walk_left.json",
 		root / "Imp" / "imp_animation_walk_right.json",
+		root / "Imp" / "imp_animation_run.json",
 
 		root / "Knight" / "knight_animation_death.json",
 		root / "Knight" / "knight_animation_dodge.json",

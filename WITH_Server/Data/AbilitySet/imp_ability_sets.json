@@ -119,7 +119,7 @@
         },
         {
           "mode": "Run",
-          "animationKey": "Imp_Walk_Forward"
+          "animationKey": "Imp_Run"
         },
         {
           "mode": "Turn",

@@ -261,6 +261,7 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "Imp_walk_forward", AnimationId::Imp_Walk_Forward },
 		{ "Imp_walk_left", AnimationId::Imp_Walk_Left },
 		{ "Imp_walk_right", AnimationId::Imp_Walk_Right },
+		{ "Imp_run", AnimationId::Imp_Run },
 
 		{ "FinalBoss_idle", AnimationId::FinalBoss_Idle },
 		{ "FinalBoss_walk", AnimationId::FinalBoss_Walk },
