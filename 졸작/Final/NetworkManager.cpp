@@ -252,10 +252,9 @@ bool NetworkManager::SendStatUiOpenedPacket()
 	Protocol::CS_STAT_UI_OPENED_PACKET packet;
 	packet.set_clientrequestid(_nextTitleRequestId++);
 
-	SendBuffer* data =
-		PacketFactory::Serialize<Protocol::CS_STAT_UI_OPENED_PACKET>(
-			PacketType::CS_STAT_UI_OPENED,
-			packet);
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_STAT_UI_OPENED_PACKET>(
+			PacketType::CS_STAT_UI_OPENED, packet);
+
 	return TrySendInternal(data);
 }
 
@@ -265,10 +264,21 @@ bool NetworkManager::SendTitleEquipRequestPacket(uint32_t titleId)
 	packet.set_clientrequestid(_nextTitleRequestId++);
 	packet.set_titleid(titleId);
 
-	SendBuffer* data =
-		PacketFactory::Serialize<Protocol::CS_TITLE_EQUIP_REQUEST_PACKET>(
-			PacketType::CS_TITLE_EQUIP_REQUEST,
-			packet);
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_TITLE_EQUIP_REQUEST_PACKET>(
+			PacketType::CS_TITLE_EQUIP_REQUEST, packet);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendFinalClearChoiceSubmit(bool choosePvp)
+{
+	Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET packet;
+	packet.set_voteid(_nextVoteId++);
+	packet.set_choosepvp(choosePvp);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET>(
+			PacketType::CS_FINAL_CLEAR_CHOICE_SUBMIT, packet);
+
 	return TrySendInternal(data);
 }
 

@@ -388,6 +388,75 @@ inline bool BossGimmickObjectState_Parse(absl::string_view name, BossGimmickObje
   return ::google::protobuf::internal::ParseNamedEnum<BossGimmickObjectState>(
       BossGimmickObjectState_descriptor(), name, value);
 }
+enum FinalClearChoiceOutcome : int {
+  FINAL_CLEAR_OUTCOME_UNSPECIFIED = 0,
+  FINAL_CLEAR_OUTCOME_PVP = 1,
+  FINAL_CLEAR_OUTCOME_ENDING = 2,
+  FinalClearChoiceOutcome_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  FinalClearChoiceOutcome_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool FinalClearChoiceOutcome_IsValid(int value);
+extern const uint32_t FinalClearChoiceOutcome_internal_data_[];
+constexpr FinalClearChoiceOutcome FinalClearChoiceOutcome_MIN = static_cast<FinalClearChoiceOutcome>(0);
+constexpr FinalClearChoiceOutcome FinalClearChoiceOutcome_MAX = static_cast<FinalClearChoiceOutcome>(2);
+constexpr int FinalClearChoiceOutcome_ARRAYSIZE = 2 + 1;
+const ::google::protobuf::EnumDescriptor*
+FinalClearChoiceOutcome_descriptor();
+template <typename T>
+const std::string& FinalClearChoiceOutcome_Name(T value) {
+  static_assert(std::is_same<T, FinalClearChoiceOutcome>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to FinalClearChoiceOutcome_Name().");
+  return FinalClearChoiceOutcome_Name(static_cast<FinalClearChoiceOutcome>(value));
+}
+template <>
+inline const std::string& FinalClearChoiceOutcome_Name(FinalClearChoiceOutcome value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<FinalClearChoiceOutcome_descriptor,
+                                                 0, 2>(
+      static_cast<int>(value));
+}
+inline bool FinalClearChoiceOutcome_Parse(absl::string_view name, FinalClearChoiceOutcome* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<FinalClearChoiceOutcome>(
+      FinalClearChoiceOutcome_descriptor(), name, value);
+}
+enum FinalClearChoiceReason : int {
+  FINAL_CLEAR_REASON_UNSPECIFIED = 0,
+  FINAL_CLEAR_REASON_PVP_CHOSEN = 1,
+  FINAL_CLEAR_REASON_ALL_DECLINED = 2,
+  FINAL_CLEAR_REASON_TIMEOUT = 3,
+  FinalClearChoiceReason_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  FinalClearChoiceReason_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool FinalClearChoiceReason_IsValid(int value);
+extern const uint32_t FinalClearChoiceReason_internal_data_[];
+constexpr FinalClearChoiceReason FinalClearChoiceReason_MIN = static_cast<FinalClearChoiceReason>(0);
+constexpr FinalClearChoiceReason FinalClearChoiceReason_MAX = static_cast<FinalClearChoiceReason>(3);
+constexpr int FinalClearChoiceReason_ARRAYSIZE = 3 + 1;
+const ::google::protobuf::EnumDescriptor*
+FinalClearChoiceReason_descriptor();
+template <typename T>
+const std::string& FinalClearChoiceReason_Name(T value) {
+  static_assert(std::is_same<T, FinalClearChoiceReason>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to FinalClearChoiceReason_Name().");
+  return FinalClearChoiceReason_Name(static_cast<FinalClearChoiceReason>(value));
+}
+template <>
+inline const std::string& FinalClearChoiceReason_Name(FinalClearChoiceReason value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<FinalClearChoiceReason_descriptor,
+                                                 0, 3>(
+      static_cast<int>(value));
+}
+inline bool FinalClearChoiceReason_Parse(absl::string_view name, FinalClearChoiceReason* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<FinalClearChoiceReason>(
+      FinalClearChoiceReason_descriptor(), name, value);
+}
 
 // ===================================================================
 
@@ -2319,6 +2388,18 @@ struct is_proto_enum<::Protocol::BossGimmickObjectState> : std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor<::Protocol::BossGimmickObjectState>() {
   return ::Protocol::BossGimmickObjectState_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::FinalClearChoiceOutcome> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::FinalClearChoiceOutcome>() {
+  return ::Protocol::FinalClearChoiceOutcome_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::FinalClearChoiceReason> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::FinalClearChoiceReason>() {
+  return ::Protocol::FinalClearChoiceReason_descriptor();
 }
 
 }  // namespace protobuf

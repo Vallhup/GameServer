@@ -49,6 +49,8 @@ public:
 	bool SendStatUiOpenedPacket();
 	bool SendTitleEquipRequestPacket(uint32_t titleId);
 
+	bool SendFinalClearChoiceSubmit(bool choosePvp);
+
 private:
 	bool TrySendInternal(SendBuffer* sendBuffer);
 
@@ -56,4 +58,5 @@ private:
 	uint32_t _nextPartyRequestId;
 	uint32_t _nextRespawnRequestId;
 	uint32_t _nextTitleRequestId;
+	uint64_t _nextVoteId;
 };

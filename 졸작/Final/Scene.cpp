@@ -150,6 +150,16 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 			return NetHelper::DispatchPacket<Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET>(header, data,
 				[this](const auto& packet) { HandleBossGimmickZoneSync(packet); });
 		}
+		case PacketType::SC_FINAL_CLEAR_CHOICE_BEGIN:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET>(header, data,
+				[this](const auto& packet) { HandleFinalClearChoiceBegin(packet); });
+		}
+		case PacketType::SC_FINAL_CLEAR_CHOICE_RESULT:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET>(header, data,
+				[this](const auto& packet) { HandleFinalClearChoiceResult(packet); });
+		}
 	}
 }
 
@@ -809,4 +819,29 @@ void Scene::HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_
 
 	const XMFLOAT3 objectPos{ gimmickZone.x(), gimmickZone.y(), gimmickZone.z() };
 	const float objectRadius = gimmickZone.radius();
+}
+
+void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& choiceBegin)
+{
+	// Final Boss 처치 후 UI 띄우기 위해 보내는 패킷
+	// 아마 Id 3개는 딱히 필요 없을 거 같고, 
+	// eligibleCount는 혹시 진행도 같은 거 표시할 때 쓸 수 있을 듯
+	const uint64_t voteId		 = choiceBegin.voteid();
+	const uint64_t partyId		 = choiceBegin.partyid();
+	const uint64_t sourceWorldId = choiceBegin.sourceworldid();
+	const uint32_t eligibleCount = choiceBegin.eligiblecount();
+}
+
+void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult)
+{
+	const uint64_t voteId = choiceResult.voteid();
+	const uint32_t targetWorldDefId = choiceResult.targetworlddefid();
+	const uint64_t pvpChooserNetId = choiceResult.pvpchoosernetid();
+
+	// FINAL_CLEAR_OUTCOME_PVP or FINAL_CLEAR_OUTCOME_ENDING
+	// 이거에 따라 PvP 전이 or 엔딩 연출 -> Plaza 선택
+	const Protocol::FinalClearChoiceOutcome outcome = choiceResult.outcome();
+
+	// 이거는 말 그대로 선택 이유인데, 아마 UI에는 쓸 일 없을 듯
+	const Protocol::FinalClearChoiceReason reason = choiceResult.reason();
 }

@@ -153,7 +153,7 @@ struct PartySnapshotDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PartySnapshotDefaultTypeInternal _PartySnapshot_default_instance_;
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[9];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[11];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_DTO_2eproto = nullptr;
 const ::uint32_t
@@ -299,13 +299,20 @@ const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIAB
     "ATE_SPAWNED\020\000\022%\n!BOSS_GIMMICK_OBJECT_STA"
     "TE_UPDATED\020\001\022$\n BOSS_GIMMICK_OBJECT_STAT"
     "E_BROKEN\020\002\022\'\n#BOSS_GIMMICK_OBJECT_STATE_"
-    "DESPAWNED\020\003b\006proto3"
+    "DESPAWNED\020\003*{\n\027FinalClearChoiceOutcome\022#"
+    "\n\037FINAL_CLEAR_OUTCOME_UNSPECIFIED\020\000\022\033\n\027F"
+    "INAL_CLEAR_OUTCOME_PVP\020\001\022\036\n\032FINAL_CLEAR_"
+    "OUTCOME_ENDING\020\002*\244\001\n\026FinalClearChoiceRea"
+    "son\022\"\n\036FINAL_CLEAR_REASON_UNSPECIFIED\020\000\022"
+    "!\n\035FINAL_CLEAR_REASON_PVP_CHOSEN\020\001\022#\n\037FI"
+    "NAL_CLEAR_REASON_ALL_DECLINED\020\002\022\036\n\032FINAL"
+    "_CLEAR_REASON_TIMEOUT\020\003b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DTO_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_DTO_2eproto = {
     false,
     false,
-    2419,
+    2711,
     descriptor_table_protodef_DTO_2eproto,
     "DTO.proto",
     &descriptor_table_DTO_2eproto_once,
@@ -398,6 +405,24 @@ const ::google::protobuf::EnumDescriptor* BossGimmickObjectState_descriptor() {
 PROTOBUF_CONSTINIT const uint32_t BossGimmickObjectState_internal_data_[] = {
     262144u, 0u, };
 bool BossGimmickObjectState_IsValid(int value) {
+  return 0 <= value && value <= 3;
+}
+const ::google::protobuf::EnumDescriptor* FinalClearChoiceOutcome_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[9];
+}
+PROTOBUF_CONSTINIT const uint32_t FinalClearChoiceOutcome_internal_data_[] = {
+    196608u, 0u, };
+bool FinalClearChoiceOutcome_IsValid(int value) {
+  return 0 <= value && value <= 2;
+}
+const ::google::protobuf::EnumDescriptor* FinalClearChoiceReason_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[10];
+}
+PROTOBUF_CONSTINIT const uint32_t FinalClearChoiceReason_internal_data_[] = {
+    262144u, 0u, };
+bool FinalClearChoiceReason_IsValid(int value) {
   return 0 <= value && value <= 3;
 }
 // ===================================================================

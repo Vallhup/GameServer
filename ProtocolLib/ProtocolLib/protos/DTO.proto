@@ -126,3 +126,20 @@ enum BossGimmickObjectState
     BOSS_GIMMICK_OBJECT_STATE_BROKEN = 2;
     BOSS_GIMMICK_OBJECT_STATE_DESPAWNED = 3;
 }
+
+/* ------------------------------- [ Boss Gimmick ]  ------------------------------- */
+
+enum FinalClearChoiceOutcome 
+{
+	FINAL_CLEAR_OUTCOME_UNSPECIFIED = 0;
+	FINAL_CLEAR_OUTCOME_PVP         = 1;
+	FINAL_CLEAR_OUTCOME_ENDING      = 2;
+}
+
+enum FinalClearChoiceReason 
+{
+	FINAL_CLEAR_REASON_UNSPECIFIED   = 0;
+	FINAL_CLEAR_REASON_PVP_CHOSEN    = 1; 
+	FINAL_CLEAR_REASON_ALL_DECLINED  = 2; 
+	FINAL_CLEAR_REASON_TIMEOUT       = 3;
+}

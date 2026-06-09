@@ -85,6 +85,8 @@ private:
 	void HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState);
 	void HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& gimmickObject);
 	void HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& gimmickZone);
+	void HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& choiceBegin);
+	void HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult);
 
 	void UpdateDissolves();
 

@@ -442,6 +442,63 @@ struct SC_ITEM_COUNT_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_ITEM_COUNT_PACKETDefaultTypeInternal _SC_ITEM_COUNT_PACKET_default_instance_;
 
+inline constexpr SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : voteid_{::uint64_t{0u}},
+        outcome_{static_cast< ::Protocol::FinalClearChoiceOutcome >(0)},
+        reason_{static_cast< ::Protocol::FinalClearChoiceReason >(0)},
+        pvpchoosernetid_{::uint64_t{0u}},
+        targetworlddefid_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_FINAL_CLEAR_CHOICE_RESULT_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_FINAL_CLEAR_CHOICE_RESULT_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_FINAL_CLEAR_CHOICE_RESULT_PACKETDefaultTypeInternal() {}
+  union {
+    SC_FINAL_CLEAR_CHOICE_RESULT_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_FINAL_CLEAR_CHOICE_RESULT_PACKETDefaultTypeInternal _SC_FINAL_CLEAR_CHOICE_RESULT_PACKET_default_instance_;
+
+inline constexpr SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : voteid_{::uint64_t{0u}},
+        partyid_{::uint64_t{0u}},
+        sourceworldid_{::uint64_t{0u}},
+        eligiblecount_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_FINAL_CLEAR_CHOICE_BEGIN_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_FINAL_CLEAR_CHOICE_BEGIN_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_FINAL_CLEAR_CHOICE_BEGIN_PACKETDefaultTypeInternal() {}
+  union {
+    SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_FINAL_CLEAR_CHOICE_BEGIN_PACKETDefaultTypeInternal _SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET_default_instance_;
+
 inline constexpr SC_COMBAT_IMPACT_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : attackernetid_{::uint64_t{0u}},
@@ -1097,6 +1154,32 @@ struct CS_GUARD_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_GUARD_PACKETDefaultTypeInternal _CS_GUARD_PACKET_default_instance_;
 
+inline constexpr CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : voteid_{::uint64_t{0u}},
+        choosepvp_{false},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKETDefaultTypeInternal() {}
+  union {
+    CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKETDefaultTypeInternal _CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET_default_instance_;
+
 inline constexpr CS_DODGE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : dirx_{0},
@@ -1498,6 +1581,16 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_TITLE_EQUIP_REQUEST_PACKET, _impl_.clientrequestid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_TITLE_EQUIP_REQUEST_PACKET, _impl_.titleid_),
         ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.voteid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.choosepvp_),
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_TIME_SYNC_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -1811,6 +1904,31 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET, _impl_.success_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET, _impl_.equippedtitleid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET, _impl_.reason_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.voteid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.partyid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.sourceworldid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.eligiblecount_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.voteid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.outcome_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.reason_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.targetworlddefid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.pvpchoosernetid_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -1836,31 +1954,34 @@ static const ::_pbi::MigrationSchema
         {179, -1, -1, sizeof(::Protocol::CS_RESPAWN_REQUEST_PACKET)},
         {188, -1, -1, sizeof(::Protocol::CS_STAT_UI_OPENED_PACKET)},
         {197, -1, -1, sizeof(::Protocol::CS_TITLE_EQUIP_REQUEST_PACKET)},
-        {207, -1, -1, sizeof(::Protocol::SC_TIME_SYNC_PACKET)},
-        {218, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
-        {227, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
-        {236, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {250, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {263, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {272, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
-        {289, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {301, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {318, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
-        {338, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
-        {348, 360, -1, sizeof(::Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET)},
-        {364, -1, -1, sizeof(::Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET)},
-        {374, -1, -1, sizeof(::Protocol::SC_PARTY_COMMAND_RESULT_PACKET)},
-        {387, 396, -1, sizeof(::Protocol::SC_PARTY_SNAPSHOT_PACKET)},
-        {397, 407, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)},
-        {409, -1, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)},
-        {421, -1, -1, sizeof(::Protocol::SC_ITEM_COUNT_PACKET)},
-        {430, -1, -1, sizeof(::Protocol::SC_TEAM_DEATH_COUNT_PACKET)},
-        {440, -1, -1, sizeof(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET)},
-        {450, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET)},
-        {464, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)},
-        {482, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)},
-        {498, -1, -1, sizeof(::Protocol::SC_STAT_UI_BOOTSTRAP_PACKET)},
-        {509, -1, -1, sizeof(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET)},
+        {207, -1, -1, sizeof(::Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)},
+        {217, -1, -1, sizeof(::Protocol::SC_TIME_SYNC_PACKET)},
+        {228, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
+        {237, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
+        {246, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {260, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {273, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {282, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
+        {299, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {311, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {328, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
+        {348, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
+        {358, 370, -1, sizeof(::Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET)},
+        {374, -1, -1, sizeof(::Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET)},
+        {384, -1, -1, sizeof(::Protocol::SC_PARTY_COMMAND_RESULT_PACKET)},
+        {397, 406, -1, sizeof(::Protocol::SC_PARTY_SNAPSHOT_PACKET)},
+        {407, 417, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)},
+        {419, -1, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)},
+        {431, -1, -1, sizeof(::Protocol::SC_ITEM_COUNT_PACKET)},
+        {440, -1, -1, sizeof(::Protocol::SC_TEAM_DEATH_COUNT_PACKET)},
+        {450, -1, -1, sizeof(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET)},
+        {460, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET)},
+        {474, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)},
+        {492, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)},
+        {508, -1, -1, sizeof(::Protocol::SC_STAT_UI_BOOTSTRAP_PACKET)},
+        {519, -1, -1, sizeof(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET)},
+        {531, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)},
+        {543, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_TIME_SYNC_PACKET_default_instance_._instance,
@@ -1884,6 +2005,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_RESPAWN_REQUEST_PACKET_default_instance_._instance,
     &::Protocol::_CS_STAT_UI_OPENED_PACKET_default_instance_._instance,
     &::Protocol::_CS_TITLE_EQUIP_REQUEST_PACKET_default_instance_._instance,
+    &::Protocol::_CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET_default_instance_._instance,
     &::Protocol::_SC_TIME_SYNC_PACKET_default_instance_._instance,
     &::Protocol::_SC_LOGIN_SUCCESS_PACKET_default_instance_._instance,
     &::Protocol::_SC_LOGIN_FAIL_PACKET_default_instance_._instance,
@@ -1909,6 +2031,8 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_BOSS_GIMMICK_ZONE_SYNC_PACKET_default_instance_._instance,
     &::Protocol::_SC_STAT_UI_BOOTSTRAP_PACKET_default_instance_._instance,
     &::Protocol::_SC_TITLE_EQUIP_RESULT_PACKET_default_instance_._instance,
+    &::Protocol::_SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET_default_instance_._instance,
+    &::Protocol::_SC_FINAL_CLEAR_CHOICE_RESULT_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -1947,83 +2071,93 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "RequestId\030\001 \001(\r\"3\n\030CS_STAT_UI_OPENED_PAC"
     "KET\022\027\n\017clientRequestId\030\001 \001(\r\"I\n\035CS_TITLE"
     "_EQUIP_REQUEST_PACKET\022\027\n\017clientRequestId"
-    "\030\001 \001(\r\022\017\n\007titleId\030\002 \001(\r\"V\n\023SC_TIME_SYNC_"
-    "PACKET\022\020\n\010probeSeq\030\001 \001(\r\022\030\n\020serverSendTi"
-    "meMs\030\002 \001(\r\022\023\n\013serverFrame\030\003 \001(\004\"(\n\027SC_LO"
-    "GIN_SUCCESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024SC_"
-    "LOGIN_FAIL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\rSC_"
-    "ADD_PACKET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002 \001("
-    "\r\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003ya"
-    "w\030\006 \001(\002\"M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001(\004"
-    "\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw"
-    "\030\005 \001(\002\"!\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 \001("
-    "\004\"\266\001\n\027SC_COMBAT_IMPACT_PACKET\022\025\n\rattacke"
-    "rNetId\030\001 \001(\004\022\023\n\013victimNetId\030\002 \001(\004\022\022\n\nres"
-    "ultType\030\003 \001(\r\022\017\n\007impactX\030\004 \001(\002\022\017\n\007impact"
-    "Y\030\005 \001(\002\022\017\n\007impactZ\030\006 \001(\002\022\014\n\004dirX\030\007 \001(\002\022\014"
-    "\n\004dirY\030\010 \001(\002\022\014\n\004dirZ\030\t \001(\002\"t\n\036SC_ANIMATI"
-    "ON_TRANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010c"
-    "urrAnim\030\002 \001(\005\022\031\n\021abilityInstanceId\030\003 \001(\r"
-    "\022\026\n\016normalizedTime\030\004 \001(\002\"\264\001\n\025SC_STAT_CHA"
-    "NGE_PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r"
-    "\022\r\n\005maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nm"
-    "axstamina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attack"
-    "speed\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmovespee"
-    "d\030\t \001(\002\"\264\002\n SC_WORLD_TRANSITION_BEGIN_PA"
-    "CKET\022\022\n\ntransferId\030\001 \001(\004\022\021\n\trequestId\030\002 "
-    "\001(\r\022\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rsourceW"
-    "orldId\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025"
-    "\n\rtargetWorldId\030\006 \001(\004\022\025\n\rmapResourceId\030\007"
-    " \001(\r\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clearExisti"
-    "ngObjects\030\t \001(\010\022\027\n\017waitClientReady\030\n \001(\010"
-    "\022\024\n\014usedFallback\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H"
-    "\n#SC_WORLD_TRANSITION_REJECTED_PACKET\022\021\n"
-    "\trequestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\240\001\n\034SC_"
-    "PARTY_UI_BOOTSTRAP_PACKET\022\027\n\017clientReque"
-    "stId\030\001 \001(\r\022\022\n\nhasMyParty\030\002 \001(\010\022(\n\007myPart"
-    "y\030\003 \001(\0132\027.Protocol.PartySnapshot\022)\n\007part"
-    "ies\030\004 \003(\0132\030.Protocol.PartyListEntry\"c\n\035S"
-    "C_PARTY_LIST_SNAPSHOT_PACKET\022\027\n\017clientRe"
-    "questId\030\001 \001(\r\022)\n\007parties\030\002 \003(\0132\030.Protoco"
-    "l.PartyListEntry\"\201\001\n\036SC_PARTY_COMMAND_RE"
-    "SULT_PACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007"
-    "success\030\002 \001(\010\022\r\n\005error\030\003 \001(\r\022\017\n\007partyId\030"
-    "\004 \001(\004\022\025\n\rjoinRequestId\030\005 \001(\004\"B\n\030SC_PARTY"
-    "_SNAPSHOT_PACKET\022&\n\005party\030\001 \001(\0132\027.Protoc"
-    "ol.PartySnapshot\"e\n%SC_PARTY_JOIN_REQUES"
-    "T_RECEIVED_PACKET\022\017\n\007partyId\030\001 \001(\004\022+\n\007re"
-    "quest\030\002 \001(\0132\032.Protocol.PartyJoinRequest\""
-    "\264\001\n#SC_PARTY_JOIN_REQUEST_CLOSED_PACKET\022"
-    "\017\n\007partyId\030\001 \001(\004\022\025\n\rjoinRequestId\030\002 \001(\004\022"
-    "5\n\006reason\030\003 \001(\0162%.Protocol.PartyJoinRequ"
-    "estCloseReason\022.\n\005state\030\004 \001(\0162\037.Protocol"
-    ".PartyJoinRequestState\"-\n\024SC_ITEM_COUNT_"
-    "PACKET\022\025\n\rhpPotionCount\030\001 \001(\r\"G\n\032SC_TEAM"
-    "_DEATH_COUNT_PACKET\022\025\n\rmaxDeathCount\030\001 \001"
-    "(\r\022\022\n\ndeathCount\030\002 \001(\r\"A\n\036SC_MONSTER_COM"
-    "BAT_STATE_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010inCom"
-    "bat\030\002 \001(\010\"\313\001\n\034SC_BOSS_GIMMICK_STATE_PACK"
-    "ET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001("
-    "\r\022.\n\013gimmickType\030\003 \001(\0162\031.Protocol.BossGi"
-    "mmickType\022)\n\005stage\030\004 \001(\0162\032.Protocol.Boss"
-    "GimmickStage\022\023\n\013durationSec\030\005 \001(\002\022\024\n\014rem"
-    "ainingSec\030\006 \001(\002\"\340\001\n\"SC_BOSS_GIMMICK_OBJE"
-    "CT_SYNC_PACKET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngim"
-    "mickSeq\030\002 \001(\r\022\023\n\013objectNetId\030\003 \001(\004\022/\n\005st"
-    "ate\030\004 \001(\0162 .Protocol.BossGimmickObjectSt"
-    "ate\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006"
-    "radius\030\010 \001(\002\022\r\n\005curHp\030\t \001(\r\022\r\n\005maxHp\030\n \001"
-    "(\r\"\276\001\n SC_BOSS_GIMMICK_ZONE_SYNC_PACKET\022"
-    "\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\021"
-    "\n\tzoneNetId\030\003 \001(\004\022/\n\005state\030\004 \001(\0162 .Proto"
-    "col.BossGimmickObjectState\022\t\n\001x\030\005 \001(\002\022\t\n"
-    "\001y\030\006 \001(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006radius\030\010 \001(\002\"f\n\033S"
-    "C_STAT_UI_BOOTSTRAP_PACKET\022\027\n\017clientRequ"
-    "estId\030\001 \001(\r\022\025\n\rownedTitleIds\030\002 \003(\r\022\027\n\017eq"
-    "uippedTitleId\030\003 \001(\r\"q\n\034SC_TITLE_EQUIP_RE"
-    "SULT_PACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007"
-    "success\030\002 \001(\010\022\027\n\017equippedTitleId\030\003 \001(\r\022\016"
-    "\n\006reason\030\004 \001(\rb\006proto3"
+    "\030\001 \001(\r\022\017\n\007titleId\030\002 \001(\r\"H\n#CS_FINAL_CLEA"
+    "R_CHOICE_SUBMIT_PACKET\022\016\n\006voteId\030\001 \001(\004\022\021"
+    "\n\tchoosePvp\030\002 \001(\010\"V\n\023SC_TIME_SYNC_PACKET"
+    "\022\020\n\010probeSeq\030\001 \001(\r\022\030\n\020serverSendTimeMs\030\002"
+    " \001(\r\022\023\n\013serverFrame\030\003 \001(\004\"(\n\027SC_LOGIN_SU"
+    "CCESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024SC_LOGIN_"
+    "FAIL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\rSC_ADD_PA"
+    "CKET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002 \001(\r\022\t\n\001x"
+    "\030\003 \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001("
+    "\002\"M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001(\004\022\t\n\001x\030"
+    "\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002"
+    "\"!\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 \001(\004\"\266\001\n\027"
+    "SC_COMBAT_IMPACT_PACKET\022\025\n\rattackerNetId"
+    "\030\001 \001(\004\022\023\n\013victimNetId\030\002 \001(\004\022\022\n\nresultTyp"
+    "e\030\003 \001(\r\022\017\n\007impactX\030\004 \001(\002\022\017\n\007impactY\030\005 \001("
+    "\002\022\017\n\007impactZ\030\006 \001(\002\022\014\n\004dirX\030\007 \001(\002\022\014\n\004dirY"
+    "\030\010 \001(\002\022\014\n\004dirZ\030\t \001(\002\"t\n\036SC_ANIMATION_TRA"
+    "NSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010currAni"
+    "m\030\002 \001(\005\022\031\n\021abilityInstanceId\030\003 \001(\r\022\026\n\016no"
+    "rmalizedTime\030\004 \001(\002\"\264\001\n\025SC_STAT_CHANGE_PA"
+    "CKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005ma"
+    "xhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmaxstam"
+    "ina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attackspeed\030"
+    "\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmovespeed\030\t \001("
+    "\002\"\264\002\n SC_WORLD_TRANSITION_BEGIN_PACKET\022\022"
+    "\n\ntransferId\030\001 \001(\004\022\021\n\trequestId\030\002 \001(\r\022\030\n"
+    "\020sourceWorldDefId\030\003 \001(\r\022\025\n\rsourceWorldId"
+    "\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025\n\rtarg"
+    "etWorldId\030\006 \001(\004\022\025\n\rmapResourceId\030\007 \001(\r\022\023"
+    "\n\013playerNetId\030\010 \001(\004\022\034\n\024clearExistingObje"
+    "cts\030\t \001(\010\022\027\n\017waitClientReady\030\n \001(\010\022\024\n\014us"
+    "edFallback\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H\n#SC_W"
+    "ORLD_TRANSITION_REJECTED_PACKET\022\021\n\treque"
+    "stId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\240\001\n\034SC_PARTY_"
+    "UI_BOOTSTRAP_PACKET\022\027\n\017clientRequestId\030\001"
+    " \001(\r\022\022\n\nhasMyParty\030\002 \001(\010\022(\n\007myParty\030\003 \001("
+    "\0132\027.Protocol.PartySnapshot\022)\n\007parties\030\004 "
+    "\003(\0132\030.Protocol.PartyListEntry\"c\n\035SC_PART"
+    "Y_LIST_SNAPSHOT_PACKET\022\027\n\017clientRequestI"
+    "d\030\001 \001(\r\022)\n\007parties\030\002 \003(\0132\030.Protocol.Part"
+    "yListEntry\"\201\001\n\036SC_PARTY_COMMAND_RESULT_P"
+    "ACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007succes"
+    "s\030\002 \001(\010\022\r\n\005error\030\003 \001(\r\022\017\n\007partyId\030\004 \001(\004\022"
+    "\025\n\rjoinRequestId\030\005 \001(\004\"B\n\030SC_PARTY_SNAPS"
+    "HOT_PACKET\022&\n\005party\030\001 \001(\0132\027.Protocol.Par"
+    "tySnapshot\"e\n%SC_PARTY_JOIN_REQUEST_RECE"
+    "IVED_PACKET\022\017\n\007partyId\030\001 \001(\004\022+\n\007request\030"
+    "\002 \001(\0132\032.Protocol.PartyJoinRequest\"\264\001\n#SC"
+    "_PARTY_JOIN_REQUEST_CLOSED_PACKET\022\017\n\007par"
+    "tyId\030\001 \001(\004\022\025\n\rjoinRequestId\030\002 \001(\004\0225\n\006rea"
+    "son\030\003 \001(\0162%.Protocol.PartyJoinRequestClo"
+    "seReason\022.\n\005state\030\004 \001(\0162\037.Protocol.Party"
+    "JoinRequestState\"-\n\024SC_ITEM_COUNT_PACKET"
+    "\022\025\n\rhpPotionCount\030\001 \001(\r\"G\n\032SC_TEAM_DEATH"
+    "_COUNT_PACKET\022\025\n\rmaxDeathCount\030\001 \001(\r\022\022\n\n"
+    "deathCount\030\002 \001(\r\"A\n\036SC_MONSTER_COMBAT_ST"
+    "ATE_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010inCombat\030\002 "
+    "\001(\010\"\313\001\n\034SC_BOSS_GIMMICK_STATE_PACKET\022\021\n\t"
+    "bossNetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022.\n\013g"
+    "immickType\030\003 \001(\0162\031.Protocol.BossGimmickT"
+    "ype\022)\n\005stage\030\004 \001(\0162\032.Protocol.BossGimmic"
+    "kStage\022\023\n\013durationSec\030\005 \001(\002\022\024\n\014remaining"
+    "Sec\030\006 \001(\002\"\340\001\n\"SC_BOSS_GIMMICK_OBJECT_SYN"
+    "C_PACKET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngimmickSe"
+    "q\030\002 \001(\r\022\023\n\013objectNetId\030\003 \001(\004\022/\n\005state\030\004 "
+    "\001(\0162 .Protocol.BossGimmickObjectState\022\t\n"
+    "\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006radius"
+    "\030\010 \001(\002\022\r\n\005curHp\030\t \001(\r\022\r\n\005maxHp\030\n \001(\r\"\276\001\n"
+    " SC_BOSS_GIMMICK_ZONE_SYNC_PACKET\022\021\n\tbos"
+    "sNetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\021\n\tzone"
+    "NetId\030\003 \001(\004\022/\n\005state\030\004 \001(\0162 .Protocol.Bo"
+    "ssGimmickObjectState\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001"
+    "(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006radius\030\010 \001(\002\"f\n\033SC_STAT"
+    "_UI_BOOTSTRAP_PACKET\022\027\n\017clientRequestId\030"
+    "\001 \001(\r\022\025\n\rownedTitleIds\030\002 \003(\r\022\027\n\017equipped"
+    "TitleId\030\003 \001(\r\"q\n\034SC_TITLE_EQUIP_RESULT_P"
+    "ACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007succes"
+    "s\030\002 \001(\010\022\027\n\017equippedTitleId\030\003 \001(\r\022\016\n\006reas"
+    "on\030\004 \001(\r\"s\n\"SC_FINAL_CLEAR_CHOICE_BEGIN_"
+    "PACKET\022\016\n\006voteId\030\001 \001(\004\022\017\n\007partyId\030\002 \001(\004\022"
+    "\025\n\rsourceWorldId\030\003 \001(\004\022\025\n\religibleCount\030"
+    "\004 \001(\r\"\316\001\n#SC_FINAL_CLEAR_CHOICE_RESULT_P"
+    "ACKET\022\016\n\006voteId\030\001 \001(\004\0222\n\007outcome\030\002 \001(\0162!"
+    ".Protocol.FinalClearChoiceOutcome\0220\n\006rea"
+    "son\030\003 \001(\0162 .Protocol.FinalClearChoiceRea"
+    "son\022\030\n\020targetWorldDefId\030\004 \001(\r\022\027\n\017pvpChoo"
+    "serNetId\030\005 \001(\004b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[1] =
     {
@@ -2033,13 +2167,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    4462,
+    4862,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     1,
-    46,
+    49,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -6930,6 +7064,246 @@ void CS_TITLE_EQUIP_REQUEST_PACKET::InternalSwap(CS_TITLE_EQUIP_REQUEST_PACKET* 
 }
 
 ::google::protobuf::Metadata CS_TITLE_EQUIP_REQUEST_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::_Internal {
+ public:
+};
+
+CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+}
+CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET(
+    ::google::protobuf::Arena* arena, const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET& from)
+    : CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, voteid_),
+           0,
+           offsetof(Impl_, choosepvp_) -
+               offsetof(Impl_, voteid_) +
+               sizeof(Impl_::choosepvp_));
+}
+CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::~CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+  SharedDtor(*this);
+}
+inline void CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::SharedDtor(MessageLite& self) {
+  CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET& this_ = static_cast<CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET(arena);
+}
+constexpr auto CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET),
+                                            alignof(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET>(), &CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::ByteSizeLong,
+            &CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // bool choosePvp = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.choosepvp_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.choosepvp_)}},
+    // uint64 voteId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.voteid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.voteid_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 voteId = 1;
+    {PROTOBUF_FIELD_OFFSET(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.voteid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // bool choosePvp = 2;
+    {PROTOBUF_FIELD_OFFSET(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.choosepvp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.voteid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.choosepvp_) -
+      reinterpret_cast<char*>(&_impl_.voteid_)) + sizeof(_impl_.choosepvp_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET& this_ = static_cast<const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 voteId = 1;
+          if (this_._internal_voteid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_voteid(), target);
+          }
+
+          // bool choosePvp = 2;
+          if (this_._internal_choosepvp() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                2, this_._internal_choosepvp(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::ByteSizeLong(const MessageLite& base) {
+          const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET& this_ = static_cast<const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::ByteSizeLong() const {
+          const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 voteId = 1;
+            if (this_._internal_voteid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_voteid());
+            }
+            // bool choosePvp = 2;
+            if (this_._internal_choosepvp() != 0) {
+              total_size += 2;
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET*>(&to_msg);
+  auto& from = static_cast<const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_voteid() != 0) {
+    _this->_impl_.voteid_ = from._impl_.voteid_;
+  }
+  if (from._internal_choosepvp() != 0) {
+    _this->_impl_.choosepvp_ = from._impl_.choosepvp_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::CopyFrom(const CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::InternalSwap(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.choosepvp_)
+      + sizeof(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::_impl_.choosepvp_)
+      - PROTOBUF_FIELD_OFFSET(CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET, _impl_.voteid_)>(
+          reinterpret_cast<char*>(&_impl_.voteid_),
+          reinterpret_cast<char*>(&other->_impl_.voteid_));
+}
+
+::google::protobuf::Metadata CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
@@ -14350,6 +14724,596 @@ void SC_TITLE_EQUIP_RESULT_PACKET::InternalSwap(SC_TITLE_EQUIP_RESULT_PACKET* PR
 }
 
 ::google::protobuf::Metadata SC_TITLE_EQUIP_RESULT_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::_Internal {
+ public:
+};
+
+SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+}
+SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET(
+    ::google::protobuf::Arena* arena, const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& from)
+    : SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, voteid_),
+           0,
+           offsetof(Impl_, eligiblecount_) -
+               offsetof(Impl_, voteid_) +
+               sizeof(Impl_::eligiblecount_));
+}
+SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::~SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::SharedDtor(MessageLite& self) {
+  SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& this_ = static_cast<SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET(arena);
+}
+constexpr auto SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET),
+                                            alignof(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET>(), &SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::ByteSizeLong,
+            &SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 0, 0, 2> SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 eligibleCount = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.eligiblecount_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.eligiblecount_)}},
+    // uint64 voteId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.voteid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.voteid_)}},
+    // uint64 partyId = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.partyid_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.partyid_)}},
+    // uint64 sourceWorldId = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.sourceworldid_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.sourceworldid_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 voteId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.voteid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint64 partyId = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.partyid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint64 sourceWorldId = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.sourceworldid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 eligibleCount = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.eligiblecount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.voteid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.eligiblecount_) -
+      reinterpret_cast<char*>(&_impl_.voteid_)) + sizeof(_impl_.eligiblecount_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& this_ = static_cast<const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 voteId = 1;
+          if (this_._internal_voteid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_voteid(), target);
+          }
+
+          // uint64 partyId = 2;
+          if (this_._internal_partyid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                2, this_._internal_partyid(), target);
+          }
+
+          // uint64 sourceWorldId = 3;
+          if (this_._internal_sourceworldid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                3, this_._internal_sourceworldid(), target);
+          }
+
+          // uint32 eligibleCount = 4;
+          if (this_._internal_eligiblecount() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                4, this_._internal_eligiblecount(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& this_ = static_cast<const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::ByteSizeLong() const {
+          const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 voteId = 1;
+            if (this_._internal_voteid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_voteid());
+            }
+            // uint64 partyId = 2;
+            if (this_._internal_partyid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_partyid());
+            }
+            // uint64 sourceWorldId = 3;
+            if (this_._internal_sourceworldid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_sourceworldid());
+            }
+            // uint32 eligibleCount = 4;
+            if (this_._internal_eligiblecount() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_eligiblecount());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_voteid() != 0) {
+    _this->_impl_.voteid_ = from._impl_.voteid_;
+  }
+  if (from._internal_partyid() != 0) {
+    _this->_impl_.partyid_ = from._impl_.partyid_;
+  }
+  if (from._internal_sourceworldid() != 0) {
+    _this->_impl_.sourceworldid_ = from._impl_.sourceworldid_;
+  }
+  if (from._internal_eligiblecount() != 0) {
+    _this->_impl_.eligiblecount_ = from._impl_.eligiblecount_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::CopyFrom(const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::InternalSwap(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.eligiblecount_)
+      + sizeof(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::_impl_.eligiblecount_)
+      - PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET, _impl_.voteid_)>(
+          reinterpret_cast<char*>(&_impl_.voteid_),
+          reinterpret_cast<char*>(&other->_impl_.voteid_));
+}
+
+::google::protobuf::Metadata SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::_Internal {
+ public:
+};
+
+SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+}
+SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET(
+    ::google::protobuf::Arena* arena, const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& from)
+    : SC_FINAL_CLEAR_CHOICE_RESULT_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, voteid_),
+           0,
+           offsetof(Impl_, targetworlddefid_) -
+               offsetof(Impl_, voteid_) +
+               sizeof(Impl_::targetworlddefid_));
+}
+SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::~SC_FINAL_CLEAR_CHOICE_RESULT_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::SharedDtor(MessageLite& self) {
+  SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& this_ = static_cast<SC_FINAL_CLEAR_CHOICE_RESULT_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_FINAL_CLEAR_CHOICE_RESULT_PACKET(arena);
+}
+constexpr auto SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET),
+                                            alignof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_FINAL_CLEAR_CHOICE_RESULT_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_FINAL_CLEAR_CHOICE_RESULT_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_FINAL_CLEAR_CHOICE_RESULT_PACKET>(), &SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::ByteSizeLong,
+            &SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 5, 0, 0, 2> SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    5, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967264,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    5,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 voteId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.voteid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.voteid_)}},
+    // .Protocol.FinalClearChoiceOutcome outcome = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.outcome_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.outcome_)}},
+    // .Protocol.FinalClearChoiceReason reason = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.reason_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.reason_)}},
+    // uint32 targetWorldDefId = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.targetworlddefid_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.targetworlddefid_)}},
+    // uint64 pvpChooserNetId = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.pvpchoosernetid_), 63>(),
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.pvpchoosernetid_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 voteId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.voteid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // .Protocol.FinalClearChoiceOutcome outcome = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.outcome_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // .Protocol.FinalClearChoiceReason reason = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.reason_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // uint32 targetWorldDefId = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.targetworlddefid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint64 pvpChooserNetId = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.pvpchoosernetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.voteid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.targetworlddefid_) -
+      reinterpret_cast<char*>(&_impl_.voteid_)) + sizeof(_impl_.targetworlddefid_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& this_ = static_cast<const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 voteId = 1;
+          if (this_._internal_voteid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_voteid(), target);
+          }
+
+          // .Protocol.FinalClearChoiceOutcome outcome = 2;
+          if (this_._internal_outcome() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                2, this_._internal_outcome(), target);
+          }
+
+          // .Protocol.FinalClearChoiceReason reason = 3;
+          if (this_._internal_reason() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                3, this_._internal_reason(), target);
+          }
+
+          // uint32 targetWorldDefId = 4;
+          if (this_._internal_targetworlddefid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                4, this_._internal_targetworlddefid(), target);
+          }
+
+          // uint64 pvpChooserNetId = 5;
+          if (this_._internal_pvpchoosernetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                5, this_._internal_pvpchoosernetid(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& this_ = static_cast<const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::ByteSizeLong() const {
+          const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 voteId = 1;
+            if (this_._internal_voteid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_voteid());
+            }
+            // .Protocol.FinalClearChoiceOutcome outcome = 2;
+            if (this_._internal_outcome() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_outcome());
+            }
+            // .Protocol.FinalClearChoiceReason reason = 3;
+            if (this_._internal_reason() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_reason());
+            }
+            // uint64 pvpChooserNetId = 5;
+            if (this_._internal_pvpchoosernetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_pvpchoosernetid());
+            }
+            // uint32 targetWorldDefId = 4;
+            if (this_._internal_targetworlddefid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_targetworlddefid());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_FINAL_CLEAR_CHOICE_RESULT_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_voteid() != 0) {
+    _this->_impl_.voteid_ = from._impl_.voteid_;
+  }
+  if (from._internal_outcome() != 0) {
+    _this->_impl_.outcome_ = from._impl_.outcome_;
+  }
+  if (from._internal_reason() != 0) {
+    _this->_impl_.reason_ = from._impl_.reason_;
+  }
+  if (from._internal_pvpchoosernetid() != 0) {
+    _this->_impl_.pvpchoosernetid_ = from._impl_.pvpchoosernetid_;
+  }
+  if (from._internal_targetworlddefid() != 0) {
+    _this->_impl_.targetworlddefid_ = from._impl_.targetworlddefid_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::CopyFrom(const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::InternalSwap(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.targetworlddefid_)
+      + sizeof(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::_impl_.targetworlddefid_)
+      - PROTOBUF_FIELD_OFFSET(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.voteid_)>(
+          reinterpret_cast<char*>(&_impl_.voteid_),
+          reinterpret_cast<char*>(&other->_impl_.voteid_));
+}
+
+::google::protobuf::Metadata SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

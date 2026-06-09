@@ -130,6 +130,12 @@ message CS_TITLE_EQUIP_REQUEST_PACKET
 	uint32 titleId = 2;
 }
 
+message CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET
+{
+	uint64 voteId = 1;
+	bool choosePvp = 2;
+}
+
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
 
 message SC_TIME_SYNC_PACKET
@@ -360,4 +366,21 @@ message SC_TITLE_EQUIP_RESULT_PACKET
 	bool success = 2;
 	uint32 equippedTitleId = 3;
 	uint32 reason = 4;
+}
+
+message SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET 
+{
+	uint64 voteId            = 1; 
+	uint64 partyId           = 2;
+	uint64 sourceWorldId     = 3;  
+	uint32 eligibleCount     = 4;
+}
+
+message SC_FINAL_CLEAR_CHOICE_RESULT_PACKET 
+{
+	uint64 voteId = 1;
+	FinalClearChoiceOutcome outcome = 2;
+	FinalClearChoiceReason  reason  = 3;
+	uint32 targetWorldDefId = 4;  
+	uint64 pvpChooserNetId = 5;
 }
