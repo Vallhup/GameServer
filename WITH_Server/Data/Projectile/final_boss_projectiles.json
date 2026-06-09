@@ -10,7 +10,7 @@
 			"maxLifetimeSec": 1.0,
 			"radius": 0.6,
 			"maxDistance": 14.0,
-			"spawnForwardOffset": 0,
+			"spawnForwardOffset": 1.2,
 			"spawnRightOffset": 0,
 			"spawnVerticalOffset": 1.3,
 			"attackHit": {

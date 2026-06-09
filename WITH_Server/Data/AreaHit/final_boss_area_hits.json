@@ -8,7 +8,7 @@
         "nearWidth": 1.6,
         "farWidth": 20.4,
         "depth": 22.8,
-        "forwardOffset": 0.2,
+        "forwardOffset": 1.2,
         "rightOffset": 0,
         "verticalOffset": 0,
         "verticalTolerance": 2.8
@@ -97,7 +97,7 @@
         "nearWidth": 2.4,
         "farWidth": 2.4,
         "depth": 37.0,
-        "forwardOffset": 0,
+        "forwardOffset": 1.2,
         "rightOffset": 0.6,
         "verticalOffset": 0,
         "verticalTolerance": 2.4
