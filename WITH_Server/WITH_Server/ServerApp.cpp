@@ -412,12 +412,21 @@ bool ServerApp::SubmitFinalClearPvpChoice(
 	vote.choices[sessionId] = choosePvp;
 	if (choosePvp)
 	{
-		return ResolveFinalClearChoiceVote(voteId, WorldDefId::Pvp);
+		// 한 명이라도 PvP를 선택하면 즉시 PvP 월드로 확정한다.
+		return ResolveFinalClearChoiceVote(
+			voteId,
+			WorldDefId::Pvp,
+			static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_PVP_CHOSEN),
+			sessionId);
 	}
 
 	if (vote.choices.size() >= vote.eligibleSessions.size())
 	{
-		return ResolveFinalClearChoiceVote(voteId, WorldDefId::Plaza);
+		// 전원이 거절 → 엔딩 후 Plaza 복귀.
+		return ResolveFinalClearChoiceVote(
+			voteId,
+			WorldDefId::Plaza,
+			static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_ALL_DECLINED));
 	}
 
 	return true;
@@ -1263,7 +1272,11 @@ void ServerApp::TickFinalClearChoiceVotes()
 
 	for (uint64_t voteId : expiredVoteIds)
 	{
-		(void)ResolveFinalClearChoiceVote(voteId, WorldDefId::Plaza);
+		// 제한 시간(15초) 만료 → 아무도 PvP를 고르지 않은 것으로 보고 엔딩 처리.
+		(void)ResolveFinalClearChoiceVote(
+			voteId,
+			WorldDefId::Plaza,
+			static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_TIMEOUT));
 	}
 }
 
@@ -1324,14 +1337,38 @@ bool ServerApp::StartFinalClearChoiceVote(WorldId sourceWorldId)
 		return RequestPartyWorldTransfer(partyId, WorldDefId::Plaza);
 	}
 
-	_finalClearChoiceVoteByWorld[sourceWorldId.GetRaw()] = vote.voteId;
-	_finalClearChoiceVotes.emplace(vote.voteId, std::move(vote));
+	const uint64_t voteId = vote.voteId;
+	const double deadlineSec = vote.deadlineSec;
+
+	std::vector<SessionId> beginSessions;
+	beginSessions.reserve(vote.eligibleSessions.size());
+	for (const SessionId eligibleSessionId : vote.eligibleSessions)
+	{
+		beginSessions.push_back(eligibleSessionId);
+	}
+	const uint32_t eligibleCount =
+		static_cast<uint32_t>(beginSessions.size());
+
+	_finalClearChoiceVoteByWorld[sourceWorldId.GetRaw()] = voteId;
+	_finalClearChoiceVotes.emplace(voteId, std::move(vote));
+
+	(void)ServerPacketStager::StageFinalClearChoiceBeginPacket(
+		_sessionSystem.Network(),
+		std::span<const SessionId>(beginSessions.data(), beginSessions.size()),
+		voteId,
+		static_cast<uint64_t>(partyId),
+		sourceWorldId.GetRaw(),
+		static_cast<uint32_t>(kFinalClearChoiceTimeoutSec * 1000.0),
+		static_cast<uint64_t>(deadlineSec * 1000.0),
+		eligibleCount);
 	return true;
 }
 
 bool ServerApp::ResolveFinalClearChoiceVote(
 	uint64_t voteId,
-	WorldDefId targetWorldDefId)
+	WorldDefId targetWorldDefId,
+	uint32_t reason,
+	SessionId pvpChooserSessionId)
 {
 	const auto voteIt = _finalClearChoiceVotes.find(voteId);
 	if (voteIt == _finalClearChoiceVotes.end())
@@ -1341,8 +1378,36 @@ bool ServerApp::ResolveFinalClearChoiceVote(
 
 	const PartyId partyId = voteIt->second.partyId;
 	const WorldId sourceWorldId = voteIt->second.sourceWorldId;
+
+	// 결과 통지는 투표에 참여한 자격자 전원에게 보낸다(투표 엔트리가 지워지기 전에).
+	std::vector<SessionId> resultSessions;
+	resultSessions.reserve(voteIt->second.eligibleSessions.size());
+	for (const SessionId eligibleSessionId : voteIt->second.eligibleSessions)
+	{
+		resultSessions.push_back(eligibleSessionId);
+	}
+
+	const bool toPvp = targetWorldDefId == WorldDefId::Pvp;
+	const uint32_t outcome = static_cast<uint32_t>(
+		toPvp
+			? Protocol::FINAL_CLEAR_OUTCOME_PVP
+			: Protocol::FINAL_CLEAR_OUTCOME_ENDING);
+	const uint64_t pvpChooserNetId =
+		(toPvp && pvpChooserSessionId != 0)
+			? FindControlledNetId(pvpChooserSessionId).GetRaw()
+			: 0;
+
 	_finalClearChoiceVoteByWorld.erase(sourceWorldId.GetRaw());
 	_finalClearChoiceVotes.erase(voteIt);
+
+	(void)ServerPacketStager::StageFinalClearChoiceResultPacket(
+		_sessionSystem.Network(),
+		std::span<const SessionId>(resultSessions.data(), resultSessions.size()),
+		voteId,
+		outcome,
+		reason,
+		static_cast<uint32_t>(targetWorldDefId),
+		pvpChooserNetId);
 
 	return RequestPartyWorldTransfer(partyId, targetWorldDefId);
 }

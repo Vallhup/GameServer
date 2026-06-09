@@ -360,6 +360,54 @@ bool ServerPacketStager::StageWorldTransitionBeginPacket(
 	return staged;
 }
 
+bool ServerPacketStager::StageFinalClearChoiceBeginPacket(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	uint64_t voteId,
+	uint64_t partyId,
+	uint64_t sourceWorldId,
+	uint32_t timeoutMs,
+	uint64_t deadlineServerMs,
+	uint32_t eligibleCount)
+{
+	Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET packet;
+	packet.set_voteid(voteId);
+	packet.set_partyid(partyId);
+	packet.set_sourceworldid(sourceWorldId);
+	packet.set_eligiblecount(eligibleCount);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_FINAL_CLEAR_CHOICE_BEGIN,
+		sessionIds,
+		packet);
+}
+
+bool ServerPacketStager::StageFinalClearChoiceResultPacket(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	uint64_t voteId,
+	uint32_t outcome,
+	uint32_t reason,
+	uint32_t targetWorldDefId,
+	uint64_t pvpChooserNetId)
+{
+	Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET packet;
+	packet.set_voteid(voteId);
+	packet.set_outcome(
+		static_cast<Protocol::FinalClearChoiceOutcome>(outcome));
+	packet.set_reason(
+		static_cast<Protocol::FinalClearChoiceReason>(reason));
+	packet.set_targetworlddefid(targetWorldDefId);
+	packet.set_pvpchoosernetid(pvpChooserNetId);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_FINAL_CLEAR_CHOICE_RESULT,
+		sessionIds,
+		packet);
+}
+
 bool ServerPacketStager::StageStatPacketToSession(
 	NetworkRuntime& network,
 	SessionId sessionId,

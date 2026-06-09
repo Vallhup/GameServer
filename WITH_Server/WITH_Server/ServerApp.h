@@ -87,7 +87,7 @@ public:
 	bool SubmitFinalClearPvpChoice(
 		SessionId sessionId,
 		uint64_t voteId,
-		bool choosePvp);
+		bool choosePvp) override;
 
 	bool MarkClientWorldTransitionReady(
 		SessionId sessionId,
@@ -146,7 +146,11 @@ private:
 		const FrameworkRuntime::FrameResult& frameResult);
 	void TickFinalClearChoiceVotes();
 	bool StartFinalClearChoiceVote(WorldId sourceWorldId);
-	bool ResolveFinalClearChoiceVote(uint64_t voteId, WorldDefId targetWorldDefId);
+	bool ResolveFinalClearChoiceVote(
+		uint64_t voteId,
+		WorldDefId targetWorldDefId,
+		uint32_t reason,
+		SessionId pvpChooserSessionId = 0);
 	bool RequestPartyWorldTransfer(PartyId partyId, WorldDefId targetWorldDefId);
 	bool ProcessPvpRoundEndConditions();
 	bool StagePartyDeathCountSync(

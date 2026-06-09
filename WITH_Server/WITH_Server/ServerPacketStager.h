@@ -71,6 +71,27 @@ public:
 		uint32_t requestId,
 		uint32_t reason);
 
+	// FinalBoss 처치 후 파티 PvP/엔딩 선택 UI를 띄우라는 신호.
+	static bool StageFinalClearChoiceBeginPacket(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		uint64_t voteId,
+		uint64_t partyId,
+		uint64_t sourceWorldId,
+		uint32_t timeoutMs,
+		uint64_t deadlineServerMs,
+		uint32_t eligibleCount);
+
+	// 투표 결과(PvP행 / 엔딩 후 Plaza행) 통지.
+	static bool StageFinalClearChoiceResultPacket(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		uint64_t voteId,
+		uint32_t outcome,
+		uint32_t reason,
+		uint32_t targetWorldDefId,
+		uint64_t pvpChooserNetId);
+
 	static bool StageTimeSyncPacketToSession(
 		NetworkRuntime& network,
 		SessionId sessionId,

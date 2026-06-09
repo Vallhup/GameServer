@@ -762,6 +762,12 @@ void RegisterServerPacketHandlers(
         PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_READY,   &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");
+    // FinalBoss 클리어 선택은 ECS input/월드 그래프와 무관하므로 ExplicitScope.
+    // (sink->SubmitFinalClearPvpChoice 가 로직 스레드에서 ServerApp 상태를
+    //  직접 갱신하는 점은 CS_WORLD_TRANSITION_READY 와 동일한 패턴이다.)
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_FINAL_CLEAR_CHOICE_SUBMIT, &HandleFinalClearChoiceSubmitPacket, "Pkt_CS_FINAL_CLEAR_CHOICE_SUBMIT",
+        DynamicTaskTargetKind::ExplicitScope);
     // CS_PARTY_* 핸들러는 전부 PartyCommandQueue에 명령을 enqueue 하기만 하고
     // ECS 컴포넌트(ActorInputComp, PlayerNetworkTimingComp 등)나 월드 상태를
     // 직접 수정하지 않는다. 따라서 다음 두 조건이 모두 충족되어야 한다:
@@ -1790,6 +1796,30 @@ ExecCallResult HandleWorldTransitionReadyPacket(NodeExecContext& ctx)
     {
         (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
     }
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleFinalClearChoiceSubmitPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+
+    if (svc.worldTransitionSink == nullptr)
+        return ExecCallResult::Success;
+
+    Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    // 자격 없는 세션/만료된 voteId는 sink 내부에서 false로 무시된다.
+    (void)svc.worldTransitionSink->SubmitFinalClearPvpChoice(
+        sessionId,
+        pkt.voteid(),
+        pkt.choosepvp());
     return ExecCallResult::Success;
 }
 
