@@ -23,6 +23,7 @@ namespace
 		event.radius = 0.75f;
 		event.curHp = 0;
 		event.maxHp = 60;
+		event.brokenByPlayerNetId = 4004;
 
 		Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET packet;
 		BossGimmickReplicationProtocol::FillObjectSyncPacket(packet, event);
@@ -37,6 +38,7 @@ namespace
 		assert(std::fabs(packet.radius() - 0.75f) < 0.001f);
 		assert(packet.curhp() == 0);
 		assert(packet.maxhp() == 60);
+		assert(packet.brokenbyplayernetid() == 4004);
 	}
 
 	void RunBossGimmickZonePacketFillTest()
@@ -79,7 +81,7 @@ namespace
 			phaseTransition.activeType) == AnimationId::FinalBoss_50Percent);
 		assert(std::fabs(
 			BossGimmickAnimationPolicy::EntryAnimationDurationFor(
-				phaseTransition.activeType) - 10.0f) < 0.001f);
+				phaseTransition.activeType) - 13.4f) < 0.001f);
 
 		BossGimmickStateComp finalSafeZone{};
 		finalSafeZone.activeType = BossGimmickType::FinalSafeZone;
@@ -91,7 +93,7 @@ namespace
 			finalSafeZone.activeType) == AnimationId::FinalBoss_0Percent);
 		assert(std::fabs(
 			BossGimmickAnimationPolicy::EntryAnimationDurationFor(
-				finalSafeZone.activeType) - 10.0f) < 0.001f);
+				finalSafeZone.activeType) - 13.4f) < 0.001f);
 
 		finalSafeZone.stage = BossGimmickStage::Active;
 		assert(!BossGimmickAnimationPolicy::ShouldUseEntryAnimation(

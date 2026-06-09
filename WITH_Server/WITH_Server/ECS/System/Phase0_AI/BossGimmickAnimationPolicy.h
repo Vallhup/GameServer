@@ -4,7 +4,7 @@
 
 namespace BossGimmickAnimationPolicy
 {
-	inline constexpr float kEntryAnimationDurationSec = 11.5f;
+	inline constexpr float kEntryAnimationDurationSec = 13.4f;
 
 	inline AnimationId EntryAnimationFor(BossGimmickType type) noexcept
 	{
