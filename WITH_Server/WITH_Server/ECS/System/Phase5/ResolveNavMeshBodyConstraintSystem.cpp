@@ -8,6 +8,7 @@
 #include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
 
+#include "BodyCollisionSlide.h"
 #include "NavMeshRuntime.h"
 #include "WorldDef.h"
 
@@ -142,7 +143,14 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 			NavMeshAgentStateComp,
 			BodyCollisionResolveComp>())
 	{
+		const XMFLOAT3 collisionSlideDelta =
+			resolveState.collisionSlideDelta;
+		const bool overlapAdjusted = resolveState.overlapAdjusted;
+		const bool slideAdjusted = resolveState.slideAdjusted;
 		resolveState = {};
+		resolveState.collisionSlideDelta = collisionSlideDelta;
+		resolveState.overlapAdjusted = overlapAdjusted;
+		resolveState.slideAdjusted = slideAdjusted;
 		resolveState.navResolvedPosition = transform.position;
 
 		auto MarkTransformDirtyIfPresent =
@@ -240,6 +248,66 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 		{
 			RejectToPreviousPosition();
 			continue;
+		}
+
+		const float correctionX = resultPos[0] - candidatePos[0];
+		const float correctionZ = resultPos[2] - candidatePos[2];
+		if (LengthXZ(correctionX, correctionZ) > kOverlapEpsilon)
+		{
+			const BodyCollisionSlide::XZDelta slideAdjustment =
+				BodyCollisionSlide::ComputeSpeedPreservingAdjustment(
+					candidatePos[0] - startPos[0],
+					candidatePos[2] - startPos[2],
+					resultPos[0] - startPos[0],
+					resultPos[2] - startPos[2],
+					correctionX,
+					correctionZ,
+					kOverlapEpsilon);
+
+			if (LengthXZ(slideAdjustment.x, slideAdjustment.z) >
+				kOverlapEpsilon)
+			{
+				const float slideTarget[3] =
+				{
+					resultPos[0] + slideAdjustment.x,
+					resultPos[1],
+					resultPos[2] + slideAdjustment.z,
+				};
+				float slideResult[3] = {};
+				dtPolyRef slideVisited[kMaxVisited] = {};
+				int slideVisitedCount = 0;
+				const dtStatus slideStatus = query->moveAlongSurface(
+					startRef,
+					startPos,
+					slideTarget,
+					&filter,
+					slideResult,
+					slideVisited,
+					&slideVisitedCount,
+					kMaxVisited);
+
+				if (!dtStatusFailed(slideStatus))
+				{
+					const float appliedSlideX = slideResult[0] - resultPos[0];
+					const float appliedSlideZ = slideResult[2] - resultPos[2];
+					resultPos[0] = slideResult[0];
+					resultPos[1] = slideResult[1];
+					resultPos[2] = slideResult[2];
+					std::copy_n(
+						slideVisited,
+						slideVisitedCount,
+						visited);
+					visitedCount = slideVisitedCount;
+
+					if (LengthXZ(appliedSlideX, appliedSlideZ) >
+						kOverlapEpsilon)
+					{
+						resolveState.collisionSlideDelta.x += appliedSlideX;
+						resolveState.collisionSlideDelta.z += appliedSlideZ;
+						resolveState.slideAdjusted = true;
+					}
+				}
+			}
 		}
 
 		dtPolyRef resultRef =

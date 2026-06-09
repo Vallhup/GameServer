@@ -185,6 +185,7 @@
     <ClCompile Include="AttributeDef.cpp" />
     <ClCompile Include="BossGimmickCombatPolicy_SmokeTest.cpp" />
     <ClCompile Include="BossGimmickReplication_SmokeTest.cpp" />
+    <ClCompile Include="CombatDamagePolicy_SmokeTest.cpp" />
     <ClCompile Include="CombatStatisticsCommands.cpp" />
     <ClCompile Include="DataDrivenAIIdleActionPolicy.cpp" />
     <ClCompile Include="DBConn.cpp" />
@@ -380,6 +381,7 @@
     <ClInclude Include="ECS\System\Phase4\ApplyMovementDeltaSystem.h" />
     <ClInclude Include="ECS\System\Phase4\ComputeAbilityMoveDeltaSystem.h" />
     <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h" />
+    <ClInclude Include="ECS\System\Phase5\BodyCollisionSlide.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveGimmickObjectOverlapSystem.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.h" />

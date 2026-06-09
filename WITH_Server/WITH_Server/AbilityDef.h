@@ -231,6 +231,8 @@ struct AbilityParryResponseDef
 
 struct AbilityGuardResponseDef
 {
+	// Reduction is the blocked fraction; chip damage is the minimum fraction
+	// of incoming HP damage that still passes through a successful guard.
 	float damageReductionRatio{ 0.0f };
 	float chipDamageRatio{ 0.0f };
 	float staminaDamageMultiplier{ 0.0f };

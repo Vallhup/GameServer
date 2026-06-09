@@ -10,6 +10,7 @@
 #include "../../../GameplayContentCatalog.h"
 #include "../GameplaySystemUtil.h"
 #include "BossGimmickCombatPolicy.h"
+#include "CombatDamagePolicy.h"
 #include "ECS/Components/GameplayInputComponents.h"
 #include "ECS/Components/GameplayWorldLifecycleComponents.h"
 #include "RepComponent.h"
@@ -168,22 +169,20 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 				}
 
 				guardResolved = true;
-				float chipDamage = static_cast<float>(damage);
 				float staminaDamageScale = 1.0f;
 				if (interaction.guardEffect.has_value())
 				{
-					chipDamage =
-						chipDamage *
-						interaction.guardEffect->chipDamageRatio *
-						std::max(
-							0.0f,
-							1.0f - interaction.guardEffect->damageReductionRatio);
 					staminaDamageScale =
 						interaction.guardEffect->staminaDamageMultiplier;
 				}
 
-				const int32_t guardedHpDamage = static_cast<int32_t>(std::lround(
-					chipDamage * 100.0f / std::max(1, 100 + stats.defense)));
+				const int32_t guardedHpDamage =
+					CombatDamagePolicy::ResolveGuardedHpDamage(
+						damage,
+						stats.defense,
+						interaction.guardEffect.has_value()
+							? &*interaction.guardEffect
+							: nullptr);
 				const int32_t guardedStaminaDamage = static_cast<int32_t>(std::lround(
 					static_cast<float>(staminaDamage) * staminaDamageScale));
 				hpDelta -= std::max(0, guardedHpDamage);

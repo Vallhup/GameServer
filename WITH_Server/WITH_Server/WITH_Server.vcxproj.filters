@@ -389,6 +389,9 @@
     <ClCompile Include="BossGimmickCombatPolicy_SmokeTest.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
+    <ClCompile Include="CombatDamagePolicy_SmokeTest.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
     <ClCompile Include="BossGimmickReplication_SmokeTest.cpp">
       <Filter>ECS\System\Phase0_AI</Filter>
     </ClCompile>
@@ -624,6 +627,9 @@
     </ClInclude>
     <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h">
       <Filter>ECS\System\Phase4</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase5\BodyCollisionSlide.h">
+      <Filter>ECS\System\Phase5</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h">
       <Filter>ECS\System\Phase5</Filter>

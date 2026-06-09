@@ -71,6 +71,7 @@ struct NavMeshAgentStateComp : Component
 struct BodyCollisionResolveComp : Component
 {
 	XMFLOAT3 navResolvedPosition{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 collisionSlideDelta{ 0.0f, 0.0f, 0.0f };
 	bool navMeshAdjusted{ false };
 	bool navMeshFallbackNoProvider{ false };
 	bool terrainHeightAdjusted{ false };
@@ -78,6 +79,7 @@ struct BodyCollisionResolveComp : Component
 	bool terrainHeightSampleFailed{ false };
 	bool rejectedByNavMesh{ false };
 	bool overlapAdjusted{ false };
+	bool slideAdjusted{ false };
 };
 
 struct PortalTriggerStateComp : Component

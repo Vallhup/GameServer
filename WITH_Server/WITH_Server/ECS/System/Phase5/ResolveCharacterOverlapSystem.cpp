@@ -2,6 +2,7 @@
 #include "ResolveCharacterOverlapSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "BodyCollisionSlide.h"
 
 using namespace GameplaySystemUtil;
 
@@ -113,6 +114,8 @@ void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 			BodyCollisionResolveComp>())
 	{
 		resolve.overlapAdjusted = false;
+		resolve.collisionSlideDelta = {};
+		resolve.slideAdjusted = false;
 
 		if (shape.blocksBodyOverlap &&
 			shape.pushability != BodyPushability::None &&
@@ -271,7 +274,29 @@ void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 
 		entry.transform->position.x += correction.x;
 		entry.transform->position.z += correction.z;
+
+		const BodyCollisionSlide::XZDelta slideDelta =
+			BodyCollisionSlide::ComputeSpeedPreservingAdjustment(
+				entry.preCollision->candidatePosition.x -
+					entry.preCollision->prevPosition.x,
+				entry.preCollision->candidatePosition.z -
+					entry.preCollision->prevPosition.z,
+				entry.transform->position.x -
+					entry.preCollision->prevPosition.x,
+				entry.transform->position.z -
+					entry.preCollision->prevPosition.z,
+				correction.x,
+				correction.z,
+				kOverlapEpsilon);
+		entry.transform->position.x += slideDelta.x;
+		entry.transform->position.z += slideDelta.z;
 		entry.resolve->overlapAdjusted = true;
+		if (LengthXZ(slideDelta.x, slideDelta.z) > kOverlapEpsilon)
+		{
+			entry.resolve->collisionSlideDelta.x += slideDelta.x;
+			entry.resolve->collisionSlideDelta.z += slideDelta.z;
+			entry.resolve->slideAdjusted = true;
+		}
 		MarkTransformDirtyIfPresent(entry.entity);
 	}
 }

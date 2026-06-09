@@ -2,6 +2,7 @@
 #include "ResolveGimmickObjectOverlapSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "BodyCollisionSlide.h"
 
 using namespace GameplaySystemUtil;
 
@@ -318,7 +319,29 @@ void ResolveGimmickObjectOverlapSystem::Execute(SystemContext& ctx)
 
 		player.transform->position.x += totalCorrectionX;
 		player.transform->position.z += totalCorrectionZ;
+
+		const BodyCollisionSlide::XZDelta slideDelta =
+			BodyCollisionSlide::ComputeSpeedPreservingAdjustment(
+				player.preCollision->candidatePosition.x -
+					player.preCollision->prevPosition.x,
+				player.preCollision->candidatePosition.z -
+					player.preCollision->prevPosition.z,
+				player.transform->position.x -
+					player.preCollision->prevPosition.x,
+				player.transform->position.z -
+					player.preCollision->prevPosition.z,
+				totalCorrectionX,
+				totalCorrectionZ,
+				kOverlapEpsilon);
+		player.transform->position.x += slideDelta.x;
+		player.transform->position.z += slideDelta.z;
 		player.resolve->overlapAdjusted = true;
+		if (LengthXZ(slideDelta.x, slideDelta.z) > kOverlapEpsilon)
+		{
+			player.resolve->collisionSlideDelta.x += slideDelta.x;
+			player.resolve->collisionSlideDelta.z += slideDelta.z;
+			player.resolve->slideAdjusted = true;
+		}
 
 		if (DirtyFlagsComp* dirty =
 			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(player.entity))
