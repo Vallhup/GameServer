@@ -533,6 +533,35 @@ bool ServerPacketStager::StageTitleEquipResultPacket(
 		packet);
 }
 
+bool ServerPacketStager::StageTitleReplicationPacketToSessions(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	NetId ownerNetId,
+	TitleId titleId)
+{
+	if (sessionIds.empty())
+	{
+		return true;
+	}
+
+	Protocol::SC_TITLE_REPLICATION_PACKET packet;
+	packet.set_ownernetid(ownerNetId.GetRaw());
+	packet.set_titleid(static_cast<uint32_t>(titleId));
+
+	SendBuffer* const buffer =
+		PacketFactory::Serialize(PacketType::SC_TITLE_REPLICATION, packet);
+	if (buffer == nullptr)
+	{
+		return false;
+	}
+
+	const bool staged = network.StageMulticast(
+		sessionIds,
+		std::span<const uint8_t>(buffer->data, buffer->size));
+	SendBufferPool::Get().Release(buffer);
+	return staged;
+}
+
 bool ServerPacketStager::StageAnimationPacketToSession(
 	NetworkRuntime& network,
 	SessionId sessionId,

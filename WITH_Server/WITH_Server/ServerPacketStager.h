@@ -167,6 +167,14 @@ public:
 		TitleId equippedTitleId,
 		uint32_t reason);
 
+	// 한 플레이어가 장착 중인 칭호를 같은 월드(Plaza)의 모든 세션에
+	// 브로드캐스트한다. ownerNetId 본인 세션도 sessionIds에 포함되어야 한다.
+	static bool StageTitleReplicationPacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		NetId ownerNetId,
+		TitleId titleId);
+
 	static bool StageAnimationPacketToSession(
 		NetworkRuntime& network,
 		SessionId sessionId,

@@ -88,6 +88,32 @@ struct SC_WORLD_TRANSITION_BEGIN_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_WORLD_TRANSITION_BEGIN_PACKETDefaultTypeInternal _SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_;
 
+inline constexpr SC_TITLE_REPLICATION_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : ownernetid_{::uint64_t{0u}},
+        titleid_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_TITLE_REPLICATION_PACKET::SC_TITLE_REPLICATION_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_TITLE_REPLICATION_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_TITLE_REPLICATION_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_TITLE_REPLICATION_PACKETDefaultTypeInternal() {}
+  union {
+    SC_TITLE_REPLICATION_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_TITLE_REPLICATION_PACKETDefaultTypeInternal _SC_TITLE_REPLICATION_PACKET_default_instance_;
+
 inline constexpr SC_TITLE_EQUIP_RESULT_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : clientrequestid_{0u},
@@ -1931,6 +1957,16 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.reason_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.targetworlddefid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET, _impl_.pvpchoosernetid_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_TITLE_REPLICATION_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_TITLE_REPLICATION_PACKET, _impl_.ownernetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_TITLE_REPLICATION_PACKET, _impl_.titleid_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -1984,6 +2020,7 @@ static const ::_pbi::MigrationSchema
         {520, -1, -1, sizeof(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET)},
         {532, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)},
         {544, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)},
+        {557, -1, -1, sizeof(::Protocol::SC_TITLE_REPLICATION_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_TIME_SYNC_PACKET_default_instance_._instance,
@@ -2035,6 +2072,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_TITLE_EQUIP_RESULT_PACKET_default_instance_._instance,
     &::Protocol::_SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET_default_instance_._instance,
     &::Protocol::_SC_FINAL_CLEAR_CHOICE_RESULT_PACKET_default_instance_._instance,
+    &::Protocol::_SC_TITLE_REPLICATION_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -2160,7 +2198,8 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "inalClearChoiceOutcome\0220\n\006reason\030\003 \001(\0162 "
     ".Protocol.FinalClearChoiceReason\022\030\n\020targ"
     "etWorldDefId\030\004 \001(\r\022\027\n\017pvpChooserNetId\030\005 "
-    "\001(\004b\006proto3"
+    "\001(\004\"B\n\033SC_TITLE_REPLICATION_PACKET\022\022\n\now"
+    "nerNetId\030\001 \001(\004\022\017\n\007titleId\030\002 \001(\rb\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[1] =
     {
@@ -2170,13 +2209,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    4891,
+    4959,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     1,
-    49,
+    50,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -15337,6 +15376,247 @@ void SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::InternalSwap(SC_FINAL_CLEAR_CHOICE_RES
 }
 
 ::google::protobuf::Metadata SC_FINAL_CLEAR_CHOICE_RESULT_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_TITLE_REPLICATION_PACKET::_Internal {
+ public:
+};
+
+SC_TITLE_REPLICATION_PACKET::SC_TITLE_REPLICATION_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_TITLE_REPLICATION_PACKET)
+}
+SC_TITLE_REPLICATION_PACKET::SC_TITLE_REPLICATION_PACKET(
+    ::google::protobuf::Arena* arena, const SC_TITLE_REPLICATION_PACKET& from)
+    : SC_TITLE_REPLICATION_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_TITLE_REPLICATION_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_TITLE_REPLICATION_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, ownernetid_),
+           0,
+           offsetof(Impl_, titleid_) -
+               offsetof(Impl_, ownernetid_) +
+               sizeof(Impl_::titleid_));
+}
+SC_TITLE_REPLICATION_PACKET::~SC_TITLE_REPLICATION_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_TITLE_REPLICATION_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_TITLE_REPLICATION_PACKET::SharedDtor(MessageLite& self) {
+  SC_TITLE_REPLICATION_PACKET& this_ = static_cast<SC_TITLE_REPLICATION_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_TITLE_REPLICATION_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_TITLE_REPLICATION_PACKET(arena);
+}
+constexpr auto SC_TITLE_REPLICATION_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_TITLE_REPLICATION_PACKET),
+                                            alignof(SC_TITLE_REPLICATION_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_TITLE_REPLICATION_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_TITLE_REPLICATION_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_TITLE_REPLICATION_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_TITLE_REPLICATION_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_TITLE_REPLICATION_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_TITLE_REPLICATION_PACKET>(), &SC_TITLE_REPLICATION_PACKET::ByteSizeLong,
+            &SC_TITLE_REPLICATION_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_TITLE_REPLICATION_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_TITLE_REPLICATION_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_TITLE_REPLICATION_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> SC_TITLE_REPLICATION_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_TITLE_REPLICATION_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 titleId = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_TITLE_REPLICATION_PACKET, _impl_.titleid_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_TITLE_REPLICATION_PACKET, _impl_.titleid_)}},
+    // uint64 ownerNetId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_TITLE_REPLICATION_PACKET, _impl_.ownernetid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_TITLE_REPLICATION_PACKET, _impl_.ownernetid_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 ownerNetId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_TITLE_REPLICATION_PACKET, _impl_.ownernetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 titleId = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_TITLE_REPLICATION_PACKET, _impl_.titleid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_TITLE_REPLICATION_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_TITLE_REPLICATION_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.ownernetid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.titleid_) -
+      reinterpret_cast<char*>(&_impl_.ownernetid_)) + sizeof(_impl_.titleid_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_TITLE_REPLICATION_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_TITLE_REPLICATION_PACKET& this_ = static_cast<const SC_TITLE_REPLICATION_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_TITLE_REPLICATION_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_TITLE_REPLICATION_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_TITLE_REPLICATION_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 ownerNetId = 1;
+          if (this_._internal_ownernetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_ownernetid(), target);
+          }
+
+          // uint32 titleId = 2;
+          if (this_._internal_titleid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_titleid(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_TITLE_REPLICATION_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_TITLE_REPLICATION_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_TITLE_REPLICATION_PACKET& this_ = static_cast<const SC_TITLE_REPLICATION_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_TITLE_REPLICATION_PACKET::ByteSizeLong() const {
+          const SC_TITLE_REPLICATION_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_TITLE_REPLICATION_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 ownerNetId = 1;
+            if (this_._internal_ownernetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_ownernetid());
+            }
+            // uint32 titleId = 2;
+            if (this_._internal_titleid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_titleid());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_TITLE_REPLICATION_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_TITLE_REPLICATION_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_TITLE_REPLICATION_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_TITLE_REPLICATION_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_ownernetid() != 0) {
+    _this->_impl_.ownernetid_ = from._impl_.ownernetid_;
+  }
+  if (from._internal_titleid() != 0) {
+    _this->_impl_.titleid_ = from._impl_.titleid_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_TITLE_REPLICATION_PACKET::CopyFrom(const SC_TITLE_REPLICATION_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_TITLE_REPLICATION_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_TITLE_REPLICATION_PACKET::InternalSwap(SC_TITLE_REPLICATION_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_TITLE_REPLICATION_PACKET, _impl_.titleid_)
+      + sizeof(SC_TITLE_REPLICATION_PACKET::_impl_.titleid_)
+      - PROTOBUF_FIELD_OFFSET(SC_TITLE_REPLICATION_PACKET, _impl_.ownernetid_)>(
+          reinterpret_cast<char*>(&_impl_.ownernetid_),
+          reinterpret_cast<char*>(&other->_impl_.ownernetid_));
+}
+
+::google::protobuf::Metadata SC_TITLE_REPLICATION_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

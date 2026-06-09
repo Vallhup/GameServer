@@ -2632,5 +2632,25 @@ ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx)
             payload.equippedTitleId,
             payload.resultCode);
     }
+
+    // 장착에 성공했다면, 같은 월드(Plaza)에 있는 모든 플레이어에게
+    // 이 플레이어가 어떤 칭호를 끼고 있는지 브로드캐스트한다.
+    // 본인 세션도 currentWorldId 세션 목록에 포함되므로 함께 통지된다.
+    if (success &&
+        svc.network != nullptr &&
+        flow->controlledNetId.IsValid() &&
+        flow->currentWorldId.IsValid())
+    {
+        std::vector<SessionId> worldSessionIds;
+        svc.sessionFlow->CollectSessionsInWorld(
+            flow->currentWorldId,
+            worldSessionIds);
+        (void)ServerPacketStager::StageTitleReplicationPacketToSessions(
+            *svc.network,
+            worldSessionIds,
+            flow->controlledNetId,
+            payload.equippedTitleId);
+    }
+
     return ExecCallResult::Success;
 }

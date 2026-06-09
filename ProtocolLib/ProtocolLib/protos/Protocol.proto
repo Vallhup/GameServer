@@ -384,3 +384,9 @@ message SC_FINAL_CLEAR_CHOICE_RESULT_PACKET
 	uint32 targetWorldDefId = 4;  
 	uint64 pvpChooserNetId = 5;
 }
+
+message SC_TITLE_REPLICATION_PACKET
+{
+	uint64 ownerNetId = 1;
+	uint32 titleId = 2;
+}
