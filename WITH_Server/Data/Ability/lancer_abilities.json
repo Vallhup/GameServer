@@ -867,7 +867,7 @@
         "combatWindows": [
           {
             "kind": "Guard",
-            "startNormalized": 0.05,
+            "startNormalized": 0,
             "endNormalized": 1,
             "applyEffectKey": null,
             "appliesTo": "GuardableAttack",
@@ -901,6 +901,15 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.Lancer_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
           {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.Lancer_Dead",
