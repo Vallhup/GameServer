@@ -2,7 +2,12 @@
 #include "ServerApp.h"
 
 #include <filesystem>
+#include <string>
 #include <string_view>
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 #include "FrameworkLog.h"
 
@@ -22,6 +27,37 @@ namespace
 				return true;
 		}
 		return false;
+	}
+
+	// "--key value" 형태에서 value 포인터 반환. 없으면 nullptr.
+	const char* GetArgValue(int argc, char** argv, const char* key)
+	{
+		for (int i = 1; i + 1 < argc; ++i)
+		{
+			if (std::string_view{ argv[i] } == key)
+				return argv[i + 1];
+		}
+		return nullptr;
+	}
+
+	// UTF-8(좁은) 문자열을 std::wstring 으로 변환.
+	std::wstring Widen(const char* s)
+	{
+		if (s == nullptr || *s == '\0')
+			return std::wstring{};
+
+#ifdef _WIN32
+		const int needed =
+			::MultiByteToWideChar(CP_UTF8, 0, s, -1, nullptr, 0);
+		if (needed <= 0)
+			return std::wstring{};
+
+		std::wstring result(static_cast<size_t>(needed - 1), L'\0');
+		::MultiByteToWideChar(CP_UTF8, 0, s, -1, result.data(), needed);
+		return result;
+#else
+		return std::wstring(s, s + std::char_traits<char>::length(s));
+#endif
 	}
 }
 
@@ -77,11 +113,22 @@ int main(int argc, char** argv)
 	// 백그라운드 드레인 스레드 시작 (파일 I/O를 메인/워커 스레드에서 분리)
 	FrameworkLog::Instance().StartWorker();
 
+	// DB 접속 정보: 기본값(fallback) 유지 → 인자로 넘기면 덮어쓴다.
+	//   --db-dsn <DSN>   --db-user <USER>   --db-pass <PASSWORD>
+	//   --no-db          DB 연동 비활성화
+	// 예) WITH_Server.exe --db-dsn WITH_Server_DB --db-user sa --db-pass ****
 	ServerApp::Config config{};
-	config.database.enabled = true;
+	config.database.enabled = !HasArg(argc, argv, "--no-db");
 	config.database.dsn = L"WITH_Server_DB";
 	config.database.user = L"sa";
 	config.database.password = L"sdong8426A";
+
+	if (const char* v = GetArgValue(argc, argv, "--db-dsn"))
+		config.database.dsn = Widen(v);
+	if (const char* v = GetArgValue(argc, argv, "--db-user"))
+		config.database.user = Widen(v);
+	if (const char* v = GetArgValue(argc, argv, "--db-pass"))
+		config.database.password = Widen(v);
 
 	ServerApp app(config);
 	app.Run();
