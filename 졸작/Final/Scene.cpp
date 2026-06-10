@@ -586,17 +586,17 @@ void Scene::UpdateBreakerShields()
 {
 	if (activeBreakerShields.empty()) return;
 
-	bool fireAlive = false;
+	bool gimmickActive = false;
 	if (auto it = activeCharacters.find(shieldGateBossId); it != activeCharacters.end())
-		if (auto* sfx = it->second->GetComponent<AnimationSfxComponent>())
-			fireAlive = sfx->IsEffectAlive("50per");
+		if (auto* anim = it->second->GetComponent<AnimationMachine>())
+			gimmickActive = anim->IsPlaying("50per");
 
 	for (auto it = activeBreakerShields.begin(); it != activeBreakerShields.end(); )
 	{
 		const int breakerId = it->first;
 		const int handle = it->second;
 
-		if (!fireAlive || !EFFECT_MANAGER->Exists(handle))
+		if (!gimmickActive || !EFFECT_MANAGER->Exists(handle))
 		{
 			EFFECT_MANAGER->Stop(handle);
 			it = activeBreakerShields.erase(it);
@@ -822,7 +822,7 @@ void Scene::HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PAC
 			typeIt->second == MonsterType::BigDemonWarrior ||
 			typeIt->second == MonsterType::Tank))
 	{
-		controller->SetBossCombatState(inCombat);
+		controller->SetBossCombatState(inCombat, typeIt->second);
 
 		if (const char* bossBgm = GetBossBGMPath())
 			SOUND_MANAGER->PlayBGM(inCombat ? bossBgm : GetBGMPath(), 0.5f);

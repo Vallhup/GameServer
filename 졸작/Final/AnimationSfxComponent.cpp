@@ -81,11 +81,3 @@ void AnimationSfxComponent::Update(float deltaTime)
 		}
 	}
 }
-
-bool AnimationSfxComponent::IsEffectAlive(const string& clip) const
-{
-	for (auto& t : effectTriggers)
-		if (t.clip == clip && t.handle != -1 && EFFECT_MANAGER->Exists(t.handle))
-			return true;
-	return false;
-}

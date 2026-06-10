@@ -28,8 +28,6 @@ public:
 	void AddTrigger(const string& clip, int frameLo, int frameHi, const char* sound);
 	void AddEffectTrigger(const string& clip, int frameLo, int frameHi, const wstring& effect);
 
-	bool IsEffectAlive(const string& clip) const;	
-
 private:
 	vector<SfxTrigger> triggers;
 	vector<AnimEffectTrigger> effectTriggers;

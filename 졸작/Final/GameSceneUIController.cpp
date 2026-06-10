@@ -768,6 +768,7 @@ void GameSceneUIController::InitJoinRequestPopup()
 	joinRequestText = make_shared<TextUI>(uiManager, L"PartyJoinRequestText", L"VerdanaBold");
 	joinRequestText->SetPosition(popupX + popupW * 0.14f, popupY + popupH * 0.32f);
 	joinRequestText->SetScale(0.4f * textScale);
+	joinRequestText->SetTextColor(Colors::Black);
 	widgets.push_back(joinRequestText);
 
 	const float btnW = popupW * 0.34f;
@@ -1273,6 +1274,11 @@ void GameSceneUIController::InitBossHpBar()
 	bossBar->SetHoriLength(bossBarFullW);
 	bossBar->SetVertLength(backH * HPBAR_HEIGHT_RATIO);
 	widgets.push_back(bossBar);
+
+	bossNameLabel = make_shared<TextUI>(uiManager, L"BossName", L"MalgunGothic");
+	bossNameLabel->SetScale(WinSize.y / 1080.0f * 0.5f);
+	bossNameLabel->SetPosition(backX + backW * 0.01f, backY - WinSize.y * 0.02f);
+	widgets.push_back(bossNameLabel);
 }
 
 void GameSceneUIController::HandleBossHp(int cur, int max)
@@ -1284,12 +1290,28 @@ void GameSceneUIController::HandleBossHp(int cur, int max)
 		bossBar->SetHoriLength(bossBarFullW * bossHpPercent);
 }
 
-void GameSceneUIController::SetBossCombatState(bool inCombat)
+void GameSceneUIController::SetBossCombatState(bool inCombat, MonsterType bossType)
 {
 	bossInCombat = inCombat;
 	const ImageUIState state = inCombat ? ImageUIState::Visible : ImageUIState::Hidden;
 	if (bossBarBack) bossBarBack->ChangeState(state);
 	if (bossBar)     bossBar->ChangeState(state);
+
+	if (bossNameLabel)
+	{
+		const wchar_t* name = L"";
+		switch (bossType)
+		{
+		case MonsterType::BigDemonWarrior: name = L"검은 가시의 분쇄자, 그라툼"; break;
+		case MonsterType::Tank:            name = L"무쇠뿔의 거수, 브룬타크";   break;
+		case MonsterType::Boss:            name = L"왕좌의 흑기사, 벨카리온";   break;
+		default: break;
+		}
+		bossNameLabel->SetText(inCombat ? name : L"");
+
+		static const XMVECTORF32 bloodRed = { 0.62f, 0.04f, 0.05f, 1.0f };
+		bossNameLabel->SetTextColor(bossType == MonsterType::Boss ? bloodRed : Colors::AntiqueWhite);
+	}
 }
 
 void GameSceneUIController::RemoveBossHpBar()
@@ -1297,6 +1319,7 @@ void GameSceneUIController::RemoveBossHpBar()
 	bossInCombat = false;
 	if (bossBarBack) bossBarBack->ChangeState(ImageUIState::Hidden);
 	if (bossBar)     bossBar->ChangeState(ImageUIState::Hidden);
+	if (bossNameLabel) bossNameLabel->SetText(L"");
 }
 
 void GameSceneUIController::UpdateMonsterHpBars()

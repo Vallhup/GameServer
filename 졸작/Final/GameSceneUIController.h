@@ -6,6 +6,7 @@ class ImageUI;
 class TextUI;
 class UIComponent;
 class GameObject;
+enum class MonsterType;
 
 enum class PartyView { Lobby, Created };
 
@@ -32,7 +33,7 @@ public:
 
 	void InitBossHpBar();
 	void HandleBossHp(int cur, int max);
-	void SetBossCombatState(bool inCombat);
+	void SetBossCombatState(bool inCombat, MonsterType bossType);
 	void RemoveBossHpBar();
 
 	void HandlePartyMemberHp(int id, int cur, int max);
@@ -118,6 +119,7 @@ private:
 
 	shared_ptr<ImageUI> bossBarBack;
 	shared_ptr<ImageUI> bossBar;
+	shared_ptr<TextUI>  bossNameLabel;
 	float bossBarFullW = 0.0f;
 	float bossHpPercent = 1.0f;
 	bool bossInCombat = false;
