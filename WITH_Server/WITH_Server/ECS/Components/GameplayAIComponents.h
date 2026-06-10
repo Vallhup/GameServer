@@ -218,6 +218,10 @@ struct BossGimmickStateComp : Component
 	bool phaseTransitionInstantKillResolved{ false };
 	bool finalSafeZoneSpawned{ false };
 	bool finalSafeZoneResolved{ false };
+	// 사망(즉사) 타이머: 패턴 지속과 독립적으로 kGimmickLethalTimeSec 에 1회 판정.
+	// gimmickLethalApplied = 판정 완료 여부, gimmickRunFailed = 그 판정에서 파훼 실패였는지.
+	bool gimmickLethalApplied{ false };
+	bool gimmickRunFailed{ false };
 	std::vector<Entity> phaseTransitionObjectEntities;
 	std::vector<Entity> phaseTransitionImmunePlayers;
 	std::vector<Entity> finalSafeZoneEntities;
@@ -265,6 +269,8 @@ struct BossGimmickStateComp : Component
 		phaseTransitionInstantKillResolved = false;
 		finalSafeZoneSpawned = false;
 		finalSafeZoneResolved = false;
+		gimmickLethalApplied = false;
+		gimmickRunFailed = false;
 		phaseTransitionObjectEntities.clear();
 		phaseTransitionImmunePlayers.clear();
 		finalSafeZoneEntities.clear();
@@ -295,6 +301,8 @@ struct BossGimmickStateComp : Component
 		phaseTransitionInstantKillResolved = false;
 		finalSafeZoneSpawned = false;
 		finalSafeZoneResolved = false;
+		gimmickLethalApplied = false;
+		gimmickRunFailed = false;
 		phaseTransitionObjectEntities.clear();
 		phaseTransitionImmunePlayers.clear();
 		finalSafeZoneEntities.clear();

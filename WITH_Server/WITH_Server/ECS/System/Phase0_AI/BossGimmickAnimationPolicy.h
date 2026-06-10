@@ -4,7 +4,11 @@
 
 namespace BossGimmickAnimationPolicy
 {
-	inline constexpr float kEntryAnimationDurationSec = 13.4f;
+	// 패턴(기믹) 지속 시간. 사망(즉사) 타이머와는 독립이며, 둘은 기믹 시작
+	// 시점(Begin)에 동시에 시작한다. 사망 시점은 BossGimmickSystem.cpp 의
+	// kGimmickLethalTimeSec 로 별도 관리한다.
+	inline constexpr float kPhaseTransitionPatternDurationSec = 13.4f;
+	inline constexpr float kFinalSafeZonePatternDurationSec = 12.0f;
 
 	inline AnimationId EntryAnimationFor(BossGimmickType type) noexcept
 	{
@@ -20,9 +24,14 @@ namespace BossGimmickAnimationPolicy
 
 	inline float EntryAnimationDurationFor(BossGimmickType type) noexcept
 	{
-		return EntryAnimationFor(type) != AnimationId::None
-			? kEntryAnimationDurationSec
-			: 0.0f;
+		switch (type) {
+		case BossGimmickType::PhaseTransitionObjects:
+			return kPhaseTransitionPatternDurationSec;
+		case BossGimmickType::FinalSafeZone:
+			return kFinalSafeZonePatternDurationSec;
+		default:
+			return 0.0f;
+		}
 	}
 
 	inline bool ShouldUseEntryAnimation(

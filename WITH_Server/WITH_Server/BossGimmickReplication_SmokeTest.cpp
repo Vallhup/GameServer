@@ -93,7 +93,7 @@ namespace
 			finalSafeZone.activeType) == AnimationId::FinalBoss_0Percent);
 		assert(std::fabs(
 			BossGimmickAnimationPolicy::EntryAnimationDurationFor(
-				finalSafeZone.activeType) - 13.4f) < 0.001f);
+				finalSafeZone.activeType) - 12.0f) < 0.001f);
 
 		finalSafeZone.stage = BossGimmickStage::Active;
 		assert(!BossGimmickAnimationPolicy::ShouldUseEntryAnimation(

@@ -19,6 +19,10 @@ namespace
 	constexpr float kPhaseTransitionImmunitySec = 13.4f;
 	constexpr float kGimmickFailureHpRestoreRatio = 0.2f;
 
+	// 파훼 실패 즉사 판정 시점(초). 패턴 지속 시간과 독립이며 기믹 시작(Begin)에
+	// 동시에 시작한다. 두 기믹 패턴 지속(13.4/12.0)보다 작아 패턴 종료 전에 발생한다.
+	constexpr float kGimmickLethalTimeSec = 11.3f;
+
 	constexpr float kFinalSafeZoneRadius = 1.5f;
 	constexpr float kFinalSafeZoneDistance = 5.5f;
 	constexpr float kFinalSafeZoneDistanceJitter = 1.5f;
@@ -196,6 +200,8 @@ namespace
 		gimmick.phaseTransitionInstantKillResolved = false;
 		gimmick.finalSafeZoneSpawned = false;
 		gimmick.finalSafeZoneResolved = false;
+		gimmick.gimmickLethalApplied = false;
+		gimmick.gimmickRunFailed = false;
 		gimmick.phaseTransitionObjectEntities.clear();
 		gimmick.phaseTransitionImmunePlayers.clear();
 		gimmick.finalSafeZoneEntities.clear();
@@ -396,7 +402,8 @@ namespace
 				.ownerBoss = boss,
 				.radius = kFinalSafeZoneRadius,
 				.remainingSec =
-					BossGimmickAnimationPolicy::kEntryAnimationDurationSec
+					BossGimmickAnimationPolicy::EntryAnimationDurationFor(
+						BossGimmickType::FinalSafeZone)
 			});
 		return safeZone;
 	}
@@ -731,6 +738,46 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 
 		}
 
+		// 사망(즉사) 타이머: 패턴 종료와 독립적으로 kGimmickLethalTimeSec 에 1회만
+		// 파훼 실패 판정/즉사를 적용한다. 패턴 지속(stageDurationSec)보다 작으므로
+		// 패턴이 끝나기 전에 발생하며, 결과는 gimmickRunFailed 에 저장해 패턴 종료
+		// 시점의 정리/재시도에서 사용한다.
+		if (gimmick.stageElapsedSec >= kGimmickLethalTimeSec &&
+			!gimmick.gimmickLethalApplied)
+		{
+			bool gimmickFailed = false;
+			for (const PartyPlayerEntry& player : CollectPartyPlayers(ctx))
+			{
+				if (!player.alive)
+				{
+					gimmickFailed = true;
+					continue;
+				}
+
+				if (ContainsEntity(
+						gimmick.phaseTransitionImmunePlayers,
+						player.entity))
+				{
+					continue;
+				}
+
+				const BossGimmickImmunityComp* immunity =
+					ctx.ecs.GetComponent<BossGimmickImmunityComp>(player.entity);
+				if (immunity != nullptr &&
+					immunity->ownerBoss == boss &&
+					immunity->remainingSec > 0.0f)
+				{
+					continue;
+				}
+
+				ApplyGimmickLethalFailure(ctx, player.entity, boss);
+				gimmickFailed = true;
+			}
+
+			gimmick.gimmickRunFailed = gimmickFailed;
+			gimmick.gimmickLethalApplied = true;
+		}
+
 		if (gimmick.stageElapsedSec < gimmick.stageDurationSec)
 		{
 			return;
@@ -739,42 +786,14 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 		SetStage(gimmick, BossGimmickStage::Resolve, 0.0f);
 	}
 
+	// 패턴 종료 시점: 오브젝트 정리 후, 사망 판정에서 캡처한 결과로 재시도/완료 결정.
 	if (gimmick.stage == BossGimmickStage::Resolve &&
 		!gimmick.phaseTransitionInstantKillResolved)
 	{
-		bool gimmickFailed = false;
-		for (const PartyPlayerEntry& player : CollectPartyPlayers(ctx))
-		{
-			if (!player.alive)
-			{
-				gimmickFailed = true;
-				continue;
-			}
-
-			if (ContainsEntity(
-					gimmick.phaseTransitionImmunePlayers,
-					player.entity))
-			{
-				continue;
-			}
-
-			const BossGimmickImmunityComp* immunity =
-				ctx.ecs.GetComponent<BossGimmickImmunityComp>(player.entity);
-			if (immunity != nullptr &&
-				immunity->ownerBoss == boss &&
-				immunity->remainingSec > 0.0f)
-			{
-				continue;
-			}
-
-			ApplyGimmickLethalFailure(ctx, player.entity, boss);
-			gimmickFailed = true;
-		}
-
 		CleanupGimmickObjects(ctx, boss, gimmick);
 		gimmick.phaseTransitionInstantKillResolved = true;
 
-		if (gimmickFailed)
+		if (gimmick.gimmickRunFailed)
 		{
 			RestoreBossHpForGimmickRetry(ctx, boss);
 			ResetPhaseTransitionForRetry(ctx, boss);
@@ -830,6 +849,63 @@ void BossGimmickSystem::TickFinalSafeZone(
 			gimmick.finalSafeZoneSpawned = true;
 		}
 
+		// 사망(즉사) 타이머: 패턴 종료와 독립적으로 kGimmickLethalTimeSec 에 1회만
+		// 세이프존 생존 판정을 수행한다. 실패자는 즉사, 전원 생존 시 보스 즉사(성공).
+		// 결과는 gimmickRunFailed 에 저장해 패턴 종료 시점의 정리/재시도에서 사용한다.
+		if (gimmick.stageElapsedSec >= kGimmickLethalTimeSec &&
+			!gimmick.gimmickLethalApplied)
+		{
+			Entity safeZoneEntity = Entity::Null();
+			if (!gimmick.finalSafeZoneEntities.empty())
+				safeZoneEntity = gimmick.finalSafeZoneEntities.front();
+
+			const WorldTransformComp* safeZoneTransform =
+				ctx.ecs.GetComponent<WorldTransformComp>(safeZoneEntity);
+			const SafeZoneComp* safeZone =
+				ctx.ecs.GetComponent<SafeZoneComp>(safeZoneEntity);
+
+			bool allPlayersAliveAndInsideSafeZone = true;
+			const std::vector<PartyPlayerEntry> players = CollectPartyPlayers(ctx);
+			if (players.empty())
+			{
+				allPlayersAliveAndInsideSafeZone = false;
+			}
+
+			for (const PartyPlayerEntry& player : players)
+			{
+				if (!player.alive)
+				{
+					allPlayersAliveAndInsideSafeZone = false;
+					continue;
+				}
+
+				bool insideSafeZone = false;
+				if (safeZoneTransform != nullptr && safeZone != nullptr)
+				{
+					const float dx =
+						player.position.x - safeZoneTransform->position.x;
+					const float dz =
+						player.position.z - safeZoneTransform->position.z;
+					insideSafeZone = dx * dx + dz * dz <=
+						safeZone->radius * safeZone->radius;
+				}
+
+				if (!insideSafeZone)
+				{
+					allPlayersAliveAndInsideSafeZone = false;
+					ApplyGimmickLethalFailure(ctx, player.entity, boss);
+				}
+			}
+
+			if (allPlayersAliveAndInsideSafeZone)
+			{
+				ApplyGimmickLethalFailure(ctx, boss, Entity::Null());
+			}
+
+			gimmick.gimmickRunFailed = !allPlayersAliveAndInsideSafeZone;
+			gimmick.gimmickLethalApplied = true;
+		}
+
 		if (gimmick.stageElapsedSec < gimmick.stageDurationSec)
 		{
 			return;
@@ -838,56 +914,11 @@ void BossGimmickSystem::TickFinalSafeZone(
 		SetStage(gimmick, BossGimmickStage::Resolve, 0.0f);
 	}
 
+	// 패턴 종료 시점: 실패면 보스 HP 복구, 세이프존 정리 후 재시도/완료 결정.
 	if (gimmick.stage == BossGimmickStage::Resolve &&
 		!gimmick.finalSafeZoneResolved)
 	{
-		Entity safeZoneEntity = Entity::Null();
-		if (!gimmick.finalSafeZoneEntities.empty())
-			safeZoneEntity = gimmick.finalSafeZoneEntities.front();
-
-		const WorldTransformComp* safeZoneTransform =
-			ctx.ecs.GetComponent<WorldTransformComp>(safeZoneEntity);
-		const SafeZoneComp* safeZone =
-			ctx.ecs.GetComponent<SafeZoneComp>(safeZoneEntity);
-
-		bool allPlayersAliveAndInsideSafeZone = true;
-		const std::vector<PartyPlayerEntry> players = CollectPartyPlayers(ctx);
-		if (players.empty())
-		{
-			allPlayersAliveAndInsideSafeZone = false;
-		}
-
-		for (const PartyPlayerEntry& player : players)
-		{
-			if (!player.alive)
-			{
-				allPlayersAliveAndInsideSafeZone = false;
-				continue;
-			}
-
-			bool insideSafeZone = false;
-			if (safeZoneTransform != nullptr && safeZone != nullptr)
-			{
-				const float dx =
-					player.position.x - safeZoneTransform->position.x;
-				const float dz =
-					player.position.z - safeZoneTransform->position.z;
-				insideSafeZone = dx * dx + dz * dz <=
-					safeZone->radius * safeZone->radius;
-			}
-
-			if (!insideSafeZone)
-			{
-				allPlayersAliveAndInsideSafeZone = false;
-				ApplyGimmickLethalFailure(ctx, player.entity, boss);
-			}
-		}
-
-		if (allPlayersAliveAndInsideSafeZone)
-		{
-			ApplyGimmickLethalFailure(ctx, boss, Entity::Null());
-		}
-		else
+		if (gimmick.gimmickRunFailed)
 		{
 			RestoreBossHpForGimmickRetry(ctx, boss);
 		}
@@ -895,7 +926,7 @@ void BossGimmickSystem::TickFinalSafeZone(
 		CleanupSafeZones(ctx, boss, gimmick);
 		gimmick.finalSafeZoneResolved = true;
 
-		if (!allPlayersAliveAndInsideSafeZone)
+		if (gimmick.gimmickRunFailed)
 		{
 			ResetActiveGimmickForRetry(
 				gimmick,
