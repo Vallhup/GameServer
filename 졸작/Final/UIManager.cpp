@@ -119,6 +119,9 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"StatueInteractWindow", L"../Assets/UI/Textures/StatueInteractWindow.png", core, resourceUpload);
 	RegisterUITexture(L"BeaconInteractWindow", L"../Assets/UI/Textures/BeaconInteractWindow.png", core, resourceUpload);
 	RegisterUITexture(L"RespawnWindow", L"../Assets/UI/Textures/RespawnWindow.png", core, resourceUpload);
+	RegisterUITexture(L"WITH", L"../Assets/UI/Textures/WITH.png", core, resourceUpload);
+	RegisterUITexture(L"ME", L"../Assets/UI/Textures/ME.png", core, resourceUpload);
+	RegisterUITexture(L"WE", L"../Assets/UI/Textures/WE.png", core, resourceUpload);
 
 	RegisterUITexture(L"DeathCount", L"../Assets/UI/Textures/DeathCount.png", core, resourceUpload);
 

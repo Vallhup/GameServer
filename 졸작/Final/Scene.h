@@ -2,9 +2,9 @@
 #include "Camera.h"
 #include "SceneRenderer.h"
 #include "InstancingBatch.h"
-#include "GameObject.h"		// DX12Core.h 포함
-#include "Mesh.h"			// Component.h 포함
-#include "Transform.h"		// Component.h
+#include "GameObject.h"		
+#include "Mesh.h"			
+#include "Transform.h"		
 #include "SceneSetting.h"
 
 class SceneManager;
@@ -89,6 +89,7 @@ private:
 	void HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult);
 
 	void UpdateDissolves();
+	void UpdateBreakerShields();
 
 protected:
 	DX12Core* coreRef = nullptr;
@@ -107,7 +108,10 @@ protected:
 
 	vector<shared_ptr<GimmickDiamond>> gimmickPool;
 	unordered_map<int, shared_ptr<GimmickDiamond>> activeGimmicks;
-	unordered_map<int, int> activeZoneBarriers;	
+	unordered_map<int, int> activeZoneBarriers;
+	unordered_map<int, int> activeBreakerShields;	
+	int shieldGateBossId = -1;						
+
 	shared_ptr<MainCharacter> myPlayer;
 	CharacterType myCharacterType = CharacterType::Knight;
 

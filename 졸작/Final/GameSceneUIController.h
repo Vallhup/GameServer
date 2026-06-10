@@ -6,6 +6,7 @@ class ImageUI;
 class TextUI;
 class UIComponent;
 class GameObject;
+enum class MonsterType;
 
 enum class PartyView { Lobby, Created };
 
@@ -32,7 +33,7 @@ public:
 
 	void InitBossHpBar();
 	void HandleBossHp(int cur, int max);
-	void SetBossCombatState(bool inCombat);
+	void SetBossCombatState(bool inCombat, MonsterType bossType);
 	void RemoveBossHpBar();
 
 	void HandlePartyMemberHp(int id, int cur, int max);
@@ -47,6 +48,9 @@ public:
 	bool ConsumeBeaconConfirmed();
 
 	void HideHudForCinematic();
+
+	void ShowHeroChoice(uint64_t voteId);	
+	void HideHeroChoice();					
 
 private:
 	void InitMonsterHpBars();
@@ -67,6 +71,8 @@ private:
 	void UpdateStatueWindow();
 	void InitBeaconWindow();
 	void UpdateBeaconWindow();
+	void InitHeroChoiceWindow();
+	void UpdateHeroChoiceWindow();
 	void InitRespawnWindow();
 	void UpdateRespawnWindow(float deltaTime);
 	void OnLocalPlayerDied();
@@ -113,6 +119,7 @@ private:
 
 	shared_ptr<ImageUI> bossBarBack;
 	shared_ptr<ImageUI> bossBar;
+	shared_ptr<TextUI>  bossNameLabel;
 	float bossBarFullW = 0.0f;
 	float bossHpPercent = 1.0f;
 	bool bossInCombat = false;
@@ -182,7 +189,12 @@ private:
 	float               respawnTimer = 0.0f;
 	static constexpr float RESPAWN_SECONDS = 5.0f;  
 
-	shared_ptr<ImageUI> settingWindow;  
+	shared_ptr<ImageUI> heroChoiceWindow;
+	shared_ptr<ImageUI> heroMeButton;
+	shared_ptr<ImageUI> heroWeButton;
+	uint64_t            heroChoiceVoteId = 0;
+
+	shared_ptr<ImageUI> settingWindow;
 
 	shared_ptr<ImageUI> joinRequestWindow;
 	shared_ptr<TextUI>  joinRequestText;

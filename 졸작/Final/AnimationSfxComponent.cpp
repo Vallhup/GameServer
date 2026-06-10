@@ -61,10 +61,7 @@ void AnimationSfxComponent::Update(float deltaTime)
 		const bool playing = animMachine->IsPlaying(t.clip);
 		const bool inRange = playing && frame >= t.frameLo && frame <= t.frameHi;
 
-		if (!playing)
-			t.suppressed = false;	
-
-		if (inRange && !t.fired && !t.suppressed)
+		if (inRange && !t.fired)
 		{
 			t.handle = EFFECT_MANAGER->Play(t.effect, ownerPos);
 			EFFECT_MANAGER->SetMatrix(t.handle, ownerMat);
@@ -81,23 +78,6 @@ void AnimationSfxComponent::Update(float deltaTime)
 				EFFECT_MANAGER->SetMatrix(t.handle, ownerMat);
 			else
 				t.handle = -1;
-		}
-	}
-}
-
-void AnimationSfxComponent::StopEffectByClip(const string& clip)
-{
-	for (auto& t : effectTriggers)
-	{
-		if (t.clip != clip) continue;
-
-		t.suppressed = true;	
-
-		if (t.handle != -1)
-		{
-			if (EFFECT_MANAGER->Exists(t.handle))
-				EFFECT_MANAGER->Stop(t.handle);
-			t.handle = -1;
 		}
 	}
 }
