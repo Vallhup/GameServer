@@ -147,7 +147,7 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	if (myPlayer)
 	{
 		auto& pos = myPlayer->GetComponent<Transform>()->GetPosition();
-		if (pos.x < 502.0f)
+		if (pos.x > 475.823f && pos.x < 478.102f && pos.z > 451.728f && pos.z < 534.614f)
 		{
 		    auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Plaza);
 		    if (controller)

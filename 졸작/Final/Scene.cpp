@@ -731,6 +731,9 @@ void Scene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET
 				anim.curranim(),
 				anim.abilityinstanceid(),
 				anim.normalizedtime());
+
+			if (myPlayer && myPlayer->GetId() == id && cam && animName == "Dodge")
+				cam->TriggerDodgeZoom();
 		}
 	}
 }

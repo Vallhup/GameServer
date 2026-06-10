@@ -151,7 +151,7 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 	if (myPlayer)
 	{
 		auto& pos = myPlayer->GetComponent<Transform>()->GetPosition();
-		if (pos.x < 325.8f && pos.x > 322.5f && pos.z > 220.1f && pos.z < 221.2f)
+		if (pos.x > 339.729f && pos.x < 345.106f && pos.z > 266.896f && pos.z < 268.911f)
 		{
 			auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Castle);
 			if (controller)

@@ -257,9 +257,9 @@ void Engine::EnterPvpReuse()
         worldTransitionController.MarkLoadingStarted();
         fade->SetOnFadedOut([fade, doReady]() {
             doReady();
-            fade->FadeIn(1.5f);
+            fade->FadeIn(3.0f);
         });
-        fade->FadeOut(1.5f);
+        fade->FadeOut(3.0f);
     }
     else
     {
