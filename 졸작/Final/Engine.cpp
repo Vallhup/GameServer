@@ -217,6 +217,7 @@ void Engine::ProcessWorldTransitionState()
     case 2:     targetScene = SceneType::Village; break;
     case 3:     targetScene = SceneType::Castle;  break;
     case 4:     targetScene = SceneType::Final;   break;
+    case 5:     targetScene = SceneType::Final;   break;
     default:    targetScene = SceneType::Plaza;   break;
     }
 

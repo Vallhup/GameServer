@@ -964,7 +964,6 @@ void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_R
 	case Protocol::FINAL_CLEAR_OUTCOME_PVP:
 	{
 		// PvP 진입
-
 		break;
 	}
 	case Protocol::FINAL_CLEAR_OUTCOME_ENDING:
