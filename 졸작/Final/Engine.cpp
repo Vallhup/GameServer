@@ -211,13 +211,18 @@ void Engine::ProcessWorldTransitionState()
 
     const uint32_t targetWorldDefId = transition.GetTargetWorldDefId();
 
+    if (targetWorldDefId == 5)
+    {
+        EnterPvpReuse();
+        return;
+    }
+
     SceneType targetScene;
     switch (targetWorldDefId) {
     case 1:     targetScene = SceneType::Plaza;   break;
     case 2:     targetScene = SceneType::Village; break;
     case 3:     targetScene = SceneType::Castle;  break;
     case 4:     targetScene = SceneType::Final;   break;
-    case 5:     targetScene = SceneType::Final;   break;
     default:    targetScene = SceneType::Plaza;   break;
     }
 
@@ -226,4 +231,38 @@ void Engine::ProcessWorldTransitionState()
 
     if (auto* fade = uiManager->GetScreenFade())
         fade->FadeIn(0.0f);
+}
+
+void Engine::EnterPvpReuse()
+{
+    auto doReady = [this]() {
+        auto& tr = worldTransitionController;
+        if (!tr.HasPendingReady()) return;
+
+        const uint64_t transferId = tr.GetTransferId();
+        if (NETWORK_MANAGER &&
+            NETWORK_MANAGER->SendWorldTransitionReadyPacket(transferId))
+        {
+            tr.MarkReadySent();
+            tr.Complete();
+        }
+        else
+        {
+            tr.Reset();
+        }
+    };
+
+    if (auto* fade = uiManager->GetScreenFade())
+    {
+        worldTransitionController.MarkLoadingStarted();
+        fade->SetOnFadedOut([fade, doReady]() {
+            doReady();
+            fade->FadeIn(1.5f);
+        });
+        fade->FadeOut(1.5f);
+    }
+    else
+    {
+        doReady();
+    }
 }

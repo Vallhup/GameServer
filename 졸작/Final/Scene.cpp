@@ -653,6 +653,8 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 		const XMFLOAT3 impactPos{ impact.impactx(), impact.impacty(), impact.impactz() };
 		const XMFLOAT3 impactDir{ impact.dirx(), impact.diry(), impact.dirz() };
 
+		const bool isMine = myPlayer && myPlayer->GetId() == vId;
+
 		// 0 : Hit / 1 : Guard / 2 : Parry
 		switch (impact.resulttype()) {
 		case 0:
@@ -685,6 +687,9 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 		}
 		case 2:
 		{
+			if (isMine && cam)
+				cam->AddTrauma(0.65f);   
+
 			auto victim = activeCharacters[vId];
 			if (victim)
 			{

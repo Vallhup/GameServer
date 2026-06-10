@@ -43,6 +43,7 @@ public:
 
 private:
     void ProcessWorldTransitionState();
+    void EnterPvpReuse();
 
     HWND mHwnd = nullptr;
 

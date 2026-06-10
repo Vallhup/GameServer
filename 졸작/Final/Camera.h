@@ -43,11 +43,23 @@ public:
 	void SetCursor(bool in);
 	void ReleaseMouse();
 
+	void AddTrauma(float amount);
+
+	void TriggerDodgeZoom();        
+
 	bool IsCursorActive() const { return spacePressed; }
 
 private:
 	void UpdateInputtoCamLogic(DX12Core& core, float deltaTime);
 	void UpdateSmoothFollow(float deltaTime);
+
+	void UpdateShake(float deltaTime);
+	XMFLOAT3 GetShakeOffset() const;
+
+	void UpdateZoomKick(float deltaTime);
+	float GetZoomKick() const;
+	float GetZoomBell() const;
+
 	void UpdateCameraMatrices(DX12Core& core);
 	void UpdateForwardAndRight();
 	void ChangeAngleByInput(float deltaTime);
@@ -80,7 +92,7 @@ private:
 
 	bool spacePressed = false;
 
-	float mouseSensitivity = 0.1f;       // 설정에서 조절 (기본 0.1, 0.01~2.0)
+	float mouseSensitivity = 0.1f;       
 	static constexpr float CAMERA_FOLLOW_SPEED = 120.0f;
 	static constexpr float TARGET_FOLLOW_SPEED = 6.0f;
 	static constexpr float TERRAIN_CLEARANCE = 0.001f;   
@@ -94,6 +106,21 @@ private:
 	float zoomSpeedPerNotch = 0.25f;    
 	float zoomFollowSpeed = 2.5f;
 
+	float shakeTrauma = 0.0f;
+	float shakeTime = 0.0f;
+	static constexpr float SHAKE_DECAY = 2.0f;        
+	static constexpr float SHAKE_MAX_OFFSET = 0.18f;  
+	static constexpr float SHAKE_FREQUENCY = 28.0f;
+
+	float zoomKickTime = -1.0f;                         
+	float zoomLevel = 0.0f;                             
+	static constexpr float ZOOM_KICK_AMPLITUDE = -0.7f; 
+	static constexpr float ZOOM_KICK_START = 0.25f;     
+	static constexpr float ZOOM_KICK_HOLD = 0.72f;      
+	static constexpr float ZOOM_ATTACK = 6.0f;          
+	static constexpr float ZOOM_RELEASE = 1.3f;         
+	static constexpr float ZOOM_KICK_RECENTER = 1.0f;   
+
 	BoundingFrustum viewFrustum;
 
 	XMFLOAT4X4 matView;
@@ -104,7 +131,7 @@ private:
 	float lutBlendFactor = 1.0f;
 	float lutTransitionSpeed = 2.0f;
 	float toneSaturationFactor = 0.85f;
-	float screenBrightness = 1.0f;       // 설정 화면 밝기 (1.0=원본)
+	float screenBrightness = 1.0f;       
 
 	const Terrain* terrain = nullptr;
 };
