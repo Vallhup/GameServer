@@ -953,13 +953,57 @@ void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_R
 	const uint32_t targetWorldDefId = choiceResult.targetworlddefid();
 	const uint64_t pvpChooserNetId = choiceResult.pvpchoosernetid();
 
-	// FINAL_CLEAR_OUTCOME_PVP or FINAL_CLEAR_OUTCOME_ENDING
-	// 이거에 따라 PvP 전이 or 엔딩 연출 -> Plaza 선택
 	const Protocol::FinalClearChoiceOutcome outcome = choiceResult.outcome();
-
-	// 이거는 말 그대로 선택 이유인데, 아마 UI에는 쓸 일 없을 듯
 	const Protocol::FinalClearChoiceReason reason = choiceResult.reason();
 
 	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 		controller->HideHeroChoice();
+
+	// 서버에서 보내주는 결과에 따라 PvP 진입 or 엔딩 연출
+	switch (outcome) {
+	case Protocol::FINAL_CLEAR_OUTCOME_PVP:
+	{
+		// PvP 진입
+
+		break;
+	}
+	case Protocol::FINAL_CLEAR_OUTCOME_ENDING:
+	{
+		// 엔딩 -> Plaza 전이
+		
+		// 1. TODO : 엔딩 연출 재생
+		{
+
+		}
+
+		// 2. 연출 종료 서버 동기화
+		NETWORK_MANAGER->SendFinalEndingCinematicDone(
+			Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_FINAL_CLEAR);
+
+		// 3. (이후 흐름) 서버에서 SC_WORKD_TRANSIGION_BEGIN(Plaza) 보내주면 Plaza 전이
+		break;
+	}
+	case Protocol::FINAL_CLEAR_OUTCOME_UNSPECIFIED:
+	default:
+	{
+		// 비정상 값
+		break;
+	}
+	}
+}
+
+void Scene::HandlePvpRoundResult(const Protocol::SC_PVP_ROUND_RESULT_PACKET& pvpResult)
+{
+	// PvP 종료 (최종 1명 생존)하면 보내주는 패킷
+	const NetId winnerNetId{ pvpResult.winnernetid() };
+	const int winnerId = winnerNetId.GetId();
+
+	// 1. TODO : 엔딩 연출 재생
+	{
+		
+	}
+	
+	// 2. 연출 종료 서버 동기화
+	NETWORK_MANAGER->SendFinalEndingCinematicDone(
+		Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END);
 }

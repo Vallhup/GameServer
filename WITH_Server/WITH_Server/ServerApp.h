@@ -89,6 +89,10 @@ public:
 		uint64_t voteId,
 		bool choosePvp) override;
 
+	bool SubmitFinalEndingCinematicDone(
+		SessionId sessionId,
+		uint32_t context) override;
+
 	bool MarkClientWorldTransitionReady(
 		SessionId sessionId,
 		TransferId transferId) override;
@@ -123,6 +127,18 @@ private:
 		bool ending{ false };
 	};
 
+	// 엔딩/페이드 연출 후 Plaza로 전이하기 위한 대기 상태. 연출 신호를 보낸 뒤
+	// 파티원 전원의 연출 완료(CS_FINAL_ENDING_CINEMATIC_DONE) 또는 타임아웃 시
+	// 강제 그룹 전송을 실행한다.
+	struct PendingEndingTransfer
+	{
+		PartyId partyId{ 0 };
+		WorldId sourceWorldId{ WorldId::Invalid() };
+		WorldDefId targetWorldDefId{ WorldDefId::Plaza };
+		std::unordered_set<SessionId> awaitingAck;
+		double deadlineSec{ 0.0 };
+	};
+
 private:
 	bool InitializeFrameworkRuntime();
 	bool InitializeDatabaseRuntime();
@@ -151,7 +167,23 @@ private:
 		WorldDefId targetWorldDefId,
 		uint32_t reason,
 		SessionId pvpChooserSessionId = 0);
+	// 캐스팅된 표 기준 판정: 한 명이라도 PvP면 PvP, 아니면 Plaza(plazaReason).
+	bool ResolveFinalClearVoteByCastChoices(uint64_t voteId, uint32_t plazaReason);
 	bool RequestPartyWorldTransfer(PartyId partyId, WorldDefId targetWorldDefId);
+	// 리더 비의존 강제 그룹 전송(엔딩/PvP 종료 복귀용).
+	bool ForcePartyGroupTransfer(
+		PartyId partyId,
+		WorldId sourceWorldId,
+		WorldDefId targetWorldDefId);
+	// 엔딩 연출 핸드셰이크: 신호 송신 후 전원 완료/타임아웃 시 전이.
+	void BeginEndingThenTransfer(
+		PartyId partyId,
+		WorldId sourceWorldId,
+		WorldDefId targetWorldDefId,
+		std::span<const SessionId> members);
+	// 투표 없는 엔딩(솔로/자격<2): ENDING 결과 송신 후 연출→Plaza 핸드셰이크 시작.
+	void StartFinalEndingForParty(PartyId partyId, WorldId sourceWorldId);
+	void TickPendingEndingTransfers();
 	bool ProcessPvpRoundEndConditions();
 	bool StagePartyDeathCountSync(
 		PartyId partyId,
@@ -202,6 +234,8 @@ private:
 	std::unordered_map<uint64_t, FinalClearChoiceVote> _finalClearChoiceVotes;
 	std::unordered_map<uint64_t, uint64_t> _finalClearChoiceVoteByWorld;
 	std::unordered_map<uint64_t, ActivePvpRound> _activePvpRounds;
+	// 키: partyId. 엔딩 연출 완료 대기 중인 파티들.
+	std::unordered_map<uint64_t, PendingEndingTransfer> _pendingEndingTransfers;
 	uint64_t _nextFinalClearChoiceVoteId{ 1 };
 
 	uint64_t _tickCount{ 0 };

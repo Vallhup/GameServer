@@ -457,6 +457,40 @@ inline bool FinalClearChoiceReason_Parse(absl::string_view name, FinalClearChoic
   return ::google::protobuf::internal::ParseNamedEnum<FinalClearChoiceReason>(
       FinalClearChoiceReason_descriptor(), name, value);
 }
+enum FinalEndingCinematicContext : int {
+  FINAL_ENDING_CINEMATIC_CONTEXT_UNSPECIFIED = 0,
+  FINAL_ENDING_CINEMATIC_CONTEXT_FINAL_CLEAR = 1,
+  FINAL_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END = 2,
+  FinalEndingCinematicContext_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  FinalEndingCinematicContext_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool FinalEndingCinematicContext_IsValid(int value);
+extern const uint32_t FinalEndingCinematicContext_internal_data_[];
+constexpr FinalEndingCinematicContext FinalEndingCinematicContext_MIN = static_cast<FinalEndingCinematicContext>(0);
+constexpr FinalEndingCinematicContext FinalEndingCinematicContext_MAX = static_cast<FinalEndingCinematicContext>(2);
+constexpr int FinalEndingCinematicContext_ARRAYSIZE = 2 + 1;
+const ::google::protobuf::EnumDescriptor*
+FinalEndingCinematicContext_descriptor();
+template <typename T>
+const std::string& FinalEndingCinematicContext_Name(T value) {
+  static_assert(std::is_same<T, FinalEndingCinematicContext>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to FinalEndingCinematicContext_Name().");
+  return FinalEndingCinematicContext_Name(static_cast<FinalEndingCinematicContext>(value));
+}
+template <>
+inline const std::string& FinalEndingCinematicContext_Name(FinalEndingCinematicContext value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<FinalEndingCinematicContext_descriptor,
+                                                 0, 2>(
+      static_cast<int>(value));
+}
+inline bool FinalEndingCinematicContext_Parse(absl::string_view name, FinalEndingCinematicContext* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<FinalEndingCinematicContext>(
+      FinalEndingCinematicContext_descriptor(), name, value);
+}
 
 // ===================================================================
 
@@ -2400,6 +2434,12 @@ struct is_proto_enum<::Protocol::FinalClearChoiceReason> : std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor<::Protocol::FinalClearChoiceReason>() {
   return ::Protocol::FinalClearChoiceReason_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::FinalEndingCinematicContext> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::FinalEndingCinematicContext>() {
+  return ::Protocol::FinalEndingCinematicContext_descriptor();
 }
 
 }  // namespace protobuf

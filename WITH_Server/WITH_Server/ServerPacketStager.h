@@ -92,6 +92,12 @@ public:
 		uint32_t targetWorldDefId,
 		uint64_t pvpChooserNetId);
 
+	// PvP 라운드 결과(라스트맨) 통지 → 클라 페이드/엔딩 연출 트리거.
+	static bool StagePvpRoundResultPacket(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		uint64_t winnerNetId);
+
 	static bool StageTimeSyncPacketToSession(
 		NetworkRuntime& network,
 		SessionId sessionId,

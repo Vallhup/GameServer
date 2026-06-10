@@ -633,11 +633,35 @@
         "movementSegments": [
           {
             "startNormalized": 0,
-            "endNormalized": 0.5,
+            "endNormalized": 0.403,
             "movementMode": "None",
             "moveDistance": null,
             "rotationMode": "FaceTarget",
             "rotationRate": 3.0,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.403,
+            "endNormalized": 0.497,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 0.98108,
+            "rotationMode": "None",
+            "rotationRate": null,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.87,
+            "endNormalized": 1.0,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 0.4739,
+            "rotationMode": "None",
+            "rotationRate": null,
             "verticalMovementMode": "None",
             "verticalAmount": null,
             "directionPolicy": "TargetDirection",
@@ -704,9 +728,33 @@
         "movementSegments": [
           {
             "startNormalized": 0,
-            "endNormalized": 0.625,
-            "movementMode": "None",
-            "moveDistance": null,
+            "endNormalized": 0.293,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 1.20,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3.6,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.376,
+            "endNormalized": 0.697,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 1.59,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3.6,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.697,
+            "endNormalized": 1.0,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": -0.99,
             "rotationMode": "FaceTarget",
             "rotationRate": 3.6,
             "verticalMovementMode": "None",

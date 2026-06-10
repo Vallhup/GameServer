@@ -51,6 +51,8 @@ public:
 
 	bool SendFinalClearChoiceSubmit(uint64_t voteId, bool choosePvp);
 
+	bool SendFinalEndingCinematicDone(const Protocol::FinalEndingCinematicContext& ctx);
+
 private:
 	bool TrySendInternal(SendBuffer* sendBuffer);
 

@@ -72,6 +72,16 @@ public:
 		double nowSec,
 		bool allowFallback = false);
 
+	// 강제(리더 비의존) 그룹 전송용. PvP 라운드 종료/엔딩 복귀처럼 리더가
+	// 사망/접속종료 상태일 수 있는 상황에서, 지정 소스월드에 실재하며 전송
+	// 가능한 멤버(사망자 포함, 접속종료 제외)만 모아 전송을 시작한다.
+	PartyWorldEntryResult BeginForcedWorldEntry(
+		PartyId partyId,
+		WorldId sourceWorldId,
+		const WorldTargetSpec& target,
+		double nowSec,
+		bool allowFallback = false);
+
 	PartyResult MarkWorldEntryEnqueued(
 		PartyId partyId,
 		TransferId transferId,

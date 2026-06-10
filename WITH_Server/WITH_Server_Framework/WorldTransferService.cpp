@@ -15,6 +15,13 @@
 #include "WorldTransferTxn.h"
 #include "WorldTransferRequest.h"
 
+#include "FrameworkLog.h"
+
+namespace
+{
+	constexpr const char* kTransferLogCategory = "WorldTransfer";
+}
+
 WorldTransferService::WorldTransferService(
 	WorldManager& worldManager, 
 	WorldRegistry& worldRegistry,
@@ -479,6 +486,22 @@ void WorldTransferService::FailTxn(
 	double nowSec)
 {
 	txn.failReason = reason;
+
+	// 전송 실패 사유를 남긴다. allowFallback=true 인 경우(예: PvP→fallback Plaza)
+	// 이후 TryApplyFallback 으로 조용히 목적지가 바뀌므로, 여기서 반드시 로깅해야
+	// "왜 PvP 대신 Plaza로 갔는지"를 추적할 수 있다.
+	FWLOG_WARN(kTransferLogCategory,
+		"Transfer failed (id=%llu, partyId=%llu, stage=%d, reason=%d, "
+		"srcWorld=%u, targetDef=%u, instanceKey=%llu, allowFallback=%d)",
+		static_cast<unsigned long long>(txn.id),
+		static_cast<unsigned long long>(txn.partyId),
+		static_cast<int>(txn.stage),
+		static_cast<int>(reason),
+		txn.sourceWorldId.GetRaw(),
+		static_cast<uint32_t>(
+			txn.target.targetWorldDefId.value_or(WorldDefId::None)),
+		static_cast<unsigned long long>(txn.target.instanceKey),
+		txn.allowFallback ? 1 : 0);
 
 	if (reason == TransferFailureReason::TimedOut)
 	{

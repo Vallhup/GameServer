@@ -768,6 +768,10 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_FINAL_CLEAR_CHOICE_SUBMIT, &HandleFinalClearChoiceSubmitPacket, "Pkt_CS_FINAL_CLEAR_CHOICE_SUBMIT",
         DynamicTaskTargetKind::ExplicitScope);
+    // 엔딩 연출 완료 통지도 ECS/월드 그래프와 무관 → ExplicitScope (sink가 직접 처리).
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_FINAL_ENDING_CINEMATIC_DONE, &HandleFinalEndingCinematicDonePacket, "Pkt_CS_FINAL_ENDING_CINEMATIC_DONE",
+        DynamicTaskTargetKind::ExplicitScope);
     // CS_PARTY_* 핸들러는 전부 PartyCommandQueue에 명령을 enqueue 하기만 하고
     // ECS 컴포넌트(ActorInputComp, PlayerNetworkTimingComp 등)나 월드 상태를
     // 직접 수정하지 않는다. 따라서 다음 두 조건이 모두 충족되어야 한다:
@@ -1820,6 +1824,29 @@ ExecCallResult HandleFinalClearChoiceSubmitPacket(NodeExecContext& ctx)
         sessionId,
         pkt.voteid(),
         pkt.choosepvp());
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleFinalEndingCinematicDonePacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+
+    if (svc.worldTransitionSink == nullptr)
+        return ExecCallResult::Success;
+
+    Protocol::CS_FINAL_ENDING_CINEMATIC_DONE_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    // 해당 파티의 대기 중인 엔딩 전이가 없으면 sink 내부에서 false로 무시된다.
+    (void)svc.worldTransitionSink->SubmitFinalEndingCinematicDone(
+        sessionId,
+        static_cast<uint32_t>(pkt.context()));
     return ExecCallResult::Success;
 }
 

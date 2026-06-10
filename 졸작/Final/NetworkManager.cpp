@@ -282,6 +282,17 @@ bool NetworkManager::SendFinalClearChoiceSubmit(uint64_t voteId, bool choosePvp)
 	return TrySendInternal(data);
 }
 
+bool NetworkManager::SendFinalEndingCinematicDone(const Protocol::FinalEndingCinematicContext& ctx)
+{
+	Protocol::CS_FINAL_ENDING_CINEMATIC_DONE_PACKET packet;
+	packet.set_context(ctx);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_FINAL_ENDING_CINEMATIC_DONE_PACKET>(
+		PacketType::CS_FINAL_ENDING_CINEMATIC_DONE, packet);
+
+	return TrySendInternal(data);
+}
+
 bool NetworkManager::TrySendInternal(SendBuffer* sendBuffer)
 {
 	if (_service && sendBuffer)

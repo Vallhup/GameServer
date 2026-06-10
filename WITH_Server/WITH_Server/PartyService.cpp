@@ -659,6 +659,100 @@ PartyWorldEntryResult PartyService::BeginWorldEntry(
 	};
 }
 
+PartyWorldEntryResult PartyService::BeginForcedWorldEntry(
+	PartyId partyId,
+	WorldId sourceWorldId,
+	const WorldTargetSpec& target,
+	double nowSec,
+	bool allowFallback)
+{
+	AssertOwnerThread();
+	ExpireJoinRequests(nowSec);
+
+	PartyRecord* const party = FindParty(partyId);
+	if (party == nullptr)
+	{
+		return PartyWorldEntryResult{ .error = PartyError::PartyNotFound, .partyId = partyId };
+	}
+
+	if (party->lifecycle == PartyLifecycleState::WorldEntryPending ||
+		party->worldEntry.state == PartyWorldEntryState::Requested ||
+		party->worldEntry.state == PartyWorldEntryState::TransferEnqueued)
+	{
+		return PartyWorldEntryResult{
+			.error = PartyError::WorldEntryAlreadyPending,
+			.partyId = partyId
+		};
+	}
+
+	if (party->lifecycle == PartyLifecycleState::Disbanded)
+	{
+		return PartyWorldEntryResult{ .error = PartyError::InvalidPartyState, .partyId = partyId };
+	}
+
+	if (!target.explicitTargetId.has_value() &&
+		!target.targetWorldDefId.has_value())
+	{
+		return PartyWorldEntryResult{ .error = PartyError::InvalidTarget, .partyId = partyId };
+	}
+
+	if (!sourceWorldId.IsValid())
+	{
+		return PartyWorldEntryResult{ .error = PartyError::InvalidTarget, .partyId = partyId };
+	}
+
+	// 리더 생존/전원 가용을 요구하지 않는다. 지정 소스월드에 실재하며 전송
+	// 가능한 멤버만 모은다(사망자는 binding 이 살아있어 포함, 접속종료는 제외).
+	std::vector<SessionId> snapshot;
+	snapshot.reserve(party->members.size());
+	for (const PartyMember& member : party->members)
+	{
+		if (member.sessionId == 0 ||
+			member.presence != PartyMemberPresence::Online ||
+			!_sessionQuery.CanBeginWorldTransfer(member.sessionId) ||
+			_sessionQuery.FindCurrentWorldId(member.sessionId) != sourceWorldId)
+		{
+			continue;
+		}
+		snapshot.push_back(member.sessionId);
+	}
+	std::sort(snapshot.begin(), snapshot.end());
+	if (snapshot.empty())
+	{
+		return PartyWorldEntryResult{ .error = PartyError::MemberUnavailable, .partyId = partyId };
+	}
+
+	party->lifecycle = PartyLifecycleState::WorldEntryPending;
+	++party->version;
+	ClosePendingRequestsForParty(
+		*party,
+		PartyJoinRequestCloseReason::ClosedByPartyEnteredWorld,
+		nowSec);
+	party->worldEntry = PartyWorldEntry{
+		.state = PartyWorldEntryState::Requested,
+		.transferId = 0,
+		.sourceWorldId = sourceWorldId,
+		.target = target,
+		.sessionSnapshot = snapshot,
+		.requestedAtSec = nowSec,
+		.completedAtSec = 0.0
+	};
+
+	WorldTransferRequest request{};
+	request.sessionIds = std::move(snapshot);
+	request.sourceWorldId = sourceWorldId;
+	request.target = target;
+	request.partyId = partyId;
+	request.allowFallback = allowFallback;
+	request.createdAtSec = nowSec;
+
+	return PartyWorldEntryResult{
+		.error = PartyError::None,
+		.partyId = partyId,
+		.request = std::move(request)
+	};
+}
+
 PartyResult PartyService::MarkWorldEntryEnqueued(
 	PartyId partyId,
 	TransferId transferId,

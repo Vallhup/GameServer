@@ -136,6 +136,11 @@ message CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET
 	bool choosePvp = 2;
 }
 
+message CS_FINAL_ENDING_CINEMATIC_DONE_PACKET
+{
+	FinalEndingCinematicContext context = 1;
+}
+
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
 
 message SC_TIME_SYNC_PACKET
@@ -389,4 +394,9 @@ message SC_TITLE_REPLICATION_PACKET
 {
 	uint64 ownerNetId = 1;
 	uint32 titleId = 2;
+}
+
+message SC_PVP_ROUND_RESULT_PACKET
+{
+	uint64 winnerNetId = 1;
 }

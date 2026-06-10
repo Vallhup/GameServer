@@ -24,5 +24,11 @@ public:
 		uint64_t voteId,
 		bool choosePvp) = 0;
 
+	// 클라이언트 엔딩/페이드 연출 완료 통지(CS_FINAL_ENDING_CINEMATIC_DONE).
+	// context: FinalEndingCinematicContext (1=FinalClear, 2=PvpRoundEnd).
+	virtual bool SubmitFinalEndingCinematicDone(
+		SessionId sessionId,
+		uint32_t context) = 0;
+
 	virtual void OnSessionDisconnected(SessionId sessionId) noexcept = 0;
 };

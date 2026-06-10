@@ -408,6 +408,21 @@ bool ServerPacketStager::StageFinalClearChoiceResultPacket(
 		packet);
 }
 
+bool ServerPacketStager::StagePvpRoundResultPacket(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	uint64_t winnerNetId)
+{
+	Protocol::SC_PVP_ROUND_RESULT_PACKET packet;
+	packet.set_winnernetid(winnerNetId);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_PVP_ROUND_RESULT,
+		sessionIds,
+		packet);
+}
+
 bool ServerPacketStager::StageStatPacketToSession(
 	NetworkRuntime& network,
 	SessionId sessionId,

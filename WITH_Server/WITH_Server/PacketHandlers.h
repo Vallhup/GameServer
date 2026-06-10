@@ -28,6 +28,7 @@ ExecCallResult HandleUseItemPacket(NodeExecContext& ctx);
 ExecCallResult HandleWorldTransitionRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandleWorldTransitionReadyPacket(NodeExecContext& ctx);
 ExecCallResult HandleFinalClearChoiceSubmitPacket(NodeExecContext& ctx);
+ExecCallResult HandleFinalEndingCinematicDonePacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyUiOpenedPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyUiClosedPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyListRefreshPacket(NodeExecContext& ctx);

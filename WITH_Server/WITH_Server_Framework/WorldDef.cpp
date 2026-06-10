@@ -657,19 +657,19 @@ WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey)
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartA,
 					.name = "Pvp.PlayerStart.A",
-					.position = WorldVec3Def{ -8.0f, 5.0f, -42.0f },
+					.position = WorldVec3Def{ -3.0f, 5.0f, -96.193400f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartB,
 					.name = "Pvp.PlayerStart.B",
-					.position = WorldVec3Def{ 8.0f, 5.0f, -42.0f },
+					.position = WorldVec3Def{ 3.0f, 5.0f, -96.193400f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartC,
 					.name = "Pvp.PlayerStart.C",
-					.position = WorldVec3Def{ 0.0f, 5.0f, -30.0f },
+					.position = WorldVec3Def{ 0.0f, 5.0f, -93.000000f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},

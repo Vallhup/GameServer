@@ -153,7 +153,7 @@ struct PartySnapshotDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PartySnapshotDefaultTypeInternal _PartySnapshot_default_instance_;
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[11];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[12];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_DTO_2eproto = nullptr;
 const ::uint32_t
@@ -306,13 +306,18 @@ const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIAB
     "son\022\"\n\036FINAL_CLEAR_REASON_UNSPECIFIED\020\000\022"
     "!\n\035FINAL_CLEAR_REASON_PVP_CHOSEN\020\001\022#\n\037FI"
     "NAL_CLEAR_REASON_ALL_DECLINED\020\002\022\036\n\032FINAL"
-    "_CLEAR_REASON_TIMEOUT\020\003b\006proto3"
+    "_CLEAR_REASON_TIMEOUT\020\003*\257\001\n\033FinalEndingC"
+    "inematicContext\022.\n*FINAL_ENDING_CINEMATI"
+    "C_CONTEXT_UNSPECIFIED\020\000\022.\n*FINAL_ENDING_"
+    "CINEMATIC_CONTEXT_FINAL_CLEAR\020\001\0220\n,FINAL"
+    "_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END\020"
+    "\002b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DTO_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_DTO_2eproto = {
     false,
     false,
-    2711,
+    2889,
     descriptor_table_protodef_DTO_2eproto,
     "DTO.proto",
     &descriptor_table_DTO_2eproto_once,
@@ -424,6 +429,15 @@ PROTOBUF_CONSTINIT const uint32_t FinalClearChoiceReason_internal_data_[] = {
     262144u, 0u, };
 bool FinalClearChoiceReason_IsValid(int value) {
   return 0 <= value && value <= 3;
+}
+const ::google::protobuf::EnumDescriptor* FinalEndingCinematicContext_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[11];
+}
+PROTOBUF_CONSTINIT const uint32_t FinalEndingCinematicContext_internal_data_[] = {
+    196608u, 0u, };
+bool FinalEndingCinematicContext_IsValid(int value) {
+  return 0 <= value && value <= 2;
 }
 // ===================================================================
 

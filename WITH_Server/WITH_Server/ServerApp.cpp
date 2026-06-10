@@ -30,6 +30,9 @@ namespace
 	constexpr const char* kLogCategory = "ServerApp";
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
 	constexpr double kFinalClearChoiceTimeoutSec = 15.0;
+	// 엔딩/페이드 연출 완료를 기다리는 안전 타임아웃. 일부 클라가 연출 완료를
+	// 보고하지 않아도 이 시간 후에는 강제로 Plaza 전이한다.
+	constexpr double kEndingCinematicTimeoutSec = 20.0;
 
 	WorldDefId ResolveDemoNextWorld(WorldDefId currentWorldDefId) noexcept
 	{
@@ -410,26 +413,46 @@ bool ServerApp::SubmitFinalClearPvpChoice(
 	}
 
 	vote.choices[sessionId] = choosePvp;
-	if (choosePvp)
-	{
-		// 한 명이라도 PvP를 선택하면 즉시 PvP 월드로 확정한다.
-		return ResolveFinalClearChoiceVote(
-			voteId,
-			WorldDefId::Pvp,
-			static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_PVP_CHOSEN),
-			sessionId);
-	}
 
+	// 조작감 개선: 한 명이 PvP를 골라도 즉시 전이하지 않는다. 자격자 전원이
+	// 투표를 마쳐야 판정한다(한 명이라도 PvP면 PvP, 아니면 Plaza 엔딩).
 	if (vote.choices.size() >= vote.eligibleSessions.size())
 	{
-		// 전원이 거절 → 엔딩 후 Plaza 복귀.
-		return ResolveFinalClearChoiceVote(
+		return ResolveFinalClearVoteByCastChoices(
 			voteId,
-			WorldDefId::Plaza,
 			static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_ALL_DECLINED));
 	}
 
 	return true;
+}
+
+bool ServerApp::ResolveFinalClearVoteByCastChoices(
+	uint64_t voteId,
+	uint32_t plazaReason)
+{
+	const auto voteIt = _finalClearChoiceVotes.find(voteId);
+	if (voteIt == _finalClearChoiceVotes.end())
+	{
+		return false;
+	}
+
+	// 캐스팅된 표 중 한 명이라도 PvP면 PvP로 확정, 그 외에는 Plaza(엔딩).
+	for (const auto& [chooserSessionId, choosePvp] : voteIt->second.choices)
+	{
+		if (choosePvp)
+		{
+			return ResolveFinalClearChoiceVote(
+				voteId,
+				WorldDefId::Pvp,
+				static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_PVP_CHOSEN),
+				chooserSessionId);
+		}
+	}
+
+	return ResolveFinalClearChoiceVote(
+		voteId,
+		WorldDefId::Plaza,
+		plazaReason);
 }
 
 bool ServerApp::MarkClientWorldTransitionReady(
@@ -903,6 +926,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 	}
 
 	TickFinalClearChoiceVotes();
+	TickPendingEndingTransfers();
 
 	if (!ProcessPvpRoundEndConditions())
 	{
@@ -1272,10 +1296,10 @@ void ServerApp::TickFinalClearChoiceVotes()
 
 	for (uint64_t voteId : expiredVoteIds)
 	{
-		// 제한 시간(15초) 만료 → 아무도 PvP를 고르지 않은 것으로 보고 엔딩 처리.
-		(void)ResolveFinalClearChoiceVote(
+		// 제한 시간 만료 → 미투표자는 거절로 간주하고, 그때까지 캐스팅된 표
+		// 기준으로 판정한다(한 명이라도 PvP를 골랐다면 PvP로 간다).
+		(void)ResolveFinalClearVoteByCastChoices(
 			voteId,
-			WorldDefId::Plaza,
 			static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_TIMEOUT));
 	}
 }
@@ -1309,7 +1333,9 @@ bool ServerApp::StartFinalClearChoiceVote(WorldId sourceWorldId)
 
 	if (party->members.size() < 2)
 	{
-		return RequestPartyWorldTransfer(partyId, WorldDefId::Plaza);
+		// 파티원 1명: 투표 없이도 바로 강제 전이하지 않고 엔딩 연출 후 Plaza로.
+		StartFinalEndingForParty(partyId, sourceWorldId);
+		return true;
 	}
 
 	FinalClearChoiceVote vote{};
@@ -1334,7 +1360,9 @@ bool ServerApp::StartFinalClearChoiceVote(WorldId sourceWorldId)
 
 	if (vote.eligibleSessions.size() < 2)
 	{
-		return RequestPartyWorldTransfer(partyId, WorldDefId::Plaza);
+		// 자격자 1명 이하: 투표 없이 엔딩 연출 후 Plaza로.
+		StartFinalEndingForParty(partyId, sourceWorldId);
+		return true;
 	}
 
 	const uint64_t voteId = vote.voteId;
@@ -1409,7 +1437,19 @@ bool ServerApp::ResolveFinalClearChoiceVote(
 		static_cast<uint32_t>(targetWorldDefId),
 		pvpChooserNetId);
 
-	return RequestPartyWorldTransfer(partyId, targetWorldDefId);
+	if (toPvp)
+	{
+		// PvP는 연출 없이 즉시 전이.
+		return RequestPartyWorldTransfer(partyId, WorldDefId::Pvp);
+	}
+
+	// 엔딩(Plaza): 즉시 전이하지 않고, 클라 엔딩 연출 완료(또는 타임아웃) 후 전이.
+	BeginEndingThenTransfer(
+		partyId,
+		sourceWorldId,
+		WorldDefId::Plaza,
+		std::span<const SessionId>(resultSessions.data(), resultSessions.size()));
+	return true;
 }
 
 bool ServerApp::RequestPartyWorldTransfer(
@@ -1474,6 +1514,205 @@ bool ServerApp::RequestPartyWorldTransfer(
 	return true;
 }
 
+bool ServerApp::ForcePartyGroupTransfer(
+	PartyId partyId,
+	WorldId sourceWorldId,
+	WorldDefId targetWorldDefId)
+{
+	if (partyId == 0 ||
+		!sourceWorldId.IsValid() ||
+		targetWorldDefId == WorldDefId::None)
+	{
+		return false;
+	}
+
+	WorldTargetSpec target{};
+	target.targetWorldDefId = targetWorldDefId;
+	target.instanceKey =
+		targetWorldDefId == WorldDefId::Pvp
+		? static_cast<uint64_t>(partyId)
+		: 0;
+
+	// 리더 비의존: 소스월드에 실재하는 전송 가능 멤버(사망자 포함)만 모은다.
+	PartyWorldEntryResult entryResult =
+		_partyService.BeginForcedWorldEntry(
+			partyId,
+			sourceWorldId,
+			target,
+			_nowSec,
+			true);
+	if (!entryResult.Succeeded())
+	{
+		FWLOG_WARN(kLogCategory,
+			"Forced party group transfer begin failed (partyId=%llu, target=%u, error=%u)",
+			static_cast<unsigned long long>(partyId),
+			static_cast<uint32_t>(targetWorldDefId),
+			static_cast<uint32_t>(entryResult.error));
+		return false;
+	}
+
+	const TransferId transferId = _framework.RequestWorldTransfer(
+		std::span<const SessionId>(
+			entryResult.request.sessionIds.data(),
+			entryResult.request.sessionIds.size()),
+		entryResult.request.sourceWorldId,
+		targetWorldDefId,
+		target.instanceKey,
+		partyId,
+		true,
+		_nowSec);
+	if (transferId == 0)
+	{
+		(void)_partyService.FailWorldEntry(partyId, 0, _nowSec);
+		return false;
+	}
+
+	(void)_partyService.MarkWorldEntryEnqueued(partyId, transferId, _nowSec);
+	return true;
+}
+
+void ServerApp::BeginEndingThenTransfer(
+	PartyId partyId,
+	WorldId sourceWorldId,
+	WorldDefId targetWorldDefId,
+	std::span<const SessionId> members)
+{
+	if (partyId == 0)
+	{
+		return;
+	}
+
+	PendingEndingTransfer pending{};
+	pending.partyId = partyId;
+	pending.sourceWorldId = sourceWorldId;
+	pending.targetWorldDefId = targetWorldDefId;
+	pending.deadlineSec = _nowSec + kEndingCinematicTimeoutSec;
+	for (const SessionId sessionId : members)
+	{
+		if (sessionId != 0)
+		{
+			pending.awaitingAck.insert(sessionId);
+		}
+	}
+
+	// 기다릴 대상이 없으면(전원 이탈 등) 즉시 전이한다.
+	if (pending.awaitingAck.empty())
+	{
+		(void)ForcePartyGroupTransfer(partyId, sourceWorldId, targetWorldDefId);
+		return;
+	}
+
+	_pendingEndingTransfers[static_cast<uint64_t>(partyId)] = std::move(pending);
+}
+
+void ServerApp::StartFinalEndingForParty(
+	PartyId partyId,
+	WorldId sourceWorldId)
+{
+	const PartyRecord* const party = _partyService.FindParty(partyId);
+	if (party == nullptr)
+	{
+		return;
+	}
+
+	std::vector<SessionId> members;
+	members.reserve(party->members.size());
+	for (const PartyMember& member : party->members)
+	{
+		if (member.sessionId == 0 ||
+			member.presence != PartyMemberPresence::Online ||
+			_sessionSystem.Flow().FindCurrentWorldId(member.sessionId) !=
+				sourceWorldId)
+		{
+			continue;
+		}
+		members.push_back(member.sessionId);
+	}
+
+	if (members.empty())
+	{
+		// 전이 대상이 없으면 연출 생략하고 강제 전이만 시도.
+		(void)ForcePartyGroupTransfer(partyId, sourceWorldId, WorldDefId::Plaza);
+		return;
+	}
+
+	// 투표 없는 엔딩: voteId=0 으로 ENDING 결과를 보내 클라 연출을 트리거한다.
+	(void)ServerPacketStager::StageFinalClearChoiceResultPacket(
+		_sessionSystem.Network(),
+		std::span<const SessionId>(members.data(), members.size()),
+		0,
+		static_cast<uint32_t>(Protocol::FINAL_CLEAR_OUTCOME_ENDING),
+		static_cast<uint32_t>(Protocol::FINAL_CLEAR_REASON_ALL_DECLINED),
+		static_cast<uint32_t>(WorldDefId::Plaza),
+		0);
+
+	BeginEndingThenTransfer(
+		partyId,
+		sourceWorldId,
+		WorldDefId::Plaza,
+		std::span<const SessionId>(members.data(), members.size()));
+}
+
+bool ServerApp::SubmitFinalEndingCinematicDone(
+	SessionId sessionId,
+	uint32_t context)
+{
+	(void)context;  // 검증/로깅용. 현재는 파티 단위 대기로만 처리.
+	if (sessionId == 0)
+	{
+		return false;
+	}
+
+	const PartyId partyId = _partyService.FindPartyBySession(sessionId);
+	const auto it = _pendingEndingTransfers.find(static_cast<uint64_t>(partyId));
+	if (it == _pendingEndingTransfers.end())
+	{
+		return false;
+	}
+
+	it->second.awaitingAck.erase(sessionId);
+	if (!it->second.awaitingAck.empty())
+	{
+		return true;
+	}
+
+	const WorldId sourceWorldId = it->second.sourceWorldId;
+	const WorldDefId targetWorldDefId = it->second.targetWorldDefId;
+	_pendingEndingTransfers.erase(it);
+	(void)ForcePartyGroupTransfer(partyId, sourceWorldId, targetWorldDefId);
+	return true;
+}
+
+void ServerApp::TickPendingEndingTransfers()
+{
+	std::vector<uint64_t> expiredPartyIds;
+	for (const auto& [partyIdRaw, pending] : _pendingEndingTransfers)
+	{
+		if (_nowSec >= pending.deadlineSec)
+		{
+			expiredPartyIds.push_back(partyIdRaw);
+		}
+	}
+
+	for (uint64_t partyIdRaw : expiredPartyIds)
+	{
+		const auto it = _pendingEndingTransfers.find(partyIdRaw);
+		if (it == _pendingEndingTransfers.end())
+		{
+			continue;
+		}
+
+		const WorldId sourceWorldId = it->second.sourceWorldId;
+		const WorldDefId targetWorldDefId = it->second.targetWorldDefId;
+		_pendingEndingTransfers.erase(it);
+		// 타임아웃: 일부가 연출 완료를 보고하지 않아도 강제로 전이한다.
+		(void)ForcePartyGroupTransfer(
+			static_cast<PartyId>(partyIdRaw),
+			sourceWorldId,
+			targetWorldDefId);
+	}
+}
+
 bool ServerApp::ProcessPvpRoundEndConditions()
 {
 	for (auto& [worldIdRaw, round] : _activePvpRounds)
@@ -1502,6 +1741,7 @@ bool ServerApp::ProcessPvpRoundEndConditions()
 		ECSView view = world->GetRuntime().MakeView();
 		uint32_t playerCount = 0;
 		uint32_t aliveCount = 0;
+		SessionId winnerSessionId = 0;
 		for (auto [entity, player, stats] :
 			view.View<
 				PlayerControlIdentityComp,
@@ -1518,22 +1758,39 @@ bool ServerApp::ProcessPvpRoundEndConditions()
 			if (stats.currentHp > 0)
 			{
 				++aliveCount;
+				winnerSessionId = player.ownerSessionId;
 			}
 		}
 
+		// 라스트맨: 생존자가 1명 이하가 되면 라운드 종료. 사망자는 despawn되지
+		// 않고 그대로 남아있으므로(ResolveDeathAndDespawnSystem), 결과 통지/전이
+		// 대상에 함께 포함된다.
 		if (playerCount > 0 && aliveCount <= 1)
 		{
 			round.ending = true;
-			if (!RequestPartyWorldTransfer(round.partyId, WorldDefId::Plaza))
-			{
-				FWLOG_WARN(kLogCategory,
-					"PvP round end transfer failed (partyId=%llu, worldId=%u, alive=%u, players=%u)",
-					static_cast<unsigned long long>(round.partyId),
-					round.worldId.GetRaw(),
-					aliveCount,
-					playerCount);
-				return false;
-			}
+
+			const uint64_t winnerNetId =
+				winnerSessionId != 0
+				? FindControlledNetId(winnerSessionId).GetRaw()
+				: 0;
+
+			std::vector<SessionId> pvpSessions;
+			_sessionSystem.Flow().CollectSessionsInWorld(
+				round.worldId,
+				pvpSessions);
+
+			// 결과(라스트맨) 통지 → 클라 페이드/엔딩 연출 트리거.
+			(void)ServerPacketStager::StagePvpRoundResultPacket(
+				_sessionSystem.Network(),
+				std::span<const SessionId>(pvpSessions.data(), pvpSessions.size()),
+				winnerNetId);
+
+			// 연출 완료(또는 타임아웃) 후 생존자/사망자 전원을 Plaza로 전이.
+			BeginEndingThenTransfer(
+				round.partyId,
+				round.worldId,
+				WorldDefId::Plaza,
+				std::span<const SessionId>(pvpSessions.data(), pvpSessions.size()));
 		}
 	}
 

@@ -192,6 +192,10 @@ void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 	const bool supportsPlayerRespawn =
 		worldDef != nullptr &&
 		PlayerDeathStatePolicy::IsRespawnWorld(worldDef->id);
+	// PvP에서는 패배한 플레이어를 despawn 하지 않고 사망 자세 그대로 둔다.
+	// 라운드 종료(라스트맨) 시 생존자/사망자 전원을 함께 Plaza로 전이시킨다.
+	const bool isPvpWorld =
+		worldDef != nullptr && worldDef->id == WorldDefId::Pvp;
 
 	for (auto [entity, stats, abilityState] :
 		ctx.ecs.MutableView<CombatStatStateComp, AbilityStateComp>())
@@ -279,7 +283,15 @@ void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
+		// PvP 월드의 플레이어 시신은 despawn하지 않고 그대로 유지한다(라운드 종료
+		// 시 전원 전송). 몬스터 등 비플레이어나 다른 월드는 기존대로 despawn.
+		const bool keepPvpCorpse =
+			isPvpWorld &&
+			player != nullptr &&
+			player->ownerSessionId != 0;
+
 		if (deadAbilityFinished &&
+			!keepPvpCorpse &&
 			!ctx.ecs.HasComponent<PendingDespawnTag>(entity))
 		{
 			ctx.runtime.DeferredAddComponent<PendingDespawnTag>(
