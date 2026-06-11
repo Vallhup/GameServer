@@ -11,6 +11,7 @@
                  "attackPower":  11,
                  "defense":  18,
                  "moveSpeed":  5.784,
+                 "walkSpeed":  1.8429,
                  "attackSpeed":  1.0
              },
     "bodyCollision":  {

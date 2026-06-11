@@ -52,14 +52,29 @@ namespace
 		CharacterStatDef& outStat,
 		std::string& outError)
 	{
-		return
-			ReadRequiredNumber(node, "maxHp", outStat.maxHp, outError) &&
-			ReadRequiredNumber(node, "maxStamina", outStat.maxStamina, outError) &&
-			ReadRequiredNumber(node, "maxPoise", outStat.maxPoise, outError) &&
-			ReadRequiredNumber(node, "attackPower", outStat.attackPower, outError) &&
-			ReadRequiredNumber(node, "defense", outStat.defense, outError) &&
-			ReadRequiredNumber(node, "moveSpeed", outStat.moveSpeed, outError) &&
-			ReadRequiredNumber(node, "attackSpeed", outStat.attackSpeed, outError);
+		if (!ReadRequiredNumber(node, "maxHp", outStat.maxHp, outError) ||
+			!ReadRequiredNumber(node, "maxStamina", outStat.maxStamina, outError) ||
+			!ReadRequiredNumber(node, "maxPoise", outStat.maxPoise, outError) ||
+			!ReadRequiredNumber(node, "attackPower", outStat.attackPower, outError) ||
+			!ReadRequiredNumber(node, "defense", outStat.defense, outError) ||
+			!ReadRequiredNumber(node, "moveSpeed", outStat.moveSpeed, outError) ||
+			!ReadRequiredNumber(node, "attackSpeed", outStat.attackSpeed, outError))
+		{
+			return false;
+		}
+
+		outStat.walkSpeed.reset();
+		if (node.contains("walkSpeed"))
+		{
+			float walkSpeed = 0.0f;
+			if (!ReadOptionalNumber(node, "walkSpeed", walkSpeed, outError))
+			{
+				return false;
+			}
+			outStat.walkSpeed = walkSpeed;
+		}
+
+		return true;
 	}
 
 	bool ParseAttributes(
@@ -353,6 +368,13 @@ namespace
 			if (def.name.empty())
 			{
 				outError = "Character name must not be empty.";
+				return false;
+			}
+
+			if (def.stat.walkSpeed.has_value() &&
+				def.stat.walkSpeed.value() < 0.0f)
+			{
+				outError = "Character walk speed must not be negative.";
 				return false;
 			}
 

@@ -134,6 +134,10 @@ void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 
 		const CharacterStatDef* statDef = FindCharacterStats(ctx.ecs, entity);
 		const float baseSpeed = (statDef != nullptr) ? statDef->moveSpeed : 2.5f;
+		const float walkSpeed =
+			(statDef != nullptr && statDef->walkSpeed.has_value())
+			? statDef->walkSpeed.value()
+			: baseSpeed * kWalkSpeedScale;
 		const bool moving = LengthXZ(inputX, inputZ) > kOverlapEpsilon;
 
 		if (!moving)
@@ -207,8 +211,8 @@ void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 			: (input.move.wantsRun
 				? LocomotionMode::Run
 				: LocomotionMode::Walk);
-		locomotionState.currentSpeed = baseSpeed *
-			(input.move.wantsRun ? 1.0f : kWalkSpeedScale);
+		locomotionState.currentSpeed =
+			input.move.wantsRun ? baseSpeed : walkSpeed;
 
 		if (!locomotionState.wasLocomotionMoving)
 		{

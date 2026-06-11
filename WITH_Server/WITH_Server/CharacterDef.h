@@ -66,6 +66,7 @@ struct CharacterStatDef
 	uint32_t attackPower;
 	uint16_t defense;
 	float moveSpeed;
+	std::optional<float> walkSpeed;
 	float attackSpeed;
 };
 
