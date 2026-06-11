@@ -57,8 +57,6 @@ void PlazaScene::InitializeLogic()
 
 	InitializeSceneEnvironments();
 
-	CreateEffectSamples();
-
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
@@ -93,54 +91,15 @@ void PlazaScene::InitializeSceneEnvironments()
 
 void PlazaScene::UpdateScene(const float deltaTime)
 {
-	//if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
-	//	effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	if (effectObjects.size() > 1 && INPUT.GetKeyDown('2'))
-		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	if (effectObjects.size() > 2 && INPUT.GetKeyDown('3'))
-		effectObjects[2]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	if (effectObjects.size() > 3 && INPUT.GetKeyDown('4'))
-		effectObjects[3]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	if (effectObjects.size() > 4 && INPUT.GetKeyDown('5'))
-		effectObjects[4]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	if (effectObjects.size() > 5 && INPUT.GetKeyDown('6'))
-		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	if (effectObjects.size() > 6 && INPUT.GetKeyDown('7'))
-		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	if (myPlayer)	// Temporary Code for Player Centered Shadow Mapping
+	if (myPlayer)	
 	{
 		auto transform = myPlayer->GetComponent<Transform>();
 		coreRef->SetPlayerPosForShadow(transform->GetPosition());
-
-		SoundManager* sound = SOUND_MANAGER;
-
-		/*if (transform->GetPosition().z < -11.0f)
-		{
-			sound->PlayBGM("../Assets/Music/BGM/background.mp3");
-		}
-		else
-		{
-			if (INPUT.GetKeyDown('0'))
-				sound->StopBGM();
-		}*/
 
 		if (INPUT.GetKeyDown('0'))
 		{
 			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
 			OutputDebugStringA(("MyPlayer Pos: " + to_string(pos.x) + ", " + to_string(pos.y) + ", " + to_string(pos.z) + "\n").c_str());
-		}
-
-		if (INPUT.GetKeyDown('2'))
-		{
-			auto mesh = myPlayer->GetComponent<Mesh>();
-			mesh->ToggleCollisionMesh();
 		}
 	}
 
@@ -197,12 +156,8 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	XMFLOAT3 playerPos = cam->GetTargetPosition();
 	XMVECTOR playerPosVec = XMLoadFloat3(&playerPos);
 
-	/*auto start = chrono::high_resolution_clock::now();*/
 	for (auto& batch : instancingBatches)
 		batch->Update(frustum, camPosVec, playerPosVec);
-	//auto end = chrono::high_resolution_clock::now();
-	//auto ms = chrono::duration_cast<chrono::microseconds>(end - start).count();
-	//OutputDebugStringA(("Update: " + to_string(ms) + "us\n").c_str());
 }
 
 void PlazaScene::RenderSceneDeferred()
@@ -210,50 +165,13 @@ void PlazaScene::RenderSceneDeferred()
 	auto renderer = sManagerRef->GetSceneRenderer();
 
 	renderer->RenderDeferred(*coreRef, gameObjects, cam.get());
-	//renderer->RenderCollisionMeshWireframe(*coreRef, gameObjects);
 
-	// Render terrain
 	if (terrain)
 		renderer->RenderTerrain(*coreRef, terrain.get());
 
 	for (const auto& batch : instancingBatches)
 	{
 		batch->Render(*coreRef, renderer);
-	}
-
-	static bool hitOn = false;
-
-	if (INPUT.GetKeyDown('1'))
-		hitOn = !hitOn;
-
-	for (const auto& obj : gameObjects)
-	{
-		if (obj->GetId() != -1)
-		{
-			if (auto mesh = obj->GetComponent<Mesh>())
-			{
-				auto animator = obj->GetComponent<Animator>();
-
-				if (hitOn && !animator)
-					obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
-			}
-		}
-	}
-
-	for (const auto& group : instancingBatches)
-	{
-		const auto& batchObjects = group->GetObjects();
-
-		for (const auto& obj : batchObjects)
-		{
-			if (auto mesh = obj->GetComponent<Mesh>())
-			{
-				auto animator = obj->GetComponent<Animator>();
-
-				if (hitOn && !animator)
-					obj->RenderDebugBoundingBox(*coreRef, { 0, 1, 1, 1 });
-			}
-		}
 	}
 }
 
@@ -304,43 +222,6 @@ void PlazaScene::RenderSceneEffects()
 const char* PlazaScene::GetBGMPath() const
 {
 	return "../Assets/Music/BGM/PlazaBGM.mp3";
-}
-
-void PlazaScene::CreateEffectSamples()
-{
-	struct EffectInfo {
-		u16string name;
-		float x;
-		float y;
-		float z;
-	};
-
-	vector<EffectInfo> info = {
-		{u"Fireworks", 484.607025f, 6.f, 481.862946f},
-		{u"BloodLance", 484.607025f, 7.3f, 481.862946f},
-		{u"HolySandstorm", 484.607025f, 7.3f, 481.862946f},
-		{u"Sword_Moonlight", 484.607025f, 7.3f, 481.862946f},
-		{u"Sword_Storm", 484.607025f, 7.3f, 481.862946f},
-		{u"PhantasmMeteor_Single", 484.607025f, 10.3f, 481.862946f},
-		{u"Fire", 484.607025f, 7.3f, 481.862946f},
-	};
-
-	for (int i = 0; i < info.size(); ++i)
-	{
-		wstring name(info[i].name.begin(), info[i].name.end());
-		EFFECT_MANAGER->PreLoad(name);
-
-		auto effectSample = make_shared<GameObject>();
-		auto effectRenderer = effectSample->AddComponent<EffectRenderer>();
-		auto transform = effectSample->AddComponent<Transform>();
-
-		effectRenderer->SetEffectName(name);
-
-		transform->SetInitPosition(info[i].x, info[i].y, info[i].z);
-		transform->SetScale(1.f, 1.f, 1.f);
-		effectObjects.push_back(effectSample);
-		AddGameObject(effectSample);
-	}
 }
 
 float PlazaScene::SampleHeightAt(float worldX, float worldZ) const

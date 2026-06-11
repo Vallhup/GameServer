@@ -33,14 +33,11 @@ protected:
 	const char* GetBGMPath() const override;
 
 private:
-	void CreateEffectSamples();
-
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 private:
 	NetworkManager* _nManager{ nullptr };
 
-	vector<shared_ptr<GameObject>> effectObjects;
 	shared_ptr<SkyBox> skyBox;
 	shared_ptr<Terrain> terrain;
 };

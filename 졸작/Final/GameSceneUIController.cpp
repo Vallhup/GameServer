@@ -607,10 +607,12 @@ void GameSceneUIController::InitStatWindow()
 	statusRibbon->SetVertLength(ribbonHeight);
 	widgets.push_back(statusRibbon);
 
-	const float arrowSizeX = WinSize.y * 0.07f;
-	const float arrowSizeY = WinSize.y * 0.09f;
-	const float arrowY = ribbonY + (ribbonHeight - arrowSizeY) * 0.5f;
-	const float arrowGap = WinSize.x * 0.005f;
+	const float ribbonTailCenter = 0.569f;
+	const float ribbonTailHeight = 0.48f;
+	const float arrowSizeY = ribbonHeight * ribbonTailHeight;
+	const float arrowSizeX = arrowSizeY * (1440.0f / 1709.0f);
+	const float arrowY = ribbonY + ribbonHeight * ribbonTailCenter - arrowSizeY * 0.5f;
+	const float arrowGap = WinSize.x * 0.008f;
 
 	statusArrowLeft = make_shared<ImageUI>(uiManager, L"StatusArrowLeft", ImageUIState::Hidden);
 	statusArrowLeft->SetPosition(ribbonX - arrowSizeX - arrowGap, arrowY);
