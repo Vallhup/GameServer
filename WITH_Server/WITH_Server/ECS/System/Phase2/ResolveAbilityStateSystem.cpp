@@ -12,6 +12,30 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	bool TryResolveMoveInputDirection(
+		const PlayerMoveInputState& moveInput,
+		float& outDirX,
+		float& outDirZ)
+	{
+		float inputX = ClampFloat(moveInput.inputX, -1.0f, 1.0f);
+		float inputZ = ClampFloat(moveInput.inputZ, -1.0f, 1.0f);
+		NormalizeXZ(inputX, inputZ);
+		if (LengthXZ(inputX, inputZ) <= kOverlapEpsilon)
+		{
+			return false;
+		}
+
+		const float sinYaw = std::sin(moveInput.cameraYawRad);
+		const float cosYaw = std::cos(moveInput.cameraYawRad);
+		outDirX = cosYaw * inputX + sinYaw * inputZ;
+		outDirZ = -sinYaw * inputX + cosYaw * inputZ;
+		NormalizeXZ(outDirX, outDirZ);
+		return LengthXZ(outDirX, outDirZ) > kOverlapEpsilon;
+	}
+}
+
 const StaticSystemMetaStorage<16, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
     MakeMetaStorage(
         SysTag<ResolveAbilityStateSystem>(),
@@ -161,6 +185,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				SetAbilityDirectionOnStart(
 					abilityState,
 					decision,
+					input,
 					locomotionState,
 					transform);
 				if (IsAbilityActive(abilityState))
@@ -217,6 +242,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			SetAbilityDirectionOnStart(
 				abilityState,
 				decision,
+				input,
 				locomotionState,
 				transform);
 			if (IsAbilityActive(abilityState))
@@ -1084,6 +1110,7 @@ void ResolveAbilityStateSystem::PrepareStartedAbilityAdvance(
 void ResolveAbilityStateSystem::SetAbilityDirectionOnStart(
 	AbilityStateComp& abilityState,
 	const TransitionDecision& decision,
+	const ActorInputComp& input,
 	const LocomotionStateComp& locomotionState,
 	const WorldTransformComp& transform)
 {
@@ -1092,8 +1119,22 @@ void ResolveAbilityStateSystem::SetAbilityDirectionOnStart(
 		return;
 	}
 
-	float dirX = decision.directionX;
-	float dirZ = decision.directionZ;
+	float dirX = 0.0f;
+	float dirZ = 0.0f;
+	const AbilityDef* nextAbilityDef =
+		GameplayContentCatalogSnapshot::Current()
+			.Abilities()
+			.Find(decision.nextAbilityId);
+	const bool useCurrentMoveInput =
+		nextAbilityDef != nullptr &&
+		nextAbilityDef->kind == AbilityKind::Dodge &&
+		TryResolveMoveInputDirection(input.move, dirX, dirZ);
+
+	if (!useCurrentMoveInput)
+	{
+		dirX = decision.directionX;
+		dirZ = decision.directionZ;
+	}
 	NormalizeXZ(dirX, dirZ);
 
 	if (LengthXZ(dirX, dirZ) <= kOverlapEpsilon)

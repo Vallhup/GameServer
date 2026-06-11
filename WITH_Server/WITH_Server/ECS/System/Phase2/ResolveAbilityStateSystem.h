@@ -188,6 +188,7 @@ private:
 	static void SetAbilityDirectionOnStart(
 		AbilityStateComp& abilityState,
 		const TransitionDecision& decision,
+		const ActorInputComp& input,
 		const LocomotionStateComp& locomotionState,
 		const WorldTransformComp& transform);
 
