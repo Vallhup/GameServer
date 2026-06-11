@@ -68,7 +68,9 @@ void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<Gam
 {
     UpdateInputtoCamLogic(core, deltaTime);
     UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
+    UpdateZoomKick(deltaTime);
     UpdateSmoothFollow(deltaTime);
+    UpdateShake(deltaTime);
     UpdateCameraMatrices(core);
 }
 
@@ -159,10 +161,16 @@ void Camera::UpdateSmoothFollow(float deltaTime)
     float radYaw = XMConvertToRadians(yaw);
     float radPitch = XMConvertToRadians(-pitch);
 
+    const float focus = GetZoomBell() * ZOOM_KICK_RECENTER;
+    XMFLOAT3 orbitCenter;
+    XMStoreFloat3(&orbitCenter, XMVectorLerp(XMLoadFloat3(&currentTargetPos), XMLoadFloat3(&desiredTargetPos), focus));
+
+    const float effectiveDistance = currentDistance + GetZoomKick();
+
     XMFLOAT3 targetCameraPos;
-    targetCameraPos.x = currentTargetPos.x + currentDistance * cos(radPitch) * sin(radYaw);
-    targetCameraPos.y = currentTargetPos.y + currentDistance * sin(radPitch);
-    targetCameraPos.z = currentTargetPos.z + currentDistance * cos(radPitch) * cos(radYaw);
+    targetCameraPos.x = orbitCenter.x + effectiveDistance * cos(radPitch) * sin(radYaw);
+    targetCameraPos.y = orbitCenter.y + effectiveDistance * sin(radPitch);
+    targetCameraPos.z = orbitCenter.z + effectiveDistance * cos(radPitch) * cos(radYaw);
 
     XMVECTOR currentPos = XMLoadFloat3(&position);
     XMVECTOR targetPos = XMLoadFloat3(&targetCameraPos);
@@ -177,7 +185,74 @@ void Camera::UpdateSmoothFollow(float deltaTime)
             position.y = minY;
     }
 
-    targetPosition = currentTargetPos;
+    targetPosition = orbitCenter;  
+}
+
+void Camera::AddTrauma(float amount)
+{
+    shakeTrauma = min(1.0f, shakeTrauma + amount);
+}
+
+void Camera::UpdateShake(float deltaTime)
+{
+    if (shakeTrauma <= 0.0f)
+        return;
+
+    shakeTime += deltaTime;
+    shakeTrauma = max(0.0f, shakeTrauma - SHAKE_DECAY * deltaTime);
+}
+
+XMFLOAT3 Camera::GetShakeOffset() const
+{
+    if (shakeTrauma <= 0.0f)
+        return { 0.0f, 0.0f, 0.0f };
+
+    const float shake = shakeTrauma * shakeTrauma * SHAKE_MAX_OFFSET;
+
+    const float t = shakeTime;
+    const float nx = sin(t * SHAKE_FREQUENCY) * 0.6f + sin(t * SHAKE_FREQUENCY * 1.7f + 1.3f) * 0.4f;
+    const float ny = sin(t * SHAKE_FREQUENCY * 1.1f + 2.1f) * 0.6f + sin(t * SHAKE_FREQUENCY * 2.3f) * 0.4f;
+
+    return {
+        camRight.x * nx * shake,
+        ny * shake,
+        camRight.z * nx * shake
+    };
+}
+
+void Camera::TriggerDodgeZoom()
+{
+    zoomKickTime = 0.0f;
+}
+
+void Camera::UpdateZoomKick(float deltaTime)
+{
+    float target = 0.0f;
+    if (zoomKickTime >= 0.0f)
+    {
+        zoomKickTime += deltaTime;
+        if (zoomKickTime >= ZOOM_KICK_START && zoomKickTime < ZOOM_KICK_HOLD)
+            target = 1.0f;
+    }
+
+    const float rate = (target > zoomLevel) ? ZOOM_ATTACK : ZOOM_RELEASE;
+    zoomLevel += (target - zoomLevel) * min(rate * deltaTime, 1.0f);
+
+    if (zoomKickTime >= ZOOM_KICK_HOLD && zoomLevel < 0.001f)
+    {
+        zoomLevel = 0.0f;
+        zoomKickTime = -1.0f;
+    }
+}
+
+float Camera::GetZoomBell() const
+{
+    return zoomLevel;
+}
+
+float Camera::GetZoomKick() const
+{
+    return ZOOM_KICK_AMPLITUDE * zoomLevel;
 }
 
 void Camera::SetCinematicView(DX12Core& core, const XMFLOAT3& eye, const XMFLOAT3& lookAt)
@@ -191,8 +266,11 @@ void Camera::SetCinematicView(DX12Core& core, const XMFLOAT3& eye, const XMFLOAT
 
 void Camera::UpdateCameraMatrices(DX12Core& core)
 {
-    XMVECTOR eyePos = XMLoadFloat3(&position);
-    XMVECTOR lookAt = XMLoadFloat3(&targetPosition);
+    const XMFLOAT3 shakeOffset = GetShakeOffset();
+    const XMVECTOR shake = XMLoadFloat3(&shakeOffset);
+
+    XMVECTOR eyePos = XMVectorAdd(XMLoadFloat3(&position), shake);
+    XMVECTOR lookAt = XMVectorAdd(XMLoadFloat3(&targetPosition), shake);
 
     XMVECTOR diff = XMVectorSubtract(lookAt, eyePos);
 
@@ -255,7 +333,6 @@ void Camera::UpdateForwardAndRight()
 
 void Camera::ChangeAngleByInput(float deltaTime)
 {
-    // 실제 클라이언트 중앙 (풀스크린이면 클라가 모니터 해상도라 WinSize/2와 다름)
     RECT cr; GetClientRect(hwnd, &cr);
     POINT center = { (cr.right - cr.left) / 2, (cr.bottom - cr.top) / 2 };
     ClientToScreen(hwnd, &center);
@@ -479,7 +556,6 @@ void Camera::ChangeCursorInfo(bool in)
         RECT clipRect = { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
         ClipCursor(&clipRect);
 
-        // 실제 클라이언트 중앙 (풀스크린이면 클라가 모니터 해상도라 WinSize/2와 다름)
         POINT center = { (clientRect.right - clientRect.left) / 2, (clientRect.bottom - clientRect.top) / 2 };
         ClientToScreen(hwnd, &center);
         SetCursorPos(center.x, center.y);
