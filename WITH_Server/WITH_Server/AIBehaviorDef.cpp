@@ -100,11 +100,13 @@ namespace
 		return
 			ReadOptionalNumber(node, "sightRange", outTuning.sightRange, outError) &&
 			ReadOptionalNumber(node, "attackRange", outTuning.attackRange, outError) &&
+			ReadOptionalNumber(node, "combatExitRangeBonus", outTuning.combatExitRangeBonus, outError) &&
 			ReadOptionalNumber(node, "frontDotThreshold", outTuning.frontDotThreshold, outError) &&
 			ReadOptionalNumber(node, "targetKeepBonus", outTuning.targetKeepBonus, outError) &&
 			ReadOptionalNumber(node, "lastAttackerBonus", outTuning.lastAttackerBonus, outError) &&
 			ReadOptionalNumber(node, "frontBonus", outTuning.frontBonus, outError) &&
 			ReadOptionalNumber(node, "switchScoreMargin", outTuning.switchScoreMargin, outError) &&
+			ReadOptionalNumber(node, "attacksBeforeForcedRetarget", outTuning.attacksBeforeForcedRetarget, outError) &&
 			ReadOptionalNumber(node, "loseSightGraceTime", outTuning.loseSightGraceTime, outError) &&
 			ReadOptionalNumber(node, "leashRange", outTuning.leashRange, outError) &&
 			ReadOptionalNumber(node, "hardLeashRange", outTuning.hardLeashRange, outError) &&
@@ -136,6 +138,7 @@ namespace
 			ReadOptionalNumber(node, "lastAttackerBonus", outTuning.lastAttackerBonus, outError) &&
 			ReadOptionalNumber(node, "frontBonus", outTuning.frontBonus, outError) &&
 			ReadOptionalNumber(node, "switchScoreMargin", outTuning.switchScoreMargin, outError) &&
+			ReadOptionalNumber(node, "attacksBeforeForcedRetarget", outTuning.attacksBeforeForcedRetarget, outError) &&
 			ReadOptionalBool(node, "preferNearest", outTuning.preferNearest, outError) &&
 			ReadOptionalBool(node, "preferLowestHp", outTuning.preferLowestHp, outError) &&
 			ReadOptionalNumber(node, "assistRange", outTuning.assistRange, outError);
@@ -147,6 +150,8 @@ namespace
 		profile.targeting.lastAttackerBonus = profile.perception.lastAttackerBonus;
 		profile.targeting.frontBonus = profile.perception.frontBonus;
 		profile.targeting.switchScoreMargin = profile.perception.switchScoreMargin;
+		profile.targeting.attacksBeforeForcedRetarget =
+			profile.perception.attacksBeforeForcedRetarget;
 		profile.targeting.assistRange = profile.perception.assistRange;
 	}
 
@@ -156,6 +161,8 @@ namespace
 		profile.perception.lastAttackerBonus = profile.targeting.lastAttackerBonus;
 		profile.perception.frontBonus = profile.targeting.frontBonus;
 		profile.perception.switchScoreMargin = profile.targeting.switchScoreMargin;
+		profile.perception.attacksBeforeForcedRetarget =
+			profile.targeting.attacksBeforeForcedRetarget;
 		profile.perception.assistRange = profile.targeting.assistRange;
 	}
 
@@ -398,6 +405,7 @@ namespace
 				!ReadOptionalNumber(profileNode, "farDistance", profile.farDistance, outError) ||
 				!ReadOptionalNumber(profileNode, "preferredMinDistance", profile.preferredMinDistance, outError) ||
 				!ReadOptionalNumber(profileNode, "preferredMaxDistance", profile.preferredMaxDistance, outError) ||
+				!ReadOptionalNumber(profileNode, "distanceHysteresis", profile.distanceHysteresis, outError) ||
 				!ReadOptionalEnum(profileNode, "veryCloseBehavior", profile.veryCloseBehavior, "AI movement behavior", outError) ||
 				!ReadOptionalEnum(profileNode, "closeBehavior", profile.closeBehavior, "AI movement behavior", outError) ||
 				!ReadOptionalEnum(profileNode, "preferredBehavior", profile.preferredBehavior, "AI movement behavior", outError) ||
@@ -736,6 +744,23 @@ namespace
 				outError = "AI behavior profile requires combatActions.";
 				return false;
 			}
+			if (profile.perception.attackRange < 0.0 ||
+				profile.perception.combatExitRangeBonus < 0.0)
+			{
+				outError =
+					"AI behavior perception has negative combat range tuning.";
+				return false;
+			}
+			if (profile.targeting.targetKeepBonus < 0.0 ||
+				profile.targeting.lastAttackerBonus < 0.0 ||
+				profile.targeting.frontBonus < 0.0 ||
+				profile.targeting.switchScoreMargin < 0.0 ||
+				profile.targeting.attacksBeforeForcedRetarget < 0)
+			{
+				outError =
+					"AI behavior targeting has negative tuning.";
+				return false;
+			}
 
 			for (const AIActionDef& action : profile.combatActionDefs)
 			{
@@ -753,6 +778,15 @@ namespace
 					action.condition.targetHpRatioMin > action.condition.targetHpRatioMax)
 				{
 					outError = "AI behavior combatActions has invalid hp ratio range.";
+					return false;
+				}
+				if (action.condition.minDistance.has_value() &&
+					action.condition.maxDistance.has_value() &&
+					*action.condition.minDistance >
+						*action.condition.maxDistance)
+				{
+					outError =
+						"AI behavior combatActions has invalid distance range.";
 					return false;
 				}
 				if (action.aiCooldownSec < 0.0f ||
@@ -806,6 +840,19 @@ namespace
 					movement.strafeMinSec > movement.strafeMaxSec)
 				{
 					outError = "AI behavior movementProfiles has invalid strafe range.";
+					return false;
+				}
+				if (movement.veryCloseDistance < 0.0 ||
+					movement.closeDistance < movement.veryCloseDistance ||
+					movement.midDistance < movement.closeDistance ||
+					movement.farDistance < movement.midDistance ||
+					movement.preferredMinDistance < 0.0 ||
+					movement.preferredMinDistance >
+						movement.preferredMaxDistance ||
+					movement.distanceHysteresis < 0.0)
+				{
+					outError =
+						"AI behavior movementProfiles has invalid distance tuning.";
 					return false;
 				}
 			}

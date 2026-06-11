@@ -11,6 +11,9 @@
     <ClCompile Include="AIBehaviorDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
+    <ClCompile Include="AIBehaviorPolicy_SmokeTest.cpp">
+      <Filter>FSM\Policy</Filter>
+    </ClCompile>
     <ClCompile Include="AnimationJsonLoader.cpp">
       <Filter>Data\Loader</Filter>
     </ClCompile>
@@ -347,6 +350,30 @@
     <ClCompile Include="AICombatActionPolicyUtil.cpp">
       <Filter>FSM\Core</Filter>
     </ClCompile>
+    <ClCompile Include="AICombatActionConditionEvaluator.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AICombatActionContextBuilder.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AICombatActionRuntimeUpdater.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AICombatActionSelector.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AICombatRangePolicy.cpp">
+      <Filter>FSM\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="AIMovementDistanceResolver.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AITargetAttackTracker.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AITargetCandidateSelector.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
     <ClCompile Include="AIMovementPolicyUtil.cpp">
       <Filter>FSM\Core</Filter>
     </ClCompile>
@@ -534,6 +561,9 @@
     </ClInclude>
     <ClInclude Include="AIBehaviorDef.h">
       <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="AICombatRangePolicy.h">
+      <Filter>FSM\Policy</Filter>
     </ClInclude>
     <ClInclude Include="ServerWorldBootstrap.h">
       <Filter>GameWorlds\Bootstrap</Filter>
@@ -875,6 +905,33 @@
       <Filter>FSM\Core\Interface</Filter>
     </ClInclude>
     <ClInclude Include="AICombatActionPolicyUtil.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AICombatActionConditionEvaluator.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AICombatActionContextBuilder.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AICombatActionRuntimeUpdater.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AICombatActionSelectionTypes.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AICombatActionSelector.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AIMovementDistanceResolver.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AITargetAttackTracker.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AITargetCandidateSelector.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AITargetSelectionTypes.h">
       <Filter>FSM\Core</Filter>
     </ClInclude>
     <ClInclude Include="AIMovementPolicyUtil.h">

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../../AITargetSelectionTypes.h"
 #include "System.h"
 #include "SystemMetaStorage.h"
 
@@ -10,46 +11,24 @@ struct AIBlackboardComp;
 struct AIPerceptionComp;
 
 class AIPerceptionSystem final : public System {
-	static const StaticSystemMetaStorage<6> kMetaStorage;
+	static const StaticSystemMetaStorage<7> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;
 	const SystemMeta& Meta() const override { return kMetaStorage.meta; }
 
 private:
-	struct PerceptionCandidate
-	{
-		Entity entity{ Entity::Null() };
-
-		bool isCurrentTarget{ false };
-		bool isLastAttacker{ false };
-
-		double distSq{ 0.0 };
-
-		bool inSightRange{ false };
-		bool inAttackRange{ false };
-
-		double forwardDot{ 0.0 };
-		bool inFront{ false };
-
-		bool visible{ false };
-
-		double score{ 0.0 };
-	};
-
-
 	static void EnterReturnHome(
 		AIBlackboardComp& blackboard,
 		AIPerceptionComp& perception);
 
 	double ComputeScore(
-		const PerceptionCandidate& candidate,
+		const AITargetCandidate& candidate,
 		const AIPerceptionTuningDef& perception,
 		const AITargetingTuningDef& targeting
 	) const noexcept;
 
-
-	PerceptionCandidate EvaluateCandidate(
+	AITargetCandidate EvaluateCandidate(
 		const WorldTransformComp& selfTr,
 		const WorldTransformComp& otherTr,
 		const AIPerceptionTuningDef& tuning,

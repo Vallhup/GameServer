@@ -177,6 +177,7 @@ void AIDecisionSystem::RunFSM(
 				!topEvent->instigator.IsNull())
 			{
 				ctx.blackboard->lastAttacker  = topEvent->instigator;
+				ctx.blackboard->forcedTarget = topEvent->instigator;
 				ctx.blackboard->forceRetarget = true;
 			}
 

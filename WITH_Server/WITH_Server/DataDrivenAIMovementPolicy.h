@@ -23,10 +23,6 @@ private:
 		AIContext& ctx,
 		DirectX::XMFLOAT3& outDirection);
 
-	static AIMovementBehavior ResolveCombatBehavior(
-		const AIMovementProfileDef& profile,
-		double distance) noexcept;
-
 	static int ResolveStrafeSign(
 		AIContext& ctx,
 		const AIMovementProfileDef& profile);

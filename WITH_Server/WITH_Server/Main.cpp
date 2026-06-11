@@ -16,6 +16,7 @@ void RunCombatDamagePolicySmokeTests();
 void RunBossGimmickCombatPolicySmokeTests();
 void RunBossGimmickReplicationSmokeTests();
 void RunRespawnSystemSmokeTests();
+void RunAIBehaviorPolicySmokeTests();
 
 namespace
 {
@@ -86,6 +87,11 @@ int main(int argc, char** argv)
 	if (HasArg(argc, argv, "--respawn-smoke"))
 	{
 		RunRespawnSystemSmokeTests();
+		return 0;
+	}
+	if (HasArg(argc, argv, "--ai-behavior-policy-smoke"))
+	{
+		RunAIBehaviorPolicySmokeTests();
 		return 0;
 	}
 

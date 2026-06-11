@@ -14,6 +14,12 @@ public:
 	virtual void FrameUpdate(AIContext& ctx, const double dT) const override;
 
 private:
+	static bool ShouldReturnHome(const AIContext& ctx) noexcept;
+	static bool ShouldSearchForTarget(const AIContext& ctx) noexcept;
+	static bool ShouldResumeChase(const AIContext& ctx) noexcept;
+
+	static void TryIssueCombatAction(AIContext& ctx);
+
 	static bool IsAbilityAvailableForSelf(
 		const AIContext& ctx,
 		AbilityId abilityId) noexcept;

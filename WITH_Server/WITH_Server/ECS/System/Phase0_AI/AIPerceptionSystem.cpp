@@ -2,7 +2,10 @@
 #include "AIPerceptionSystem.h"
 
 #include "../../../AIBehaviorDef.h"
+#include "../../../AITargetAttackTracker.h"
+#include "../../../AITargetCandidateSelector.h"
 #include "../../../GameDataCatalog.h"
+#include "../../../Tags.h"
 #include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
@@ -10,14 +13,15 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<6> AIPerceptionSystem::kMetaStorage =
+const StaticSystemMetaStorage<7> AIPerceptionSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<AIPerceptionSystem>(),
 		"AIPerceptionSystem",
-		std::array<AccessSpec, 6>
-	{
-		ReadImmediate(ComponentRes<AIControlledTag>()),
-		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		std::array<AccessSpec, 7>
+		{
+			ReadImmediate(ComponentRes<AIControlledTag>()),
+			ReadImmediate(ComponentRes<PlayerTag>()),
+			ReadImmediate(ComponentRes<WorldTransformComp>()),
 		ReadImmediate(ComponentRes<AITypeComp>()),
 		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		WriteImmediate(ComponentRes<AIBlackboardComp>()),
@@ -51,7 +55,11 @@ void AIPerceptionSystem::EnterReturnHome(
 	AIPerceptionComp& perception)
 {
 	blackboard.currentTarget = Entity::Null();
+	blackboard.forcedTarget = Entity::Null();
 	blackboard.forceRetarget = false;
+	AITargetAttackTracker::ResetForTarget(
+		blackboard,
+		Entity::Null());
 	blackboard.returningHome = true;
 	blackboard.returnHomeLockoutAcc = 0.0;
 	blackboard.leashGauge = 0.0;
@@ -60,7 +68,7 @@ void AIPerceptionSystem::EnterReturnHome(
 }
 
 double AIPerceptionSystem::ComputeScore(
-	const PerceptionCandidate& candidate,
+	const AITargetCandidate& candidate,
 	const AIPerceptionTuningDef& perception,
 	const AITargetingTuningDef& targeting) const noexcept
 {
@@ -88,7 +96,7 @@ double AIPerceptionSystem::ComputeScore(
 	return score;
 }
 
-AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
+AITargetCandidate AIPerceptionSystem::EvaluateCandidate(
 	const WorldTransformComp& selfTr,
 	const WorldTransformComp& otherTr,
 	const AIPerceptionTuningDef& tuning,
@@ -96,7 +104,7 @@ AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
 	const AIBlackboardComp& blackboard,
 	Entity other) const noexcept
 {
-	PerceptionCandidate out;
+	AITargetCandidate out;
 	out.entity          = other;
 	out.isCurrentTarget = (blackboard.currentTarget == other);
 	out.isLastAttacker  = (blackboard.lastAttacker == other);
@@ -144,10 +152,14 @@ void AIPerceptionSystem::BuildPerception(
 		blackboard.returnHomeLockoutAcc += sysCtx.dtSec;
 	}
 
-	PerceptionCandidate best;
-	PerceptionCandidate currentCand;
+	AITargetCandidate best;
+	AITargetCandidate currentCand;
+	AITargetCandidate forcedCand;
+	AITargetCandidate alternatePlayerCand;
 	bool foundAny = false;
 	bool hasCurrentTargetCandidate = false;
+	bool hasForcedTargetCandidate = false;
+	bool hasAlternatePlayerCandidate = false;
 
 	const bool reaggroLocked =
 		blackboard.returningHome ||
@@ -175,7 +187,14 @@ void AIPerceptionSystem::BuildPerception(
 		if (!canAcquire && !canKeepCurrent)
 			continue;
 
-		PerceptionCandidate cand = EvaluateCandidate(selfTr, otherTr, tuning, targeting, blackboard, other);
+		AITargetCandidate cand =
+			EvaluateCandidate(
+				selfTr,
+				otherTr,
+				tuning,
+				targeting,
+				blackboard,
+				other);
 		cand.inSightRange = inAggroRange;
 		cand.visible = isCurrentTarget ? inHardLeashRange : inAggroRange;
 		cand.score = ComputeScore(cand, tuning, targeting);
@@ -187,6 +206,25 @@ void AIPerceptionSystem::BuildPerception(
 		{
 			currentCand = cand;
 			hasCurrentTargetCandidate = true;
+		}
+
+		if (blackboard.forcedTarget == other)
+		{
+			forcedCand = cand;
+			hasForcedTargetCandidate = true;
+		}
+
+		const bool isAlternatePlayer =
+			!cand.isCurrentTarget &&
+			canAcquire &&
+			cand.distSq <= aggroSq &&
+			ecs.HasComponent<PlayerTag>(other);
+		if (isAlternatePlayer &&
+			(!hasAlternatePlayerCandidate ||
+				cand.score > alternatePlayerCand.score))
+		{
+			alternatePlayerCand = cand;
+			hasAlternatePlayerCandidate = true;
 		}
 
 		if (!foundAny || cand.score > best.score)
@@ -216,30 +254,36 @@ void AIPerceptionSystem::BuildPerception(
 		return;
 	}
 
-	PerceptionCandidate finalCand;
-	if (blackboard.forceRetarget || blackboard.currentTarget.IsNull())
-	{
-		finalCand = best;
-	}
-	else if (!hasCurrentTargetCandidate)
-	{
-		finalCand = best;
-	}
-	else
-	{
-		if (best.entity != blackboard.currentTarget &&
-			best.score > currentCand.score + targeting.switchScoreMargin)
-		{
-			finalCand = best;
-		}
-		else
-		{
-			finalCand = currentCand;
-		}
-	}
+	const AITargetCandidate finalCand =
+		AITargetCandidateSelector::Select(AITargetSelectionSnapshot{
+			.best = best,
+			.current = currentCand,
+			.forced = forcedCand,
+			.alternatePlayer = alternatePlayerCand,
+			.foundAny = foundAny,
+			.hasCurrent = hasCurrentTargetCandidate,
+			.hasForced = hasForcedTargetCandidate,
+			.hasAlternatePlayer = hasAlternatePlayerCandidate,
+			.forceRetarget =
+				blackboard.forceRetarget ||
+				blackboard.currentTarget.IsNull(),
+			.alternatePlayerRetargetRequested =
+				blackboard.alternateTargetRetargetRequested,
+			.switchScoreMargin = targeting.switchScoreMargin
+		});
 
+	const bool targetChanged =
+		blackboard.currentTarget != finalCand.entity;
+	blackboard.forcedTarget = Entity::Null();
 	blackboard.forceRetarget = false;
+	blackboard.alternateTargetRetargetRequested = false;
 	blackboard.currentTarget = finalCand.entity;
+	if (targetChanged)
+	{
+		AITargetAttackTracker::ResetForTarget(
+			blackboard,
+			finalCand.entity);
+	}
 
 	if (finalCand.visible)
 	{

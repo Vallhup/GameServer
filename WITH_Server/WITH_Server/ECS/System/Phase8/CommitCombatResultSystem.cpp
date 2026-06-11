@@ -452,6 +452,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 							if (!result.reactionSource.IsNull())
 							{
 								blackboard->lastAttacker = result.reactionSource;
+								blackboard->forcedTarget = result.reactionSource;
 								blackboard->currentTarget = result.reactionSource;
 							}
 							blackboard->forceRetarget = true;

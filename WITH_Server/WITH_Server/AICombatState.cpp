@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "AICombatState.h"
 
+#include "AICombatRangePolicy.h"
+#include "AITargetAttackTracker.h"
 #include "ECS/GameplayRuntimeComponents.h"
 #include "ECS/System/AbilityProfileService.h"
 #include "IAIMovementPolicy.h"
@@ -15,44 +17,25 @@ void AICombatState::Enter(AIContext& ctx) const
 
 void AICombatState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 {
-	if (ctx.blackboard->returningHome)
+	if (ShouldReturnHome(ctx))
 	{
 		ctx.decision->RequestTransition(AIStateType::ReturnHome);
 		return;
 	}
 
-	if (!ctx.perception->hasTarget)
+	if (ShouldSearchForTarget(ctx))
 	{
 		ctx.decision->RequestTransition(AIStateType::Search);
 		return;
 	}
 
-	if (!ctx.perception->targetInAttackRange)
+	if (ShouldResumeChase(ctx))
 	{
 		ctx.decision->RequestTransition(AIStateType::Chase);
 		return;
 	}
 
-
-	if (ctx.abilityState->CanIssueAbility())
-	{
-		const CombatActionSelection selection = ctx.combatActionPolicy->SelectAction(ctx);
-		if (selection.shouldAttack)
-		{
-			if (IsAbilityAvailableForSelf(ctx, selection.selectedAbilityId))
-			{
-				ctx.intent->hasAbility = true;
-				ctx.intent->abilityId = selection.selectedAbilityId;
-				ctx.intent->abilityTarget = selection.target;
-				ctx.intent->abilityDirX = selection.directionX;
-				ctx.intent->abilityDirZ = selection.directionZ;
-				ctx.intent->sequence++;
-
-				ctx.actionRuntime->lastUsedAbilityId = selection.selectedAbilityId;
-				ctx.actionRuntime->actionSequence++;
-			}
-		}
-	}
+	TryIssueCombatAction(ctx);
 }
 
 void AICombatState::FrameUpdate(AIContext& ctx, const double dT) const
@@ -61,6 +44,56 @@ void AICombatState::FrameUpdate(AIContext& ctx, const double dT) const
 	ctx.intent->target  = ctx.blackboard->currentTarget;
 
 	ctx.movementPolicy->BuildCombatIntent(ctx);
+}
+
+bool AICombatState::ShouldReturnHome(const AIContext& ctx) noexcept
+{
+	return
+		ctx.blackboard != nullptr &&
+		ctx.blackboard->returningHome;
+}
+
+bool AICombatState::ShouldSearchForTarget(const AIContext& ctx) noexcept
+{
+	return
+		ctx.perception == nullptr ||
+		!ctx.perception->hasTarget;
+}
+
+bool AICombatState::ShouldResumeChase(const AIContext& ctx) noexcept
+{
+	return AICombatRangePolicy::ShouldExitCombat(ctx);
+}
+
+void AICombatState::TryIssueCombatAction(AIContext& ctx)
+{
+	if (ctx.abilityState == nullptr ||
+		!ctx.abilityState->CanIssueAbility() ||
+		ctx.combatActionPolicy == nullptr ||
+		ctx.intent == nullptr)
+	{
+		return;
+	}
+
+	const CombatActionSelection selection =
+		ctx.combatActionPolicy->SelectAction(ctx);
+	if (!selection.shouldAttack ||
+		!IsAbilityAvailableForSelf(ctx, selection.selectedAbilityId))
+	{
+		return;
+	}
+
+	ctx.intent->hasAbility = true;
+	ctx.intent->abilityId = selection.selectedAbilityId;
+	ctx.intent->abilityTarget = selection.target;
+	ctx.intent->abilityDirX = selection.directionX;
+	ctx.intent->abilityDirZ = selection.directionZ;
+	++ctx.intent->sequence;
+
+	ctx.combatActionPolicy->CommitSelection(ctx, selection);
+	AITargetAttackTracker::RecordCommittedAttack(
+		ctx,
+		selection.target);
 }
 
 bool AICombatState::IsAbilityAvailableForSelf(const AIContext& ctx, AbilityId abilityId) noexcept

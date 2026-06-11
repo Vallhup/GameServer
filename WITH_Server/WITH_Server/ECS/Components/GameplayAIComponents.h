@@ -36,7 +36,12 @@ struct AIBlackboardComp : Component
 	// Target memory
 	Entity currentTarget{ Entity::Null() };
 	Entity lastAttacker{ Entity::Null() };
+	Entity forcedTarget{ Entity::Null() };
 	bool forceRetarget{ false };
+	bool alternateTargetRetargetRequested{ false };
+
+	Entity attackCountTarget{ Entity::Null() };
+	uint16_t committedAttackCount{ 0 };
 
 	double timeSinceCurrentTargetSeen{ std::numeric_limits<double>::max() };
 
@@ -326,10 +331,24 @@ struct AIActionRuntimeComp : Component
 	AbilityId lastUsedAbilityId{ InvalidAbilityId };
 };
 
+enum class AIMovementDistanceBand : uint8_t
+{
+	VeryClose,
+	Close,
+	Preferred,
+	Mid,
+	Far
+};
+
 struct AIMovementRuntimeComp : Component
 {
 	float strafeTimeLeftSec{ 0.0f };
 	int strafeSign{ 1 };
+
+	AIMovementDistanceBand combatDistanceBand{
+		AIMovementDistanceBand::Far
+	};
+	bool hasCombatDistanceBand{ false };
 
 	XMFLOAT3 pathDestination{ 0.0f, 0.0f, 0.0f };
 	XMFLOAT3 nextPathCorner{ 0.0f, 0.0f, 0.0f };

@@ -67,13 +67,15 @@ struct AIPerceptionTuningDef
 {
 	double sightRange{ 12.0 };
 	double attackRange{ 2.0 };
+	double combatExitRangeBonus{ 0.35 };
 	double frontDotThreshold{ 0.2 };
 
 	// Deprecated targeting fallback. Prefer AIBehaviorProfileDef::targeting.
-	double targetKeepBonus{ 4.0 };
+	double targetKeepBonus{ 1.5 };
 	double lastAttackerBonus{ 2.5 };
 	double frontBonus{ 1.0 };
-	double switchScoreMargin{ 3.0 };
+	double switchScoreMargin{ 1.0 };
+	int attacksBeforeForcedRetarget{ 4 };
 
 	double loseSightGraceTime{ 1.2 };
 	double leashRange{ 18.0 };
@@ -92,10 +94,11 @@ struct AIPerceptionTuningDef
 
 struct AITargetingTuningDef
 {
-	double targetKeepBonus{ 4.0 };
+	double targetKeepBonus{ 1.5 };
 	double lastAttackerBonus{ 2.5 };
 	double frontBonus{ 1.0 };
-	double switchScoreMargin{ 3.0 };
+	double switchScoreMargin{ 1.0 };
+	int attacksBeforeForcedRetarget{ 4 };
 	bool preferNearest{ true };
 	bool preferLowestHp{ false };
 	double assistRange{ 6.0 };
@@ -167,6 +170,7 @@ struct AIMovementProfileDef
 	double farDistance{ 0.0 };
 	double preferredMinDistance{ 0.0 };
 	double preferredMaxDistance{ 0.0 };
+	double distanceHysteresis{ 0.2 };
 
 	AIMovementBehavior veryCloseBehavior{ AIMovementBehavior::Retreat };
 	AIMovementBehavior closeBehavior{ AIMovementBehavior::Hold };
