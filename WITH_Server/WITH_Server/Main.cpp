@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 	//   --no-db          DB 연동 비활성화
 	// 예) WITH_Server.exe --db-dsn WITH_Server_DB --db-user sa --db-pass ****
 	ServerApp::Config config{};
-	config.database.enabled = !HasArg(argc, argv, "--no-db");
+	config.database.enabled = true; //!HasArg(argc, argv, "--no-db");
 	config.database.dsn = L"WITH_Server_DB";
 	config.database.user = L"sa";
 	config.database.password = L"sdong8426A";

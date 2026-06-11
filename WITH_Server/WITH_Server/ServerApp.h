@@ -158,6 +158,9 @@ private:
 		const WorldTransferEventBatch& transferEvents);
 	bool ApplyPartyDeathCountEvents(
 		const FrameworkRuntime::FrameResult& frameResult);
+	bool IsPartyWipedInWorld(
+		PartyId partyId,
+		WorldId sourceWorldId);
 	bool ApplyFinalBossDefeatedEvents(
 		const FrameworkRuntime::FrameResult& frameResult);
 	void TickFinalClearChoiceVotes();

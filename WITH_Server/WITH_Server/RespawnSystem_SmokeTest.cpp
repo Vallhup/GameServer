@@ -194,6 +194,23 @@ void RunRespawnSystemSmokeTests()
 			18));
 		assert(deathState.state == PlayerDeathState::DeathCountExhausted);
 		assert(!deathState.respawnRequested);
+
+		assert(!PlayerDeathStatePolicy::ShouldReturnExhaustedPartyToPlaza(
+			false,
+			3,
+			0));
+		assert(!PlayerDeathStatePolicy::ShouldReturnExhaustedPartyToPlaza(
+			true,
+			0,
+			0));
+		assert(!PlayerDeathStatePolicy::ShouldReturnExhaustedPartyToPlaza(
+			true,
+			3,
+			1));
+		assert(PlayerDeathStatePolicy::ShouldReturnExhaustedPartyToPlaza(
+			true,
+			3,
+			0));
 	}
 
 	GameplayContentCatalogSnapshot catalog;

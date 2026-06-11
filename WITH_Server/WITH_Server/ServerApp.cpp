@@ -1163,6 +1163,8 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 bool ServerApp::ApplyPartyDeathCountEvents(
 	const FrameworkRuntime::FrameResult& frameResult)
 {
+	std::unordered_map<PartyId, WorldId> exhaustedParties;
+
 	for (const auto& deathEvent : frameResult.events.playerDeathCounts)
 	{
 		if (deathEvent.sessionId == 0)
@@ -1241,6 +1243,7 @@ bool ServerApp::ApplyPartyDeathCountEvents(
 
 		if (result.deathCount.exhausted)
 		{
+			exhaustedParties[partyId] = deathEvent.worldId;
 			FWLOG_INFO(kLogCategory,
 				"Party death count exhausted (partyId=%llu, sid=%u, revision=%llu)",
 				static_cast<unsigned long long>(partyId),
@@ -1249,7 +1252,111 @@ bool ServerApp::ApplyPartyDeathCountEvents(
 		}
 	}
 
+	for (const auto& [partyId, sourceWorldId] : exhaustedParties)
+	{
+		if (!IsPartyWipedInWorld(partyId, sourceWorldId))
+		{
+			continue;
+		}
+
+		if (!ForcePartyGroupTransfer(
+				partyId,
+				sourceWorldId,
+				WorldDefId::Plaza))
+		{
+			FWLOG_WARN(kLogCategory,
+				"Exhausted party wipe transfer failed (partyId=%llu, sourceWorldId=%u)",
+				static_cast<unsigned long long>(partyId),
+				sourceWorldId.GetRaw());
+			continue;
+		}
+
+		FWLOG_INFO(kLogCategory,
+			"Exhausted party wiped; returning to Plaza (partyId=%llu, sourceWorldId=%u)",
+			static_cast<unsigned long long>(partyId),
+			sourceWorldId.GetRaw());
+	}
+
 	return true;
+}
+
+bool ServerApp::IsPartyWipedInWorld(
+	PartyId partyId,
+	WorldId sourceWorldId)
+{
+	const PartyRecord* const party = _partyService.FindParty(partyId);
+	const PartyDeathCountState deathCount =
+		_partyService.GetDeathCountSnapshot(partyId);
+	WorldInstance* const world = _framework.FindWorld(sourceWorldId);
+	const WorldDef* const worldDef =
+		world != nullptr ? world->GetDef() : nullptr;
+	if (party == nullptr ||
+		!deathCount.initialized ||
+		!deathCount.exhausted ||
+		deathCount.remainingCount != 0 ||
+		world == nullptr ||
+		worldDef == nullptr ||
+		!IsDeathCountSharedWorld(worldDef->id))
+	{
+		return false;
+	}
+
+	ECSView view = world->GetRuntime().MakeView();
+	uint32_t partyMemberCount = 0;
+	uint32_t aliveMemberCount = 0;
+	for (const PartyMember& member : party->members)
+	{
+		if (member.sessionId == 0 ||
+			member.presence != PartyMemberPresence::Online)
+		{
+			continue;
+		}
+
+		if (_sessionSystem.Flow().FindCurrentWorldId(member.sessionId) !=
+				sourceWorldId ||
+			!CanBeginWorldTransfer(member.sessionId))
+		{
+			return false;
+		}
+
+		const NetId netId =
+			_sessionSystem.Flow().FindControlledNetId(member.sessionId);
+		if (!netId.IsValid())
+		{
+			return false;
+		}
+
+		const NetBindingLocation binding = _framework.FindNetBinding(netId);
+		if (binding.worldId != sourceWorldId ||
+			binding.entity.IsNull())
+		{
+			return false;
+		}
+
+		const PlayerControlIdentityComp* const player =
+			view.GetComponent<PlayerControlIdentityComp>(binding.entity);
+		const CombatStatStateComp* const stats =
+			view.GetComponent<CombatStatStateComp>(binding.entity);
+		if (player == nullptr ||
+			player->ownerSessionId != member.sessionId ||
+			stats == nullptr ||
+			view.HasComponent<PendingWorldTransferTag>(binding.entity) ||
+			view.HasComponent<PendingDespawnTag>(binding.entity))
+		{
+			return false;
+		}
+
+		++partyMemberCount;
+		if (stats->currentHp > 0)
+		{
+			++aliveMemberCount;
+		}
+	}
+
+	return PlayerDeathStatePolicy::ShouldReturnExhaustedPartyToPlaza(
+		deathCount.exhausted,
+		partyMemberCount,
+		aliveMemberCount);
 }
 
 bool ServerApp::ApplyFinalBossDefeatedEvents(

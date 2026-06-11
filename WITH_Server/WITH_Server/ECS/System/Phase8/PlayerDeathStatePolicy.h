@@ -19,6 +19,17 @@ namespace PlayerDeathStatePolicy
 		return deathState.state == PlayerDeathState::AwaitingRespawnInput;
 	}
 
+	inline bool ShouldReturnExhaustedPartyToPlaza(
+		bool deathCountExhausted,
+		uint32_t partyMemberCount,
+		uint32_t aliveMemberCount) noexcept
+	{
+		return
+			deathCountExhausted &&
+			partyMemberCount > 0 &&
+			aliveMemberCount == 0;
+	}
+
 	inline bool ApplyDeathCountDecision(
 		PlayerDeathStateComp& deathState,
 		bool canRespawn,
