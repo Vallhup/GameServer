@@ -166,6 +166,16 @@ void Scene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			return NetHelper::DispatchPacket<Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET>(header, data,
 				[this](const auto& packet) { HandleFinalClearChoiceResult(packet); });
 		}
+		case PacketType::SC_GAMEPLAY_EFFECT_SYNC:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET>(header, data,
+				[this](const auto& packet) { HandleGameplayEffectSync(packet); });
+		}
+		case PacketType::SC_BEACON_CINEMATIC_START:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_BEACON_CINEMATIC_START_PACKET>(header, data,
+				[this](const auto& packet) { HandleBeaconCinematicStart(packet); });
+		}
 	}
 }
 
@@ -1029,4 +1039,40 @@ void Scene::HandlePvpRoundResult(const Protocol::SC_PVP_ROUND_RESULT_PACKET& pvp
 	// 2. 연출 종료 서버 동기화
 	NETWORK_MANAGER->SendFinalEndingCinematicDone(
 		Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END);
+}
+
+void Scene::HandleGameplayEffectSync(const Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET& effectSync)
+{
+	const int id = NetId{ effectSync.netid() }.GetId();
+
+	for (const auto& effect : effectSync.appliedeffects())
+	{
+		const std::string& key = effect.effectkey();
+
+		if (key == "Effect.KillBuff.LifeDrain")
+		{
+			// 회복 획득 이펙트
+		}
+
+		else if (key == "Effect.Killbuff.PowerSurge")
+		{
+			// 공격력 증가 이펙트
+		}
+
+		else if (key == "Effect.KillBuff.IronWill")
+		{
+			// 최대 HP 증가 이펙트
+		}
+
+		else if (key == "Effect.KillBuff.SteelSkin")
+		{
+			// 방어력 증가 이펙트
+		}
+	}
+}
+
+void Scene::HandleBeaconCinematicStart(const Protocol::SC_BEACON_CINEMATIC_START_PACKET& cinematicStart)
+{
+	// TODO: 해당 패킷 받으면 Cinematic 시작하도록 수정
+	const Protocol::BeaconCinematicType cinematicType = cinematicStart.cinematictype();
 }

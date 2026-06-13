@@ -150,3 +150,31 @@ enum FinalEndingCinematicContext
 	FINAL_ENDING_CINEMATIC_CONTEXT_FINAL_CLEAR   = 1;
 	FINAL_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END = 2;
 }
+
+/* ------------------------------- [ Effect ]  ------------------------------- */
+
+enum GameplayEffectDurationPolicy
+{
+	GAMEPLAY_EFFECT_DURATION_INSTANT = 0;
+	GAMEPLAY_EFFECT_DURATION_TIMED = 1;
+	GAMEPLAY_EFFECT_DURATION_INFINITE = 2;
+}
+
+message GameplayEffectSyncEntry
+{
+	uint32 effectId = 1;
+	string effectKey = 2;
+	uint32 instanceId = 3;
+	uint32 stackCount = 4;
+	float remainingDurationSec = 5;
+	GameplayEffectDurationPolicy durationPolicy = 6;
+}
+
+/* ------------------------------- [ Cinematic ]  ------------------------------- */
+
+enum BeaconCinematicType
+{
+    BEACON_CINEMATIC_TYPE_UNSPECIFIED = 0;
+    BEACON_CINEMATIC_TYPE_VILLAGE_EXIT = 1;
+    BEACON_CINEMATIC_TYPE_CASTLE_EXIT = 2;
+}

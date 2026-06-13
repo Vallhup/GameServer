@@ -15,6 +15,7 @@ void ReplicationAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<ReplicatedTag>();
 	runtime.RegisterStorage<DirtyFlagsComp>();
 	runtime.RegisterStorage<ReplicationStatsComp>();
+	runtime.RegisterStorage<GameplayEffectReplicationComp>();
 }
 
 void ReplicationAspect::Attach(
@@ -26,4 +27,5 @@ void ReplicationAspect::Attach(
 	runtime.DeferredAddComponent<ReplicatedTag>(entity);
 	runtime.DeferredAddComponent<DirtyFlagsComp>(entity);
 	runtime.DeferredAddComponent<ReplicationStatsComp>(entity);
+	runtime.DeferredAddComponent<GameplayEffectReplicationComp>(entity);
 }

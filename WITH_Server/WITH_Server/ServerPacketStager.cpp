@@ -1,11 +1,251 @@
 #include "pch.h"
 #include "ServerPacketStager.h"
 
+#include <google/protobuf/descriptor.h>
+
 #include "FrameworkLog.h"
+#include "GameplayContentCatalog.h"
 
 namespace
 {
 	constexpr const char* kLogCategory = "ServerPacketStager";
+	constexpr const char* kGameplayEffectSyncMessageName =
+		"Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET";
+
+	PacketType GameplayEffectSyncPacketType() noexcept
+	{
+		return PacketType::SC_GAMEPLAY_EFFECT_SYNC;
+	}
+
+	const google::protobuf::FieldDescriptor* RequireField(
+		const google::protobuf::Descriptor& descriptor,
+		const char* name)
+	{
+		return descriptor.FindFieldByName(name);
+	}
+
+	bool SetUInt32Field(
+		google::protobuf::Message& message,
+		const char* name,
+		uint32_t value)
+	{
+		const google::protobuf::FieldDescriptor* field =
+			RequireField(*message.GetDescriptor(), name);
+		if (field == nullptr ||
+			field->cpp_type() !=
+				google::protobuf::FieldDescriptor::CPPTYPE_UINT32)
+		{
+			return false;
+		}
+
+		message.GetReflection()->SetUInt32(&message, field, value);
+		return true;
+	}
+
+	bool SetUInt64Field(
+		google::protobuf::Message& message,
+		const char* name,
+		uint64_t value)
+	{
+		const google::protobuf::FieldDescriptor* field =
+			RequireField(*message.GetDescriptor(), name);
+		if (field == nullptr ||
+			field->cpp_type() !=
+				google::protobuf::FieldDescriptor::CPPTYPE_UINT64)
+		{
+			return false;
+		}
+
+		message.GetReflection()->SetUInt64(&message, field, value);
+		return true;
+	}
+
+	bool SetFloatField(
+		google::protobuf::Message& message,
+		const char* name,
+		float value)
+	{
+		const google::protobuf::FieldDescriptor* field =
+			RequireField(*message.GetDescriptor(), name);
+		if (field == nullptr ||
+			field->cpp_type() !=
+				google::protobuf::FieldDescriptor::CPPTYPE_FLOAT)
+		{
+			return false;
+		}
+
+		message.GetReflection()->SetFloat(&message, field, value);
+		return true;
+	}
+
+	bool SetEnumField(
+		google::protobuf::Message& message,
+		const char* name,
+		int value)
+	{
+		const google::protobuf::FieldDescriptor* field =
+			RequireField(*message.GetDescriptor(), name);
+		if (field == nullptr ||
+			field->cpp_type() !=
+				google::protobuf::FieldDescriptor::CPPTYPE_ENUM)
+		{
+			return false;
+		}
+
+		const google::protobuf::EnumValueDescriptor* enumValue =
+			field->enum_type()->FindValueByNumber(value);
+		if (enumValue == nullptr)
+		{
+			return false;
+		}
+
+		message.GetReflection()->SetEnum(&message, field, enumValue);
+		return true;
+	}
+
+	bool SetStringField(
+		google::protobuf::Message& message,
+		const char* name,
+		std::string_view value)
+	{
+		const google::protobuf::FieldDescriptor* field =
+			RequireField(*message.GetDescriptor(), name);
+		if (field == nullptr ||
+			field->cpp_type() !=
+				google::protobuf::FieldDescriptor::CPPTYPE_STRING)
+		{
+			return false;
+		}
+
+		message.GetReflection()->SetString(
+			&message,
+			field,
+			std::string(value));
+		return true;
+	}
+
+	google::protobuf::Message* AddMessageField(
+		google::protobuf::Message& message,
+		const char* name)
+	{
+		const google::protobuf::FieldDescriptor* field =
+			RequireField(*message.GetDescriptor(), name);
+		if (field == nullptr ||
+			!field->is_repeated() ||
+			field->cpp_type() !=
+				google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE)
+		{
+			return nullptr;
+		}
+
+		return message.GetReflection()->AddMessage(
+			&message,
+			field);
+	}
+
+	bool FillGameplayEffectEntry(
+		google::protobuf::Message& message,
+		GameplayEffectId effectId,
+		uint32_t instanceId,
+		uint16_t stackCount,
+		float remainingDurationSec)
+	{
+		const GameplayEffectDef* effectDef =
+			GameplayContentCatalogSnapshot::Current()
+				.GameplayEffects()
+				.Find(effectId);
+		if (effectDef == nullptr)
+		{
+			return false;
+		}
+
+		return
+			SetUInt32Field(message, "effectId", effectId) &&
+			SetStringField(message, "effectKey", effectDef->key) &&
+			SetUInt32Field(message, "instanceId", instanceId) &&
+			SetUInt32Field(
+				message,
+				"stackCount",
+				std::max<uint32_t>(1u, stackCount)) &&
+			SetFloatField(
+				message,
+				"remainingDurationSec",
+				std::max(0.0f, remainingDurationSec)) &&
+			SetEnumField(
+				message,
+				"durationPolicy",
+				static_cast<int>(effectDef->lifetime.durationPolicy));
+	}
+
+	std::unique_ptr<google::protobuf::Message>
+	BuildGameplayEffectSyncPacket(
+		NetId netId,
+		const GameplayEffectStateComp& effects,
+		const GameplayEffectReplicationComp& replication,
+		bool includeAppliedEvents)
+	{
+		const google::protobuf::Descriptor* descriptor =
+			google::protobuf::DescriptorPool::generated_pool()
+				->FindMessageTypeByName(kGameplayEffectSyncMessageName);
+		if (descriptor == nullptr)
+		{
+			return nullptr;
+		}
+
+		const google::protobuf::Message* prototype =
+			google::protobuf::MessageFactory::generated_factory()
+				->GetPrototype(descriptor);
+		if (prototype == nullptr)
+		{
+			return nullptr;
+		}
+
+		std::unique_ptr<google::protobuf::Message> packet(prototype->New());
+		if (packet == nullptr ||
+			!SetUInt64Field(*packet, "netid", netId.GetRaw()) ||
+			!SetUInt64Field(*packet, "revision", replication.revision))
+		{
+			return nullptr;
+		}
+
+		for (const ActiveGameplayEffectEntry& active : effects.activeEffects)
+		{
+			google::protobuf::Message* entry =
+				AddMessageField(*packet, "activeEffects");
+			if (entry == nullptr ||
+				!FillGameplayEffectEntry(
+					*entry,
+					active.effectId,
+					active.instanceId,
+					active.stackCount,
+					active.remainingDurationSec))
+			{
+				return nullptr;
+			}
+		}
+
+		if (includeAppliedEvents)
+		{
+			for (const GameplayEffectAppliedReplicationEvent& applied :
+				replication.pendingAppliedEffects)
+			{
+				google::protobuf::Message* entry =
+					AddMessageField(*packet, "appliedEffects");
+				if (entry == nullptr ||
+					!FillGameplayEffectEntry(
+						*entry,
+						applied.effectId,
+						applied.instanceId,
+						applied.stackCount,
+						applied.remainingDurationSec))
+				{
+					return nullptr;
+				}
+			}
+		}
+
+		return packet;
+	}
 
 	Protocol::PartyLifecycle ToProtoPartyLifecycle(
 		PartyLifecycleState lifecycle) noexcept
@@ -360,6 +600,32 @@ bool ServerPacketStager::StageWorldTransitionBeginPacket(
 	return staged;
 }
 
+bool ServerPacketStager::StageBeaconCinematicStartPacket(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	uint64_t cinematicInstanceId,
+	uint32_t clientRequestId,
+	uint64_t partyId,
+	uint64_t sourceWorldId,
+	uint32_t cinematicType,
+	uint64_t initiatorNetId)
+{
+	Protocol::SC_BEACON_CINEMATIC_START_PACKET packet;
+	packet.set_cinematicinstanceid(cinematicInstanceId);
+	packet.set_clientrequestid(clientRequestId);
+	packet.set_partyid(partyId);
+	packet.set_sourceworldid(sourceWorldId);
+	packet.set_cinematictype(
+		static_cast<Protocol::BeaconCinematicType>(cinematicType));
+	packet.set_initiatornetid(initiatorNetId);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_BEACON_CINEMATIC_START,
+		sessionIds,
+		packet);
+}
+
 bool ServerPacketStager::StageFinalClearChoiceBeginPacket(
 	NetworkRuntime& network,
 	std::span<const SessionId> sessionIds,
@@ -501,6 +767,92 @@ bool ServerPacketStager::StageStatPacketToSessions(
 		std::span<const uint8_t>(buffer->data, buffer->size));
 	SendBufferPool::Get().Release(buffer);
 	return staged;
+}
+
+bool ServerPacketStager::StageGameplayEffectPacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	NetId netId,
+	const GameplayEffectStateComp& effects,
+	const GameplayEffectReplicationComp& replication,
+	bool includeAppliedEvents)
+{
+	if (!includeAppliedEvents && effects.activeEffects.empty())
+	{
+		return true;
+	}
+
+	std::unique_ptr<google::protobuf::Message> packet =
+		BuildGameplayEffectSyncPacket(
+			netId,
+			effects,
+			replication,
+			includeAppliedEvents);
+	if (packet == nullptr)
+	{
+		static bool loggedMissingProtocol = false;
+		if (!loggedMissingProtocol)
+		{
+			FWLOG_WARN(
+				kLogCategory,
+				"Gameplay effect sync protocol is unavailable or incompatible "
+				"(message=%s)",
+				kGameplayEffectSyncMessageName);
+			loggedMissingProtocol = true;
+		}
+		return false;
+	}
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		GameplayEffectSyncPacketType(),
+		*packet);
+}
+
+bool ServerPacketStager::StageGameplayEffectPacketToSessions(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	NetId netId,
+	const GameplayEffectStateComp& effects,
+	const GameplayEffectReplicationComp& replication,
+	bool includeAppliedEvents)
+{
+	if (sessionIds.empty())
+	{
+		return true;
+	}
+	if (!includeAppliedEvents && effects.activeEffects.empty())
+	{
+		return true;
+	}
+
+	std::unique_ptr<google::protobuf::Message> packet =
+		BuildGameplayEffectSyncPacket(
+			netId,
+			effects,
+			replication,
+			includeAppliedEvents);
+	if (packet == nullptr)
+	{
+		static bool loggedMissingProtocol = false;
+		if (!loggedMissingProtocol)
+		{
+			FWLOG_WARN(
+				kLogCategory,
+				"Gameplay effect sync protocol is unavailable or incompatible "
+				"(message=%s)",
+				kGameplayEffectSyncMessageName);
+			loggedMissingProtocol = true;
+		}
+		return false;
+	}
+
+	return StageReplicationPacket(
+		network,
+		GameplayEffectSyncPacketType(),
+		sessionIds,
+		*packet);
 }
 
 bool ServerPacketStager::StageStatUiBootstrapPacket(

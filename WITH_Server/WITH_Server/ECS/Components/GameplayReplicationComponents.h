@@ -1,6 +1,21 @@
 #pragma once
 
 #include "GameplayComponentPrerequisites.h"
+#include "../../GameplayContentIds.h"
+
+struct GameplayEffectAppliedReplicationEvent
+{
+	GameplayEffectId effectId{ InvalidGameplayEffectId };
+	uint32_t instanceId{ 0 };
+	uint16_t stackCount{ 1 };
+	float remainingDurationSec{ 0.0f };
+};
+
+struct GameplayEffectReplicationComp : Component
+{
+	uint64_t revision{ 0 };
+	std::vector<GameplayEffectAppliedReplicationEvent> pendingAppliedEffects;
+};
 
 struct ReplicationStatsComp : Component
 {

@@ -293,6 +293,17 @@ bool NetworkManager::SendFinalEndingCinematicDone(const Protocol::FinalEndingCin
 	return TrySendInternal(data);
 }
 
+bool NetworkManager::SendBeaconCinematicStartRequest()
+{
+	Protocol::CS_BEACON_CINEMATIC_START_REQUEST_PACKET packet;
+	packet.set_clientrequestid(_nextCinematicStartReqeustId++);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_BEACON_CINEMATIC_START_REQUEST_PACKET>(
+		PacketType::CS_BEACON_CINEMATIC_START_REQUEST, packet);
+
+	return TrySendInternal(data);
+}
+
 bool NetworkManager::TrySendInternal(SendBuffer* sendBuffer)
 {
 	if (_service && sendBuffer)

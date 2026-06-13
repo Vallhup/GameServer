@@ -71,6 +71,16 @@ public:
 		uint32_t requestId,
 		uint32_t reason);
 
+	static bool StageBeaconCinematicStartPacket(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		uint64_t cinematicInstanceId,
+		uint32_t clientRequestId,
+		uint64_t partyId,
+		uint64_t sourceWorldId,
+		uint32_t cinematicType,
+		uint64_t initiatorNetId);
+
 	// FinalBoss 처치 후 파티 PvP/엔딩 선택 UI를 띄우라는 신호.
 	static bool StageFinalClearChoiceBeginPacket(
 		NetworkRuntime& network,
@@ -157,6 +167,22 @@ public:
 		std::span<const SessionId> sessionIds,
 		NetId netId,
 		const CombatStatStateComp& stats);
+
+	static bool StageGameplayEffectPacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		NetId netId,
+		const GameplayEffectStateComp& effects,
+		const GameplayEffectReplicationComp& replication,
+		bool includeAppliedEvents);
+
+	static bool StageGameplayEffectPacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		NetId netId,
+		const GameplayEffectStateComp& effects,
+		const GameplayEffectReplicationComp& replication,
+		bool includeAppliedEvents);
 
 	static bool StageStatUiBootstrapPacket(
 		NetworkRuntime& network,

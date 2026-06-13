@@ -3,6 +3,7 @@
 
 #include "RepComponent.h"
 #include "../../Components/GameplayCombatComponents.h"
+#include "../../Components/GameplayReplicationComponents.h"
 #include "../GameplaySystemUtil.h"
 #include "../Phase2/ResolveAbilityStateSystem.h"
 #include "CommitAbilityTimelineEventSystem.h"
@@ -110,6 +111,77 @@ namespace
 		}
 
 		return lhs.id == rhs.id;
+	}
+
+	const ActiveGameplayEffectEntry* FindActiveEffectEntry(
+		const GameplayEffectStateComp& effectState,
+		const GameplayEffectDef& effectDef)
+	{
+		for (auto it = effectState.activeEffects.rbegin();
+			it != effectState.activeEffects.rend();
+			++it)
+		{
+			const GameplayEffectDef* activeDef =
+				GameplayContentCatalogSnapshot::Current()
+					.GameplayEffects()
+					.Find(it->effectId);
+			if (activeDef != nullptr && IsSameStackGroup(*activeDef, effectDef))
+			{
+				return &*it;
+			}
+		}
+
+		return nullptr;
+	}
+
+	void QueueAppliedEffectReplication(
+		GameplayEffectReplicationComp* replication,
+		const GameplayEffectStateComp& effectState,
+		const GameplayEffectDef& effectDef)
+	{
+		if (replication == nullptr)
+		{
+			return;
+		}
+
+		GameplayEffectAppliedReplicationEvent event{};
+		event.effectId = effectDef.id;
+
+		if (const ActiveGameplayEffectEntry* active =
+			FindActiveEffectEntry(effectState, effectDef))
+		{
+			event.instanceId = active->instanceId;
+			event.stackCount = std::max<uint16_t>(1, active->stackCount);
+			event.remainingDurationSec =
+				std::max(0.0f, active->remainingDurationSec);
+		}
+
+		replication->pendingAppliedEffects.push_back(event);
+	}
+
+	bool HasReplicatedEffectStateChanged(
+		const std::vector<ActiveGameplayEffectEntry>& before,
+		const std::vector<ActiveGameplayEffectEntry>& after) noexcept
+	{
+		if (before.size() != after.size())
+		{
+			return true;
+		}
+
+		for (size_t index = 0; index < before.size(); ++index)
+		{
+			const ActiveGameplayEffectEntry& lhs = before[index];
+			const ActiveGameplayEffectEntry& rhs = after[index];
+			if (lhs.effectId != rhs.effectId ||
+				lhs.instanceId != rhs.instanceId ||
+				lhs.source != rhs.source ||
+				lhs.stackCount != rhs.stackCount)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	void AddEffectInstance(
@@ -477,12 +549,12 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<12, 0, 3>
+const StaticSystemMetaStorage<13, 0, 3>
 ResolveGameplayEffectStateSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<ResolveGameplayEffectStateSystem>(),
 		"ResolveGameplayEffectStateSystem",
-		std::array<AccessSpec, 12>
+		std::array<AccessSpec, 13>
 	{
 		WriteImmediate(ComponentRes<GameplayEffectStateComp>()),
 		WriteImmediate(ComponentRes<GameplayTagStateComp>()),
@@ -496,6 +568,7 @@ ResolveGameplayEffectStateSystem::kMetaStorage =
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+		WriteImmediate(ComponentRes<GameplayEffectReplicationComp>()),
 	},
 		std::array<SystemTag, 0>{},
 		std::array<SystemTag, 3>
@@ -523,6 +596,15 @@ void ResolveGameplayEffectStateSystem::Execute(SystemContext& ctx)
 			PendingGameplayEffectRemoveComp,
 			AbilityTimelineAdvanceComp>())
 	{
+		const std::vector<ActiveGameplayEffectEntry> activeEffectsBefore =
+			effectState.activeEffects;
+		GameplayEffectReplicationComp* effectReplication =
+			ctx.ecs.GetMutableComponent<GameplayEffectReplicationComp>(entity);
+		const size_t pendingAppliedCountBefore =
+			effectReplication != nullptr
+			? effectReplication->pendingAppliedEffects.size()
+			: 0;
+
 		if (HasBlockingPendingState(ctx.ecs, entity))
 		{
 			pendingApply = {};
@@ -534,6 +616,10 @@ void ResolveGameplayEffectStateSystem::Execute(SystemContext& ctx)
 				ctx.ecs.GetMutableComponent<PendingKillBuffGrantComp>(entity))
 			{
 				killBuffGrant->pendingBuffEffectIds.clear();
+			}
+			if (effectReplication != nullptr)
+			{
+				effectReplication->pendingAppliedEffects.clear();
 			}
 
 			continue;
@@ -709,6 +795,10 @@ void ResolveGameplayEffectStateSystem::Execute(SystemContext& ctx)
 				{
 					statsModifiedByTick = true; // dirty 마킹을 위해 재활용
 				}
+				QueueAppliedEffectReplication(
+					effectReplication,
+					effectState,
+					*effectDef);
 			}
 			pendingApply = {};
 		}
@@ -736,6 +826,10 @@ void ResolveGameplayEffectStateSystem::Execute(SystemContext& ctx)
 					{
 						statsModifiedByTick = true;
 					}
+					QueueAppliedEffectReplication(
+						effectReplication,
+						effectState,
+						*effectDef);
 				}
 			}
 			killBuffGrant->pendingBuffEffectIds.clear();
@@ -830,5 +924,24 @@ void ResolveGameplayEffectStateSystem::Execute(SystemContext& ctx)
 			effectState.activeEffects.end());
 
 		RebuildGrantedTags(effectState, tagState);
+
+		const bool activeEffectStateChanged =
+			HasReplicatedEffectStateChanged(
+				activeEffectsBefore,
+				effectState.activeEffects);
+		const bool appliedEffectQueued =
+			effectReplication != nullptr &&
+			effectReplication->pendingAppliedEffects.size() >
+				pendingAppliedCountBefore;
+		if (effectReplication != nullptr &&
+			(activeEffectStateChanged || appliedEffectQueued))
+		{
+			++effectReplication->revision;
+			if (DirtyFlagsComp* dirty =
+				ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+			{
+				dirty->MarkDirty(WorldDirtyType::GameplayEffect);
+			}
+		}
 	}
 }

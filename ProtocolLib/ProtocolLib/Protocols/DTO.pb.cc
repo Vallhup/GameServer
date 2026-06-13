@@ -122,6 +122,38 @@ struct PartyJoinRequestDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PartyJoinRequestDefaultTypeInternal _PartyJoinRequest_default_instance_;
 
+inline constexpr GameplayEffectSyncEntry::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : effectkey_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        effectid_{0u},
+        instanceid_{0u},
+        stackcount_{0u},
+        remainingdurationsec_{0},
+        durationpolicy_{static_cast< ::Protocol::GameplayEffectDurationPolicy >(0)},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR GameplayEffectSyncEntry::GameplayEffectSyncEntry(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct GameplayEffectSyncEntryDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GameplayEffectSyncEntryDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GameplayEffectSyncEntryDefaultTypeInternal() {}
+  union {
+    GameplayEffectSyncEntry _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GameplayEffectSyncEntryDefaultTypeInternal _GameplayEffectSyncEntry_default_instance_;
+
 inline constexpr PartySnapshot::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : members_{},
@@ -153,7 +185,7 @@ struct PartySnapshotDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PartySnapshotDefaultTypeInternal _PartySnapshot_default_instance_;
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[12];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[14];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_DTO_2eproto = nullptr;
 const ::uint32_t
@@ -222,6 +254,20 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.lifecycle_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.createdatsec_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.joinable_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::GameplayEffectSyncEntry, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::GameplayEffectSyncEntry, _impl_.effectid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::GameplayEffectSyncEntry, _impl_.effectkey_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::GameplayEffectSyncEntry, _impl_.instanceid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::GameplayEffectSyncEntry, _impl_.stackcount_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::GameplayEffectSyncEntry, _impl_.remainingdurationsec_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::GameplayEffectSyncEntry, _impl_.durationpolicy_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -230,12 +276,14 @@ static const ::_pbi::MigrationSchema
         {14, -1, -1, sizeof(::Protocol::PartyJoinRequest)},
         {32, -1, -1, sizeof(::Protocol::PartySnapshot)},
         {47, -1, -1, sizeof(::Protocol::PartyListEntry)},
+        {63, -1, -1, sizeof(::Protocol::GameplayEffectSyncEntry)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_PartyMember_default_instance_._instance,
     &::Protocol::_PartyJoinRequest_default_instance_._instance,
     &::Protocol::_PartySnapshot_default_instance_._instance,
     &::Protocol::_PartyListEntry_default_instance_._instance,
+    &::Protocol::_GameplayEffectSyncEntry_default_instance_._instance,
 };
 const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -263,67 +311,79 @@ const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIAB
     "Type\030\003 \001(\r\022\023\n\013memberCount\030\004 \001(\r\022\020\n\010capac"
     "ity\030\005 \001(\r\022+\n\tlifecycle\030\006 \001(\0162\030.Protocol."
     "PartyLifecycle\022\024\n\014createdAtSec\030\007 \001(\001\022\020\n\010"
-    "joinable\030\010 \001(\010*A\n\017AttackInputType\022\026\n\022ATT"
-    "ACK_INPUT_LIGHT\020\000\022\026\n\022ATTACK_INPUT_HEAVY\020"
-    "\001*\223\001\n\016PartyLifecycle\022\033\n\027PARTY_LIFECYCLE_"
-    "FORMING\020\000\022\'\n#PARTY_LIFECYCLE_WORLD_ENTRY"
-    "_PENDING\020\001\022\034\n\030PARTY_LIFECYCLE_IN_WORLD\020\002"
-    "\022\035\n\031PARTY_LIFECYCLE_DISBANDED\020\003*M\n\017Party"
-    "MemberRole\022\034\n\030PARTY_MEMBER_ROLE_LEADER\020\000"
-    "\022\034\n\030PARTY_MEMBER_ROLE_MEMBER\020\001*Z\n\023PartyM"
-    "emberPresence\022 \n\034PARTY_MEMBER_PRESENCE_O"
-    "NLINE\020\000\022!\n\035PARTY_MEMBER_PRESENCE_OFFLINE"
-    "\020\001*\273\001\n\025PartyJoinRequestState\022\036\n\032PARTY_JO"
-    "IN_REQUEST_PENDING\020\000\022\037\n\033PARTY_JOIN_REQUE"
-    "ST_ACCEPTED\020\001\022\037\n\033PARTY_JOIN_REQUEST_REJE"
-    "CTED\020\002\022 \n\034PARTY_JOIN_REQUEST_CANCELLED\020\003"
-    "\022\036\n\032PARTY_JOIN_REQUEST_EXPIRED\020\004*\302\002\n\033Par"
-    "tyJoinRequestCloseReason\022\024\n\020PARTY_CLOSE_"
-    "NONE\020\000\022\030\n\024PARTY_CLOSE_ACCEPTED\020\001\022\"\n\036PART"
-    "Y_CLOSE_REJECTED_BY_LEADER\020\002\022&\n\"PARTY_CL"
-    "OSE_CANCELLED_BY_REQUESTER\020\003\022\027\n\023PARTY_CL"
-    "OSE_EXPIRED\020\004\022\032\n\026PARTY_CLOSE_PARTY_FULL\020"
-    "\005\022#\n\037PARTY_CLOSE_PARTY_ENTERED_WORLD\020\006\022,"
-    "\n(PARTY_CLOSE_REQUESTER_JOINED_OTHER_PAR"
-    "TY\020\007\022\037\n\033PARTY_CLOSE_PARTY_DISBANDED\020\010*\204\001"
-    "\n\017BossGimmickType\022\032\n\026BOSS_GIMMICK_TYPE_N"
-    "ONE\020\000\022.\n*BOSS_GIMMICK_TYPE_PHASE_TRANSIT"
-    "ION_OBJECTS\020\001\022%\n!BOSS_GIMMICK_TYPE_FINAL"
-    "_SAFE_ZONE\020\002*\324\001\n\020BossGimmickStage\022\033\n\027BOS"
-    "S_GIMMICK_STAGE_NONE\020\000\022 \n\034BOSS_GIMMICK_S"
-    "TAGE_TELEGRAPH\020\001\022\035\n\031BOSS_GIMMICK_STAGE_A"
-    "CTIVE\020\002\022\036\n\032BOSS_GIMMICK_STAGE_RESOLVE\020\003\022"
-    " \n\034BOSS_GIMMICK_STAGE_COMPLETED\020\004\022 \n\034BOS"
-    "S_GIMMICK_STAGE_CANCELLED\020\005*\265\001\n\026BossGimm"
-    "ickObjectState\022%\n!BOSS_GIMMICK_OBJECT_ST"
-    "ATE_SPAWNED\020\000\022%\n!BOSS_GIMMICK_OBJECT_STA"
-    "TE_UPDATED\020\001\022$\n BOSS_GIMMICK_OBJECT_STAT"
-    "E_BROKEN\020\002\022\'\n#BOSS_GIMMICK_OBJECT_STATE_"
-    "DESPAWNED\020\003*{\n\027FinalClearChoiceOutcome\022#"
-    "\n\037FINAL_CLEAR_OUTCOME_UNSPECIFIED\020\000\022\033\n\027F"
-    "INAL_CLEAR_OUTCOME_PVP\020\001\022\036\n\032FINAL_CLEAR_"
-    "OUTCOME_ENDING\020\002*\244\001\n\026FinalClearChoiceRea"
-    "son\022\"\n\036FINAL_CLEAR_REASON_UNSPECIFIED\020\000\022"
-    "!\n\035FINAL_CLEAR_REASON_PVP_CHOSEN\020\001\022#\n\037FI"
-    "NAL_CLEAR_REASON_ALL_DECLINED\020\002\022\036\n\032FINAL"
-    "_CLEAR_REASON_TIMEOUT\020\003*\257\001\n\033FinalEndingC"
-    "inematicContext\022.\n*FINAL_ENDING_CINEMATI"
-    "C_CONTEXT_UNSPECIFIED\020\000\022.\n*FINAL_ENDING_"
-    "CINEMATIC_CONTEXT_FINAL_CLEAR\020\001\0220\n,FINAL"
-    "_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END\020"
-    "\002b\006proto3"
+    "joinable\030\010 \001(\010\"\304\001\n\027GameplayEffectSyncEnt"
+    "ry\022\020\n\010effectId\030\001 \001(\r\022\021\n\teffectKey\030\002 \001(\t\022"
+    "\022\n\ninstanceId\030\003 \001(\r\022\022\n\nstackCount\030\004 \001(\r\022"
+    "\034\n\024remainingDurationSec\030\005 \001(\002\022>\n\016duratio"
+    "nPolicy\030\006 \001(\0162&.Protocol.GameplayEffectD"
+    "urationPolicy*A\n\017AttackInputType\022\026\n\022ATTA"
+    "CK_INPUT_LIGHT\020\000\022\026\n\022ATTACK_INPUT_HEAVY\020\001"
+    "*\223\001\n\016PartyLifecycle\022\033\n\027PARTY_LIFECYCLE_F"
+    "ORMING\020\000\022\'\n#PARTY_LIFECYCLE_WORLD_ENTRY_"
+    "PENDING\020\001\022\034\n\030PARTY_LIFECYCLE_IN_WORLD\020\002\022"
+    "\035\n\031PARTY_LIFECYCLE_DISBANDED\020\003*M\n\017PartyM"
+    "emberRole\022\034\n\030PARTY_MEMBER_ROLE_LEADER\020\000\022"
+    "\034\n\030PARTY_MEMBER_ROLE_MEMBER\020\001*Z\n\023PartyMe"
+    "mberPresence\022 \n\034PARTY_MEMBER_PRESENCE_ON"
+    "LINE\020\000\022!\n\035PARTY_MEMBER_PRESENCE_OFFLINE\020"
+    "\001*\273\001\n\025PartyJoinRequestState\022\036\n\032PARTY_JOI"
+    "N_REQUEST_PENDING\020\000\022\037\n\033PARTY_JOIN_REQUES"
+    "T_ACCEPTED\020\001\022\037\n\033PARTY_JOIN_REQUEST_REJEC"
+    "TED\020\002\022 \n\034PARTY_JOIN_REQUEST_CANCELLED\020\003\022"
+    "\036\n\032PARTY_JOIN_REQUEST_EXPIRED\020\004*\302\002\n\033Part"
+    "yJoinRequestCloseReason\022\024\n\020PARTY_CLOSE_N"
+    "ONE\020\000\022\030\n\024PARTY_CLOSE_ACCEPTED\020\001\022\"\n\036PARTY"
+    "_CLOSE_REJECTED_BY_LEADER\020\002\022&\n\"PARTY_CLO"
+    "SE_CANCELLED_BY_REQUESTER\020\003\022\027\n\023PARTY_CLO"
+    "SE_EXPIRED\020\004\022\032\n\026PARTY_CLOSE_PARTY_FULL\020\005"
+    "\022#\n\037PARTY_CLOSE_PARTY_ENTERED_WORLD\020\006\022,\n"
+    "(PARTY_CLOSE_REQUESTER_JOINED_OTHER_PART"
+    "Y\020\007\022\037\n\033PARTY_CLOSE_PARTY_DISBANDED\020\010*\204\001\n"
+    "\017BossGimmickType\022\032\n\026BOSS_GIMMICK_TYPE_NO"
+    "NE\020\000\022.\n*BOSS_GIMMICK_TYPE_PHASE_TRANSITI"
+    "ON_OBJECTS\020\001\022%\n!BOSS_GIMMICK_TYPE_FINAL_"
+    "SAFE_ZONE\020\002*\324\001\n\020BossGimmickStage\022\033\n\027BOSS"
+    "_GIMMICK_STAGE_NONE\020\000\022 \n\034BOSS_GIMMICK_ST"
+    "AGE_TELEGRAPH\020\001\022\035\n\031BOSS_GIMMICK_STAGE_AC"
+    "TIVE\020\002\022\036\n\032BOSS_GIMMICK_STAGE_RESOLVE\020\003\022 "
+    "\n\034BOSS_GIMMICK_STAGE_COMPLETED\020\004\022 \n\034BOSS"
+    "_GIMMICK_STAGE_CANCELLED\020\005*\265\001\n\026BossGimmi"
+    "ckObjectState\022%\n!BOSS_GIMMICK_OBJECT_STA"
+    "TE_SPAWNED\020\000\022%\n!BOSS_GIMMICK_OBJECT_STAT"
+    "E_UPDATED\020\001\022$\n BOSS_GIMMICK_OBJECT_STATE"
+    "_BROKEN\020\002\022\'\n#BOSS_GIMMICK_OBJECT_STATE_D"
+    "ESPAWNED\020\003*{\n\027FinalClearChoiceOutcome\022#\n"
+    "\037FINAL_CLEAR_OUTCOME_UNSPECIFIED\020\000\022\033\n\027FI"
+    "NAL_CLEAR_OUTCOME_PVP\020\001\022\036\n\032FINAL_CLEAR_O"
+    "UTCOME_ENDING\020\002*\244\001\n\026FinalClearChoiceReas"
+    "on\022\"\n\036FINAL_CLEAR_REASON_UNSPECIFIED\020\000\022!"
+    "\n\035FINAL_CLEAR_REASON_PVP_CHOSEN\020\001\022#\n\037FIN"
+    "AL_CLEAR_REASON_ALL_DECLINED\020\002\022\036\n\032FINAL_"
+    "CLEAR_REASON_TIMEOUT\020\003*\257\001\n\033FinalEndingCi"
+    "nematicContext\022.\n*FINAL_ENDING_CINEMATIC"
+    "_CONTEXT_UNSPECIFIED\020\000\022.\n*FINAL_ENDING_C"
+    "INEMATIC_CONTEXT_FINAL_CLEAR\020\001\0220\n,FINAL_"
+    "ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END\020\002"
+    "*\217\001\n\034GameplayEffectDurationPolicy\022$\n GAM"
+    "EPLAY_EFFECT_DURATION_INSTANT\020\000\022\"\n\036GAMEP"
+    "LAY_EFFECT_DURATION_TIMED\020\001\022%\n!GAMEPLAY_"
+    "EFFECT_DURATION_INFINITE\020\002*\213\001\n\023BeaconCin"
+    "ematicType\022%\n!BEACON_CINEMATIC_TYPE_UNSP"
+    "ECIFIED\020\000\022&\n\"BEACON_CINEMATIC_TYPE_VILLA"
+    "GE_EXIT\020\001\022%\n!BEACON_CINEMATIC_TYPE_CASTL"
+    "E_EXIT\020\002b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DTO_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_DTO_2eproto = {
     false,
     false,
-    2889,
+    3376,
     descriptor_table_protodef_DTO_2eproto,
     "DTO.proto",
     &descriptor_table_DTO_2eproto_once,
     nullptr,
     0,
-    4,
+    5,
     schemas,
     file_default_instances,
     TableStruct_DTO_2eproto::offsets,
@@ -437,6 +497,24 @@ const ::google::protobuf::EnumDescriptor* FinalEndingCinematicContext_descriptor
 PROTOBUF_CONSTINIT const uint32_t FinalEndingCinematicContext_internal_data_[] = {
     196608u, 0u, };
 bool FinalEndingCinematicContext_IsValid(int value) {
+  return 0 <= value && value <= 2;
+}
+const ::google::protobuf::EnumDescriptor* GameplayEffectDurationPolicy_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[12];
+}
+PROTOBUF_CONSTINIT const uint32_t GameplayEffectDurationPolicy_internal_data_[] = {
+    196608u, 0u, };
+bool GameplayEffectDurationPolicy_IsValid(int value) {
+  return 0 <= value && value <= 2;
+}
+const ::google::protobuf::EnumDescriptor* BeaconCinematicType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[13];
+}
+PROTOBUF_CONSTINIT const uint32_t BeaconCinematicType_internal_data_[] = {
+    196608u, 0u, };
+bool BeaconCinematicType_IsValid(int value) {
   return 0 <= value && value <= 2;
 }
 // ===================================================================
@@ -1946,6 +2024,366 @@ void PartyListEntry::InternalSwap(PartyListEntry* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata PartyListEntry::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class GameplayEffectSyncEntry::_Internal {
+ public:
+};
+
+GameplayEffectSyncEntry::GameplayEffectSyncEntry(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.GameplayEffectSyncEntry)
+}
+inline PROTOBUF_NDEBUG_INLINE GameplayEffectSyncEntry::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::Protocol::GameplayEffectSyncEntry& from_msg)
+      : effectkey_(arena, from.effectkey_),
+        _cached_size_{0} {}
+
+GameplayEffectSyncEntry::GameplayEffectSyncEntry(
+    ::google::protobuf::Arena* arena,
+    const GameplayEffectSyncEntry& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  GameplayEffectSyncEntry* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, effectid_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, effectid_),
+           offsetof(Impl_, durationpolicy_) -
+               offsetof(Impl_, effectid_) +
+               sizeof(Impl_::durationpolicy_));
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.GameplayEffectSyncEntry)
+}
+inline PROTOBUF_NDEBUG_INLINE GameplayEffectSyncEntry::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : effectkey_(arena),
+        _cached_size_{0} {}
+
+inline void GameplayEffectSyncEntry::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, effectid_),
+           0,
+           offsetof(Impl_, durationpolicy_) -
+               offsetof(Impl_, effectid_) +
+               sizeof(Impl_::durationpolicy_));
+}
+GameplayEffectSyncEntry::~GameplayEffectSyncEntry() {
+  // @@protoc_insertion_point(destructor:Protocol.GameplayEffectSyncEntry)
+  SharedDtor(*this);
+}
+inline void GameplayEffectSyncEntry::SharedDtor(MessageLite& self) {
+  GameplayEffectSyncEntry& this_ = static_cast<GameplayEffectSyncEntry&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.effectkey_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* GameplayEffectSyncEntry::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) GameplayEffectSyncEntry(arena);
+}
+constexpr auto GameplayEffectSyncEntry::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(GameplayEffectSyncEntry),
+                                            alignof(GameplayEffectSyncEntry));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull GameplayEffectSyncEntry::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_GameplayEffectSyncEntry_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &GameplayEffectSyncEntry::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<GameplayEffectSyncEntry>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &GameplayEffectSyncEntry::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<GameplayEffectSyncEntry>(), &GameplayEffectSyncEntry::ByteSizeLong,
+            &GameplayEffectSyncEntry::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_._cached_size_),
+        false,
+    },
+    &GameplayEffectSyncEntry::kDescriptorMethods,
+    &descriptor_table_DTO_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* GameplayEffectSyncEntry::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 6, 0, 50, 2> GameplayEffectSyncEntry::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    6, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967232,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    6,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::GameplayEffectSyncEntry>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint32 effectId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GameplayEffectSyncEntry, _impl_.effectid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.effectid_)}},
+    // string effectKey = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 63, 0, PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.effectkey_)}},
+    // uint32 instanceId = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GameplayEffectSyncEntry, _impl_.instanceid_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.instanceid_)}},
+    // uint32 stackCount = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GameplayEffectSyncEntry, _impl_.stackcount_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.stackcount_)}},
+    // float remainingDurationSec = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.remainingdurationsec_)}},
+    // .Protocol.GameplayEffectDurationPolicy durationPolicy = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GameplayEffectSyncEntry, _impl_.durationpolicy_), 63>(),
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.durationpolicy_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 effectId = 1;
+    {PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.effectid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // string effectKey = 2;
+    {PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.effectkey_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // uint32 instanceId = 3;
+    {PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.instanceid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 stackCount = 4;
+    {PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.stackcount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // float remainingDurationSec = 5;
+    {PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.remainingdurationsec_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // .Protocol.GameplayEffectDurationPolicy durationPolicy = 6;
+    {PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.durationpolicy_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+  }},
+  // no aux_entries
+  {{
+    "\40\0\11\0\0\0\0\0"
+    "Protocol.GameplayEffectSyncEntry"
+    "effectKey"
+  }},
+};
+
+PROTOBUF_NOINLINE void GameplayEffectSyncEntry::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.GameplayEffectSyncEntry)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.effectkey_.ClearToEmpty();
+  ::memset(&_impl_.effectid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.durationpolicy_) -
+      reinterpret_cast<char*>(&_impl_.effectid_)) + sizeof(_impl_.durationpolicy_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* GameplayEffectSyncEntry::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const GameplayEffectSyncEntry& this_ = static_cast<const GameplayEffectSyncEntry&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* GameplayEffectSyncEntry::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const GameplayEffectSyncEntry& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.GameplayEffectSyncEntry)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint32 effectId = 1;
+          if (this_._internal_effectid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                1, this_._internal_effectid(), target);
+          }
+
+          // string effectKey = 2;
+          if (!this_._internal_effectkey().empty()) {
+            const std::string& _s = this_._internal_effectkey();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "Protocol.GameplayEffectSyncEntry.effectKey");
+            target = stream->WriteStringMaybeAliased(2, _s, target);
+          }
+
+          // uint32 instanceId = 3;
+          if (this_._internal_instanceid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                3, this_._internal_instanceid(), target);
+          }
+
+          // uint32 stackCount = 4;
+          if (this_._internal_stackcount() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                4, this_._internal_stackcount(), target);
+          }
+
+          // float remainingDurationSec = 5;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_remainingdurationsec()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                5, this_._internal_remainingdurationsec(), target);
+          }
+
+          // .Protocol.GameplayEffectDurationPolicy durationPolicy = 6;
+          if (this_._internal_durationpolicy() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                6, this_._internal_durationpolicy(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.GameplayEffectSyncEntry)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t GameplayEffectSyncEntry::ByteSizeLong(const MessageLite& base) {
+          const GameplayEffectSyncEntry& this_ = static_cast<const GameplayEffectSyncEntry&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t GameplayEffectSyncEntry::ByteSizeLong() const {
+          const GameplayEffectSyncEntry& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.GameplayEffectSyncEntry)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // string effectKey = 2;
+            if (!this_._internal_effectkey().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_effectkey());
+            }
+            // uint32 effectId = 1;
+            if (this_._internal_effectid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_effectid());
+            }
+            // uint32 instanceId = 3;
+            if (this_._internal_instanceid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_instanceid());
+            }
+            // uint32 stackCount = 4;
+            if (this_._internal_stackcount() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_stackcount());
+            }
+            // float remainingDurationSec = 5;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_remainingdurationsec()) != 0) {
+              total_size += 5;
+            }
+            // .Protocol.GameplayEffectDurationPolicy durationPolicy = 6;
+            if (this_._internal_durationpolicy() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_durationpolicy());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void GameplayEffectSyncEntry::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<GameplayEffectSyncEntry*>(&to_msg);
+  auto& from = static_cast<const GameplayEffectSyncEntry&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.GameplayEffectSyncEntry)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_effectkey().empty()) {
+    _this->_internal_set_effectkey(from._internal_effectkey());
+  }
+  if (from._internal_effectid() != 0) {
+    _this->_impl_.effectid_ = from._impl_.effectid_;
+  }
+  if (from._internal_instanceid() != 0) {
+    _this->_impl_.instanceid_ = from._impl_.instanceid_;
+  }
+  if (from._internal_stackcount() != 0) {
+    _this->_impl_.stackcount_ = from._impl_.stackcount_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_remainingdurationsec()) != 0) {
+    _this->_impl_.remainingdurationsec_ = from._impl_.remainingdurationsec_;
+  }
+  if (from._internal_durationpolicy() != 0) {
+    _this->_impl_.durationpolicy_ = from._impl_.durationpolicy_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void GameplayEffectSyncEntry::CopyFrom(const GameplayEffectSyncEntry& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.GameplayEffectSyncEntry)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void GameplayEffectSyncEntry::InternalSwap(GameplayEffectSyncEntry* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.effectkey_, &other->_impl_.effectkey_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.durationpolicy_)
+      + sizeof(GameplayEffectSyncEntry::_impl_.durationpolicy_)
+      - PROTOBUF_FIELD_OFFSET(GameplayEffectSyncEntry, _impl_.effectid_)>(
+          reinterpret_cast<char*>(&_impl_.effectid_),
+          reinterpret_cast<char*>(&other->_impl_.effectid_));
+}
+
+::google::protobuf::Metadata GameplayEffectSyncEntry::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

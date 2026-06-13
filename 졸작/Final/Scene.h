@@ -89,6 +89,8 @@ private:
 	void HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& choiceBegin);
 	void HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult);
 	void HandlePvpRoundResult(const Protocol::SC_PVP_ROUND_RESULT_PACKET& pvpResult);
+	void HandleGameplayEffectSync(const Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET& effectSync);
+	void HandleBeaconCinematicStart(const Protocol::SC_BEACON_CINEMATIC_START_PACKET& cinematicStart);
 
 	void UpdateDissolves();
 	void UpdateBreakerShields();

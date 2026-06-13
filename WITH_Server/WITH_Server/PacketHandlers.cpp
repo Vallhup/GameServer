@@ -762,6 +762,11 @@ void RegisterServerPacketHandlers(
         PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_READY,   &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_BEACON_CINEMATIC_START_REQUEST,
+        &HandleBeaconCinematicStartRequestPacket,
+        "Pkt_CS_BEACON_CINEMATIC_START_REQUEST",
+        DynamicTaskTargetKind::ExplicitScope);
     // FinalBoss 클리어 선택은 ECS input/월드 그래프와 무관하므로 ExplicitScope.
     // (sink->SubmitFinalClearPvpChoice 가 로직 스레드에서 ServerApp 상태를
     //  직접 갱신하는 점은 CS_WORLD_TRANSITION_READY 와 동일한 패턴이다.)
@@ -1800,6 +1805,36 @@ ExecCallResult HandleWorldTransitionReadyPacket(NodeExecContext& ctx)
     {
         (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
     }
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleBeaconCinematicStartRequestPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    auto& svc = PacketHandlerContext::Get();
+    if (svc.worldTransitionSink == nullptr)
+        return ExecCallResult::Success;
+
+    Protocol::CS_BEACON_CINEMATIC_START_REQUEST_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    const SessionId sessionId = ResolveSessionId(ctx);
+    if (!svc.worldTransitionSink->RequestBeaconCinematicStart(
+            sessionId,
+            pkt.clientrequestid()))
+    {
+        FWLOG_WARN(
+            kLogCategory,
+            "Beacon cinematic start request rejected "
+            "(sid=%u, clientRequestId=%u)",
+            sessionId,
+            pkt.clientrequestid());
+    }
+
     return ExecCallResult::Success;
 }
 

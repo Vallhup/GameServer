@@ -680,6 +680,36 @@ struct SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal _SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET_default_instance_;
 
+inline constexpr SC_BEACON_CINEMATIC_START_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : cinematicinstanceid_{::uint64_t{0u}},
+        partyid_{::uint64_t{0u}},
+        clientrequestid_{0u},
+        cinematictype_{static_cast< ::Protocol::BeaconCinematicType >(0)},
+        sourceworldid_{::uint64_t{0u}},
+        initiatornetid_{::uint64_t{0u}},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_BEACON_CINEMATIC_START_PACKET::SC_BEACON_CINEMATIC_START_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_BEACON_CINEMATIC_START_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_BEACON_CINEMATIC_START_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_BEACON_CINEMATIC_START_PACKETDefaultTypeInternal() {}
+  union {
+    SC_BEACON_CINEMATIC_START_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_BEACON_CINEMATIC_START_PACKETDefaultTypeInternal _SC_BEACON_CINEMATIC_START_PACKET_default_instance_;
+
 inline constexpr SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
@@ -1308,6 +1338,31 @@ struct CS_CHARACTER_SELECT_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_CHARACTER_SELECT_PACKETDefaultTypeInternal _CS_CHARACTER_SELECT_PACKET_default_instance_;
 
+inline constexpr CS_BEACON_CINEMATIC_START_REQUEST_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : clientrequestid_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CS_BEACON_CINEMATIC_START_REQUEST_PACKET::CS_BEACON_CINEMATIC_START_REQUEST_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CS_BEACON_CINEMATIC_START_REQUEST_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CS_BEACON_CINEMATIC_START_REQUEST_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CS_BEACON_CINEMATIC_START_REQUEST_PACKETDefaultTypeInternal() {}
+  union {
+    CS_BEACON_CINEMATIC_START_REQUEST_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_BEACON_CINEMATIC_START_REQUEST_PACKETDefaultTypeInternal _CS_BEACON_CINEMATIC_START_REQUEST_PACKET_default_instance_;
+
 inline constexpr CS_ATTACK_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : dirx_{0},
@@ -1389,6 +1444,34 @@ struct SC_PARTY_JOIN_REQUEST_RECEIVED_PACKETDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_PARTY_JOIN_REQUEST_RECEIVED_PACKETDefaultTypeInternal _SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET_default_instance_;
+
+inline constexpr SC_GAMEPLAY_EFFECT_SYNC_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : activeeffects_{},
+        appliedeffects_{},
+        netid_{::uint64_t{0u}},
+        revision_{::uint64_t{0u}},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_GAMEPLAY_EFFECT_SYNC_PACKET::SC_GAMEPLAY_EFFECT_SYNC_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_GAMEPLAY_EFFECT_SYNC_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_GAMEPLAY_EFFECT_SYNC_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_GAMEPLAY_EFFECT_SYNC_PACKETDefaultTypeInternal() {}
+  union {
+    SC_GAMEPLAY_EFFECT_SYNC_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_GAMEPLAY_EFFECT_SYNC_PACKETDefaultTypeInternal _SC_GAMEPLAY_EFFECT_SYNC_PACKET_default_instance_;
 
 inline constexpr SC_PARTY_UI_BOOTSTRAP_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -1676,6 +1759,15 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_FINAL_ENDING_CINEMATIC_DONE_PACKET, _impl_.context_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_BEACON_CINEMATIC_START_REQUEST_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_BEACON_CINEMATIC_START_REQUEST_PACKET, _impl_.clientrequestid_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_TIME_SYNC_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -2035,6 +2127,32 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_PVP_ROUND_RESULT_PACKET, _impl_.winnernetid_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.netid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.revision_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.activeeffects_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.appliedeffects_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BEACON_CINEMATIC_START_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematicinstanceid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BEACON_CINEMATIC_START_PACKET, _impl_.clientrequestid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BEACON_CINEMATIC_START_PACKET, _impl_.partyid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BEACON_CINEMATIC_START_PACKET, _impl_.sourceworldid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematictype_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BEACON_CINEMATIC_START_PACKET, _impl_.initiatornetid_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -2062,35 +2180,38 @@ static const ::_pbi::MigrationSchema
         {197, -1, -1, sizeof(::Protocol::CS_TITLE_EQUIP_REQUEST_PACKET)},
         {207, -1, -1, sizeof(::Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET)},
         {217, -1, -1, sizeof(::Protocol::CS_FINAL_ENDING_CINEMATIC_DONE_PACKET)},
-        {226, -1, -1, sizeof(::Protocol::SC_TIME_SYNC_PACKET)},
-        {237, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
-        {246, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
-        {255, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {269, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {282, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {291, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
-        {308, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {320, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {337, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
-        {357, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
-        {367, 379, -1, sizeof(::Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET)},
-        {383, -1, -1, sizeof(::Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET)},
-        {393, -1, -1, sizeof(::Protocol::SC_PARTY_COMMAND_RESULT_PACKET)},
-        {406, 415, -1, sizeof(::Protocol::SC_PARTY_SNAPSHOT_PACKET)},
-        {416, 426, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)},
-        {428, -1, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)},
-        {440, -1, -1, sizeof(::Protocol::SC_ITEM_COUNT_PACKET)},
-        {449, -1, -1, sizeof(::Protocol::SC_TEAM_DEATH_COUNT_PACKET)},
-        {459, -1, -1, sizeof(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET)},
-        {469, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET)},
-        {483, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)},
-        {502, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)},
-        {518, -1, -1, sizeof(::Protocol::SC_STAT_UI_BOOTSTRAP_PACKET)},
-        {529, -1, -1, sizeof(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET)},
-        {541, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)},
-        {553, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)},
-        {566, -1, -1, sizeof(::Protocol::SC_TITLE_REPLICATION_PACKET)},
-        {576, -1, -1, sizeof(::Protocol::SC_PVP_ROUND_RESULT_PACKET)},
+        {226, -1, -1, sizeof(::Protocol::CS_BEACON_CINEMATIC_START_REQUEST_PACKET)},
+        {235, -1, -1, sizeof(::Protocol::SC_TIME_SYNC_PACKET)},
+        {246, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
+        {255, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
+        {264, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {278, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {291, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {300, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
+        {317, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {329, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {346, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
+        {366, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
+        {376, 388, -1, sizeof(::Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET)},
+        {392, -1, -1, sizeof(::Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET)},
+        {402, -1, -1, sizeof(::Protocol::SC_PARTY_COMMAND_RESULT_PACKET)},
+        {415, 424, -1, sizeof(::Protocol::SC_PARTY_SNAPSHOT_PACKET)},
+        {425, 435, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)},
+        {437, -1, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)},
+        {449, -1, -1, sizeof(::Protocol::SC_ITEM_COUNT_PACKET)},
+        {458, -1, -1, sizeof(::Protocol::SC_TEAM_DEATH_COUNT_PACKET)},
+        {468, -1, -1, sizeof(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET)},
+        {478, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET)},
+        {492, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)},
+        {511, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)},
+        {527, -1, -1, sizeof(::Protocol::SC_STAT_UI_BOOTSTRAP_PACKET)},
+        {538, -1, -1, sizeof(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET)},
+        {550, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)},
+        {562, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)},
+        {575, -1, -1, sizeof(::Protocol::SC_TITLE_REPLICATION_PACKET)},
+        {585, -1, -1, sizeof(::Protocol::SC_PVP_ROUND_RESULT_PACKET)},
+        {594, -1, -1, sizeof(::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET)},
+        {606, -1, -1, sizeof(::Protocol::SC_BEACON_CINEMATIC_START_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_TIME_SYNC_PACKET_default_instance_._instance,
@@ -2116,6 +2237,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_TITLE_EQUIP_REQUEST_PACKET_default_instance_._instance,
     &::Protocol::_CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET_default_instance_._instance,
     &::Protocol::_CS_FINAL_ENDING_CINEMATIC_DONE_PACKET_default_instance_._instance,
+    &::Protocol::_CS_BEACON_CINEMATIC_START_REQUEST_PACKET_default_instance_._instance,
     &::Protocol::_SC_TIME_SYNC_PACKET_default_instance_._instance,
     &::Protocol::_SC_LOGIN_SUCCESS_PACKET_default_instance_._instance,
     &::Protocol::_SC_LOGIN_FAIL_PACKET_default_instance_._instance,
@@ -2145,6 +2267,8 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_FINAL_CLEAR_CHOICE_RESULT_PACKET_default_instance_._instance,
     &::Protocol::_SC_TITLE_REPLICATION_PACKET_default_instance_._instance,
     &::Protocol::_SC_PVP_ROUND_RESULT_PACKET_default_instance_._instance,
+    &::Protocol::_SC_GAMEPLAY_EFFECT_SYNC_PACKET_default_instance_._instance,
+    &::Protocol::_SC_BEACON_CINEMATIC_START_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -2187,95 +2311,107 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "R_CHOICE_SUBMIT_PACKET\022\016\n\006voteId\030\001 \001(\004\022\021"
     "\n\tchoosePvp\030\002 \001(\010\"_\n%CS_FINAL_ENDING_CIN"
     "EMATIC_DONE_PACKET\0226\n\007context\030\001 \001(\0162%.Pr"
-    "otocol.FinalEndingCinematicContext\"V\n\023SC"
-    "_TIME_SYNC_PACKET\022\020\n\010probeSeq\030\001 \001(\r\022\030\n\020s"
-    "erverSendTimeMs\030\002 \001(\r\022\023\n\013serverFrame\030\003 \001"
-    "(\004\"(\n\027SC_LOGIN_SUCCESS_PACKET\022\r\n\005netid\030\001"
-    " \001(\004\"&\n\024SC_LOGIN_FAIL_PACKET\022\016\n\006reason\030\001"
-    " \001(\r\"\\\n\rSC_ADD_PACKET\022\r\n\005netid\030\001 \001(\004\022\016\n\006"
-    "typeid\030\002 \001(\r\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030"
-    "\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\"M\n\016SC_MOVE_PACKET\022\r\n\005"
-    "netid\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004"
-    " \001(\002\022\013\n\003yaw\030\005 \001(\002\"!\n\020SC_REMOVE_PACKET\022\r\n"
-    "\005netid\030\001 \001(\004\"\266\001\n\027SC_COMBAT_IMPACT_PACKET"
-    "\022\025\n\rattackerNetId\030\001 \001(\004\022\023\n\013victimNetId\030\002"
-    " \001(\004\022\022\n\nresultType\030\003 \001(\r\022\017\n\007impactX\030\004 \001("
-    "\002\022\017\n\007impactY\030\005 \001(\002\022\017\n\007impactZ\030\006 \001(\002\022\014\n\004d"
-    "irX\030\007 \001(\002\022\014\n\004dirY\030\010 \001(\002\022\014\n\004dirZ\030\t \001(\002\"t\n"
-    "\036SC_ANIMATION_TRANSITION_PACKET\022\r\n\005netid"
-    "\030\001 \001(\004\022\020\n\010currAnim\030\002 \001(\005\022\031\n\021abilityInsta"
-    "nceId\030\003 \001(\r\022\026\n\016normalizedTime\030\004 \001(\002\"\264\001\n\025"
-    "SC_STAT_CHANGE_PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005"
-    "curhp\030\002 \001(\r\022\r\n\005maxhp\030\003 \001(\r\022\022\n\ncurstamina"
-    "\030\004 \001(\r\022\022\n\nmaxstamina\030\005 \001(\r\022\r\n\005power\030\006 \001("
-    "\r\022\023\n\013attackspeed\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022"
-    "\021\n\tmovespeed\030\t \001(\002\"\264\002\n SC_WORLD_TRANSITI"
-    "ON_BEGIN_PACKET\022\022\n\ntransferId\030\001 \001(\004\022\021\n\tr"
-    "equestId\030\002 \001(\r\022\030\n\020sourceWorldDefId\030\003 \001(\r"
-    "\022\025\n\rsourceWorldId\030\004 \001(\004\022\030\n\020targetWorldDe"
-    "fId\030\005 \001(\r\022\025\n\rtargetWorldId\030\006 \001(\004\022\025\n\rmapR"
-    "esourceId\030\007 \001(\r\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024"
-    "clearExistingObjects\030\t \001(\010\022\027\n\017waitClient"
-    "Ready\030\n \001(\010\022\024\n\014usedFallback\030\013 \001(\010\022\016\n\006rea"
-    "son\030\014 \001(\r\"H\n#SC_WORLD_TRANSITION_REJECTE"
-    "D_PACKET\022\021\n\trequestId\030\001 \001(\r\022\016\n\006reason\030\002 "
-    "\001(\r\"\240\001\n\034SC_PARTY_UI_BOOTSTRAP_PACKET\022\027\n\017"
-    "clientRequestId\030\001 \001(\r\022\022\n\nhasMyParty\030\002 \001("
-    "\010\022(\n\007myParty\030\003 \001(\0132\027.Protocol.PartySnaps"
-    "hot\022)\n\007parties\030\004 \003(\0132\030.Protocol.PartyLis"
-    "tEntry\"c\n\035SC_PARTY_LIST_SNAPSHOT_PACKET\022"
-    "\027\n\017clientRequestId\030\001 \001(\r\022)\n\007parties\030\002 \003("
-    "\0132\030.Protocol.PartyListEntry\"\201\001\n\036SC_PARTY"
-    "_COMMAND_RESULT_PACKET\022\027\n\017clientRequestI"
-    "d\030\001 \001(\r\022\017\n\007success\030\002 \001(\010\022\r\n\005error\030\003 \001(\r\022"
-    "\017\n\007partyId\030\004 \001(\004\022\025\n\rjoinRequestId\030\005 \001(\004\""
-    "B\n\030SC_PARTY_SNAPSHOT_PACKET\022&\n\005party\030\001 \001"
-    "(\0132\027.Protocol.PartySnapshot\"e\n%SC_PARTY_"
-    "JOIN_REQUEST_RECEIVED_PACKET\022\017\n\007partyId\030"
-    "\001 \001(\004\022+\n\007request\030\002 \001(\0132\032.Protocol.PartyJ"
-    "oinRequest\"\264\001\n#SC_PARTY_JOIN_REQUEST_CLO"
-    "SED_PACKET\022\017\n\007partyId\030\001 \001(\004\022\025\n\rjoinReque"
-    "stId\030\002 \001(\004\0225\n\006reason\030\003 \001(\0162%.Protocol.Pa"
-    "rtyJoinRequestCloseReason\022.\n\005state\030\004 \001(\016"
-    "2\037.Protocol.PartyJoinRequestState\"-\n\024SC_"
-    "ITEM_COUNT_PACKET\022\025\n\rhpPotionCount\030\001 \001(\r"
-    "\"G\n\032SC_TEAM_DEATH_COUNT_PACKET\022\025\n\rmaxDea"
-    "thCount\030\001 \001(\r\022\022\n\ndeathCount\030\002 \001(\r\"A\n\036SC_"
-    "MONSTER_COMBAT_STATE_PACKET\022\r\n\005netid\030\001 \001"
-    "(\004\022\020\n\010inCombat\030\002 \001(\010\"\313\001\n\034SC_BOSS_GIMMICK"
-    "_STATE_PACKET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngimm"
-    "ickSeq\030\002 \001(\r\022.\n\013gimmickType\030\003 \001(\0162\031.Prot"
-    "ocol.BossGimmickType\022)\n\005stage\030\004 \001(\0162\032.Pr"
-    "otocol.BossGimmickStage\022\023\n\013durationSec\030\005"
-    " \001(\002\022\024\n\014remainingSec\030\006 \001(\002\"\375\001\n\"SC_BOSS_G"
-    "IMMICK_OBJECT_SYNC_PACKET\022\021\n\tbossNetId\030\001"
-    " \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\023\n\013objectNetId\030"
-    "\003 \001(\004\022/\n\005state\030\004 \001(\0162 .Protocol.BossGimm"
-    "ickObjectState\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n\001"
-    "z\030\007 \001(\002\022\016\n\006radius\030\010 \001(\002\022\r\n\005curHp\030\t \001(\r\022\r"
-    "\n\005maxHp\030\n \001(\r\022\033\n\023brokenByPlayerNetId\030\013 \001"
-    "(\004\"\276\001\n SC_BOSS_GIMMICK_ZONE_SYNC_PACKET\022"
-    "\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\021"
-    "\n\tzoneNetId\030\003 \001(\004\022/\n\005state\030\004 \001(\0162 .Proto"
-    "col.BossGimmickObjectState\022\t\n\001x\030\005 \001(\002\022\t\n"
-    "\001y\030\006 \001(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006radius\030\010 \001(\002\"f\n\033S"
-    "C_STAT_UI_BOOTSTRAP_PACKET\022\027\n\017clientRequ"
-    "estId\030\001 \001(\r\022\025\n\rownedTitleIds\030\002 \003(\r\022\027\n\017eq"
-    "uippedTitleId\030\003 \001(\r\"q\n\034SC_TITLE_EQUIP_RE"
+    "otocol.FinalEndingCinematicContext\"C\n(CS"
+    "_BEACON_CINEMATIC_START_REQUEST_PACKET\022\027"
+    "\n\017clientRequestId\030\001 \001(\r\"V\n\023SC_TIME_SYNC_"
+    "PACKET\022\020\n\010probeSeq\030\001 \001(\r\022\030\n\020serverSendTi"
+    "meMs\030\002 \001(\r\022\023\n\013serverFrame\030\003 \001(\004\"(\n\027SC_LO"
+    "GIN_SUCCESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024SC_"
+    "LOGIN_FAIL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\rSC_"
+    "ADD_PACKET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002 \001("
+    "\r\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003ya"
+    "w\030\006 \001(\002\"M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001(\004"
+    "\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw"
+    "\030\005 \001(\002\"!\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 \001("
+    "\004\"\266\001\n\027SC_COMBAT_IMPACT_PACKET\022\025\n\rattacke"
+    "rNetId\030\001 \001(\004\022\023\n\013victimNetId\030\002 \001(\004\022\022\n\nres"
+    "ultType\030\003 \001(\r\022\017\n\007impactX\030\004 \001(\002\022\017\n\007impact"
+    "Y\030\005 \001(\002\022\017\n\007impactZ\030\006 \001(\002\022\014\n\004dirX\030\007 \001(\002\022\014"
+    "\n\004dirY\030\010 \001(\002\022\014\n\004dirZ\030\t \001(\002\"t\n\036SC_ANIMATI"
+    "ON_TRANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010c"
+    "urrAnim\030\002 \001(\005\022\031\n\021abilityInstanceId\030\003 \001(\r"
+    "\022\026\n\016normalizedTime\030\004 \001(\002\"\264\001\n\025SC_STAT_CHA"
+    "NGE_PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r"
+    "\022\r\n\005maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nm"
+    "axstamina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attack"
+    "speed\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmovespee"
+    "d\030\t \001(\002\"\264\002\n SC_WORLD_TRANSITION_BEGIN_PA"
+    "CKET\022\022\n\ntransferId\030\001 \001(\004\022\021\n\trequestId\030\002 "
+    "\001(\r\022\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rsourceW"
+    "orldId\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025"
+    "\n\rtargetWorldId\030\006 \001(\004\022\025\n\rmapResourceId\030\007"
+    " \001(\r\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clearExisti"
+    "ngObjects\030\t \001(\010\022\027\n\017waitClientReady\030\n \001(\010"
+    "\022\024\n\014usedFallback\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H"
+    "\n#SC_WORLD_TRANSITION_REJECTED_PACKET\022\021\n"
+    "\trequestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\240\001\n\034SC_"
+    "PARTY_UI_BOOTSTRAP_PACKET\022\027\n\017clientReque"
+    "stId\030\001 \001(\r\022\022\n\nhasMyParty\030\002 \001(\010\022(\n\007myPart"
+    "y\030\003 \001(\0132\027.Protocol.PartySnapshot\022)\n\007part"
+    "ies\030\004 \003(\0132\030.Protocol.PartyListEntry\"c\n\035S"
+    "C_PARTY_LIST_SNAPSHOT_PACKET\022\027\n\017clientRe"
+    "questId\030\001 \001(\r\022)\n\007parties\030\002 \003(\0132\030.Protoco"
+    "l.PartyListEntry\"\201\001\n\036SC_PARTY_COMMAND_RE"
     "SULT_PACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007"
-    "success\030\002 \001(\010\022\027\n\017equippedTitleId\030\003 \001(\r\022\016"
-    "\n\006reason\030\004 \001(\r\"s\n\"SC_FINAL_CLEAR_CHOICE_"
-    "BEGIN_PACKET\022\016\n\006voteId\030\001 \001(\004\022\017\n\007partyId\030"
-    "\002 \001(\004\022\025\n\rsourceWorldId\030\003 \001(\004\022\025\n\religible"
-    "Count\030\004 \001(\r\"\316\001\n#SC_FINAL_CLEAR_CHOICE_RE"
-    "SULT_PACKET\022\016\n\006voteId\030\001 \001(\004\0222\n\007outcome\030\002"
-    " \001(\0162!.Protocol.FinalClearChoiceOutcome\022"
-    "0\n\006reason\030\003 \001(\0162 .Protocol.FinalClearCho"
-    "iceReason\022\030\n\020targetWorldDefId\030\004 \001(\r\022\027\n\017p"
-    "vpChooserNetId\030\005 \001(\004\"B\n\033SC_TITLE_REPLICA"
-    "TION_PACKET\022\022\n\nownerNetId\030\001 \001(\004\022\017\n\007title"
-    "Id\030\002 \001(\r\"1\n\032SC_PVP_ROUND_RESULT_PACKET\022\023"
-    "\n\013winnerNetId\030\001 \001(\004b\006proto3"
+    "success\030\002 \001(\010\022\r\n\005error\030\003 \001(\r\022\017\n\007partyId\030"
+    "\004 \001(\004\022\025\n\rjoinRequestId\030\005 \001(\004\"B\n\030SC_PARTY"
+    "_SNAPSHOT_PACKET\022&\n\005party\030\001 \001(\0132\027.Protoc"
+    "ol.PartySnapshot\"e\n%SC_PARTY_JOIN_REQUES"
+    "T_RECEIVED_PACKET\022\017\n\007partyId\030\001 \001(\004\022+\n\007re"
+    "quest\030\002 \001(\0132\032.Protocol.PartyJoinRequest\""
+    "\264\001\n#SC_PARTY_JOIN_REQUEST_CLOSED_PACKET\022"
+    "\017\n\007partyId\030\001 \001(\004\022\025\n\rjoinRequestId\030\002 \001(\004\022"
+    "5\n\006reason\030\003 \001(\0162%.Protocol.PartyJoinRequ"
+    "estCloseReason\022.\n\005state\030\004 \001(\0162\037.Protocol"
+    ".PartyJoinRequestState\"-\n\024SC_ITEM_COUNT_"
+    "PACKET\022\025\n\rhpPotionCount\030\001 \001(\r\"G\n\032SC_TEAM"
+    "_DEATH_COUNT_PACKET\022\025\n\rmaxDeathCount\030\001 \001"
+    "(\r\022\022\n\ndeathCount\030\002 \001(\r\"A\n\036SC_MONSTER_COM"
+    "BAT_STATE_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010inCom"
+    "bat\030\002 \001(\010\"\313\001\n\034SC_BOSS_GIMMICK_STATE_PACK"
+    "ET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001("
+    "\r\022.\n\013gimmickType\030\003 \001(\0162\031.Protocol.BossGi"
+    "mmickType\022)\n\005stage\030\004 \001(\0162\032.Protocol.Boss"
+    "GimmickStage\022\023\n\013durationSec\030\005 \001(\002\022\024\n\014rem"
+    "ainingSec\030\006 \001(\002\"\375\001\n\"SC_BOSS_GIMMICK_OBJE"
+    "CT_SYNC_PACKET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngim"
+    "mickSeq\030\002 \001(\r\022\023\n\013objectNetId\030\003 \001(\004\022/\n\005st"
+    "ate\030\004 \001(\0162 .Protocol.BossGimmickObjectSt"
+    "ate\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006"
+    "radius\030\010 \001(\002\022\r\n\005curHp\030\t \001(\r\022\r\n\005maxHp\030\n \001"
+    "(\r\022\033\n\023brokenByPlayerNetId\030\013 \001(\004\"\276\001\n SC_B"
+    "OSS_GIMMICK_ZONE_SYNC_PACKET\022\021\n\tbossNetI"
+    "d\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\021\n\tzoneNetId"
+    "\030\003 \001(\004\022/\n\005state\030\004 \001(\0162 .Protocol.BossGim"
+    "mickObjectState\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n"
+    "\001z\030\007 \001(\002\022\016\n\006radius\030\010 \001(\002\"f\n\033SC_STAT_UI_B"
+    "OOTSTRAP_PACKET\022\027\n\017clientRequestId\030\001 \001(\r"
+    "\022\025\n\rownedTitleIds\030\002 \003(\r\022\027\n\017equippedTitle"
+    "Id\030\003 \001(\r\"q\n\034SC_TITLE_EQUIP_RESULT_PACKET"
+    "\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007success\030\002 \001"
+    "(\010\022\027\n\017equippedTitleId\030\003 \001(\r\022\016\n\006reason\030\004 "
+    "\001(\r\"s\n\"SC_FINAL_CLEAR_CHOICE_BEGIN_PACKE"
+    "T\022\016\n\006voteId\030\001 \001(\004\022\017\n\007partyId\030\002 \001(\004\022\025\n\rso"
+    "urceWorldId\030\003 \001(\004\022\025\n\religibleCount\030\004 \001(\r"
+    "\"\316\001\n#SC_FINAL_CLEAR_CHOICE_RESULT_PACKET"
+    "\022\016\n\006voteId\030\001 \001(\004\0222\n\007outcome\030\002 \001(\0162!.Prot"
+    "ocol.FinalClearChoiceOutcome\0220\n\006reason\030\003"
+    " \001(\0162 .Protocol.FinalClearChoiceReason\022\030"
+    "\n\020targetWorldDefId\030\004 \001(\r\022\027\n\017pvpChooserNe"
+    "tId\030\005 \001(\004\"B\n\033SC_TITLE_REPLICATION_PACKET"
+    "\022\022\n\nownerNetId\030\001 \001(\004\022\017\n\007titleId\030\002 \001(\r\"1\n"
+    "\032SC_PVP_ROUND_RESULT_PACKET\022\023\n\013winnerNet"
+    "Id\030\001 \001(\004\"\266\001\n\036SC_GAMEPLAY_EFFECT_SYNC_PAC"
+    "KET\022\r\n\005netid\030\001 \001(\004\022\020\n\010revision\030\002 \001(\004\0228\n\r"
+    "activeEffects\030\003 \003(\0132!.Protocol.GameplayE"
+    "ffectSyncEntry\0229\n\016appliedEffects\030\004 \003(\0132!"
+    ".Protocol.GameplayEffectSyncEntry\"\316\001\n SC"
+    "_BEACON_CINEMATIC_START_PACKET\022\033\n\023cinema"
+    "ticInstanceId\030\001 \001(\004\022\027\n\017clientRequestId\030\002"
+    " \001(\r\022\017\n\007partyId\030\003 \001(\004\022\025\n\rsourceWorldId\030\004"
+    " \001(\004\0224\n\rcinematicType\030\005 \001(\0162\035.Protocol.B"
+    "eaconCinematicType\022\026\n\016initiatorNetId\030\006 \001"
+    "(\004b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[1] =
     {
@@ -2285,13 +2421,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    5107,
+    5570,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     1,
-    52,
+    55,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -7629,6 +7765,213 @@ void CS_FINAL_ENDING_CINEMATIC_DONE_PACKET::InternalSwap(CS_FINAL_ENDING_CINEMAT
 }
 
 ::google::protobuf::Metadata CS_FINAL_ENDING_CINEMATIC_DONE_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_Internal {
+ public:
+};
+
+CS_BEACON_CINEMATIC_START_REQUEST_PACKET::CS_BEACON_CINEMATIC_START_REQUEST_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+}
+CS_BEACON_CINEMATIC_START_REQUEST_PACKET::CS_BEACON_CINEMATIC_START_REQUEST_PACKET(
+    ::google::protobuf::Arena* arena, const CS_BEACON_CINEMATIC_START_REQUEST_PACKET& from)
+    : CS_BEACON_CINEMATIC_START_REQUEST_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE CS_BEACON_CINEMATIC_START_REQUEST_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void CS_BEACON_CINEMATIC_START_REQUEST_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.clientrequestid_ = {};
+}
+CS_BEACON_CINEMATIC_START_REQUEST_PACKET::~CS_BEACON_CINEMATIC_START_REQUEST_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+  SharedDtor(*this);
+}
+inline void CS_BEACON_CINEMATIC_START_REQUEST_PACKET::SharedDtor(MessageLite& self) {
+  CS_BEACON_CINEMATIC_START_REQUEST_PACKET& this_ = static_cast<CS_BEACON_CINEMATIC_START_REQUEST_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* CS_BEACON_CINEMATIC_START_REQUEST_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) CS_BEACON_CINEMATIC_START_REQUEST_PACKET(arena);
+}
+constexpr auto CS_BEACON_CINEMATIC_START_REQUEST_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(CS_BEACON_CINEMATIC_START_REQUEST_PACKET),
+                                            alignof(CS_BEACON_CINEMATIC_START_REQUEST_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_CS_BEACON_CINEMATIC_START_REQUEST_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &CS_BEACON_CINEMATIC_START_REQUEST_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<CS_BEACON_CINEMATIC_START_REQUEST_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &CS_BEACON_CINEMATIC_START_REQUEST_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<CS_BEACON_CINEMATIC_START_REQUEST_PACKET>(), &CS_BEACON_CINEMATIC_START_REQUEST_PACKET::ByteSizeLong,
+            &CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(CS_BEACON_CINEMATIC_START_REQUEST_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &CS_BEACON_CINEMATIC_START_REQUEST_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* CS_BEACON_CINEMATIC_START_REQUEST_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::CS_BEACON_CINEMATIC_START_REQUEST_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 clientRequestId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_BEACON_CINEMATIC_START_REQUEST_PACKET, _impl_.clientrequestid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(CS_BEACON_CINEMATIC_START_REQUEST_PACKET, _impl_.clientrequestid_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 clientRequestId = 1;
+    {PROTOBUF_FIELD_OFFSET(CS_BEACON_CINEMATIC_START_REQUEST_PACKET, _impl_.clientrequestid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void CS_BEACON_CINEMATIC_START_REQUEST_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.clientrequestid_ = 0u;
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const CS_BEACON_CINEMATIC_START_REQUEST_PACKET& this_ = static_cast<const CS_BEACON_CINEMATIC_START_REQUEST_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const CS_BEACON_CINEMATIC_START_REQUEST_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint32 clientRequestId = 1;
+          if (this_._internal_clientrequestid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                1, this_._internal_clientrequestid(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t CS_BEACON_CINEMATIC_START_REQUEST_PACKET::ByteSizeLong(const MessageLite& base) {
+          const CS_BEACON_CINEMATIC_START_REQUEST_PACKET& this_ = static_cast<const CS_BEACON_CINEMATIC_START_REQUEST_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t CS_BEACON_CINEMATIC_START_REQUEST_PACKET::ByteSizeLong() const {
+          const CS_BEACON_CINEMATIC_START_REQUEST_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+           {
+            // uint32 clientRequestId = 1;
+            if (this_._internal_clientrequestid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_clientrequestid());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void CS_BEACON_CINEMATIC_START_REQUEST_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CS_BEACON_CINEMATIC_START_REQUEST_PACKET*>(&to_msg);
+  auto& from = static_cast<const CS_BEACON_CINEMATIC_START_REQUEST_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_clientrequestid() != 0) {
+    _this->_impl_.clientrequestid_ = from._impl_.clientrequestid_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CS_BEACON_CINEMATIC_START_REQUEST_PACKET::CopyFrom(const CS_BEACON_CINEMATIC_START_REQUEST_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.CS_BEACON_CINEMATIC_START_REQUEST_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CS_BEACON_CINEMATIC_START_REQUEST_PACKET::InternalSwap(CS_BEACON_CINEMATIC_START_REQUEST_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+        swap(_impl_.clientrequestid_, other->_impl_.clientrequestid_);
+}
+
+::google::protobuf::Metadata CS_BEACON_CINEMATIC_START_REQUEST_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
@@ -16107,6 +16450,684 @@ void SC_PVP_ROUND_RESULT_PACKET::InternalSwap(SC_PVP_ROUND_RESULT_PACKET* PROTOB
 }
 
 ::google::protobuf::Metadata SC_PVP_ROUND_RESULT_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_GAMEPLAY_EFFECT_SYNC_PACKET::_Internal {
+ public:
+};
+
+void SC_GAMEPLAY_EFFECT_SYNC_PACKET::clear_activeeffects() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.activeeffects_.Clear();
+}
+void SC_GAMEPLAY_EFFECT_SYNC_PACKET::clear_appliedeffects() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.appliedeffects_.Clear();
+}
+SC_GAMEPLAY_EFFECT_SYNC_PACKET::SC_GAMEPLAY_EFFECT_SYNC_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+}
+inline PROTOBUF_NDEBUG_INLINE SC_GAMEPLAY_EFFECT_SYNC_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET& from_msg)
+      : activeeffects_{visibility, arena, from.activeeffects_},
+        appliedeffects_{visibility, arena, from.appliedeffects_},
+        _cached_size_{0} {}
+
+SC_GAMEPLAY_EFFECT_SYNC_PACKET::SC_GAMEPLAY_EFFECT_SYNC_PACKET(
+    ::google::protobuf::Arena* arena,
+    const SC_GAMEPLAY_EFFECT_SYNC_PACKET& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SC_GAMEPLAY_EFFECT_SYNC_PACKET* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, netid_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, netid_),
+           offsetof(Impl_, revision_) -
+               offsetof(Impl_, netid_) +
+               sizeof(Impl_::revision_));
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+}
+inline PROTOBUF_NDEBUG_INLINE SC_GAMEPLAY_EFFECT_SYNC_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : activeeffects_{visibility, arena},
+        appliedeffects_{visibility, arena},
+        _cached_size_{0} {}
+
+inline void SC_GAMEPLAY_EFFECT_SYNC_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, netid_),
+           0,
+           offsetof(Impl_, revision_) -
+               offsetof(Impl_, netid_) +
+               sizeof(Impl_::revision_));
+}
+SC_GAMEPLAY_EFFECT_SYNC_PACKET::~SC_GAMEPLAY_EFFECT_SYNC_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_GAMEPLAY_EFFECT_SYNC_PACKET::SharedDtor(MessageLite& self) {
+  SC_GAMEPLAY_EFFECT_SYNC_PACKET& this_ = static_cast<SC_GAMEPLAY_EFFECT_SYNC_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_GAMEPLAY_EFFECT_SYNC_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_GAMEPLAY_EFFECT_SYNC_PACKET(arena);
+}
+constexpr auto SC_GAMEPLAY_EFFECT_SYNC_PACKET::InternalNewImpl_() {
+  constexpr auto arena_bits = ::google::protobuf::internal::EncodePlacementArenaOffsets({
+      PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.activeeffects_) +
+          decltype(SC_GAMEPLAY_EFFECT_SYNC_PACKET::_impl_.activeeffects_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+      PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.appliedeffects_) +
+          decltype(SC_GAMEPLAY_EFFECT_SYNC_PACKET::_impl_.appliedeffects_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+  });
+  if (arena_bits.has_value()) {
+    return ::google::protobuf::internal::MessageCreator::ZeroInit(
+        sizeof(SC_GAMEPLAY_EFFECT_SYNC_PACKET), alignof(SC_GAMEPLAY_EFFECT_SYNC_PACKET), *arena_bits);
+  } else {
+    return ::google::protobuf::internal::MessageCreator(&SC_GAMEPLAY_EFFECT_SYNC_PACKET::PlacementNew_,
+                                 sizeof(SC_GAMEPLAY_EFFECT_SYNC_PACKET),
+                                 alignof(SC_GAMEPLAY_EFFECT_SYNC_PACKET));
+  }
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_GAMEPLAY_EFFECT_SYNC_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_GAMEPLAY_EFFECT_SYNC_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_GAMEPLAY_EFFECT_SYNC_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_GAMEPLAY_EFFECT_SYNC_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_GAMEPLAY_EFFECT_SYNC_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_GAMEPLAY_EFFECT_SYNC_PACKET>(), &SC_GAMEPLAY_EFFECT_SYNC_PACKET::ByteSizeLong,
+            &SC_GAMEPLAY_EFFECT_SYNC_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_GAMEPLAY_EFFECT_SYNC_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_GAMEPLAY_EFFECT_SYNC_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 2, 0, 2> SC_GAMEPLAY_EFFECT_SYNC_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    2,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // repeated .Protocol.GameplayEffectSyncEntry appliedEffects = 4;
+    {::_pbi::TcParser::FastMtR1,
+     {34, 63, 1, PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.appliedeffects_)}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.netid_)}},
+    // uint64 revision = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.revision_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.revision_)}},
+    // repeated .Protocol.GameplayEffectSyncEntry activeEffects = 3;
+    {::_pbi::TcParser::FastMtR1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.activeeffects_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint64 revision = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.revision_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // repeated .Protocol.GameplayEffectSyncEntry activeEffects = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.activeeffects_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    // repeated .Protocol.GameplayEffectSyncEntry appliedEffects = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.appliedeffects_), 0, 1,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::Protocol::GameplayEffectSyncEntry>()},
+    {::_pbi::TcParser::GetTable<::Protocol::GameplayEffectSyncEntry>()},
+  }}, {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_GAMEPLAY_EFFECT_SYNC_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.activeeffects_.Clear();
+  _impl_.appliedeffects_.Clear();
+  ::memset(&_impl_.netid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.revision_) -
+      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.revision_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_GAMEPLAY_EFFECT_SYNC_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_GAMEPLAY_EFFECT_SYNC_PACKET& this_ = static_cast<const SC_GAMEPLAY_EFFECT_SYNC_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_GAMEPLAY_EFFECT_SYNC_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_GAMEPLAY_EFFECT_SYNC_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
+          }
+
+          // uint64 revision = 2;
+          if (this_._internal_revision() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                2, this_._internal_revision(), target);
+          }
+
+          // repeated .Protocol.GameplayEffectSyncEntry activeEffects = 3;
+          for (unsigned i = 0, n = static_cast<unsigned>(
+                                   this_._internal_activeeffects_size());
+               i < n; i++) {
+            const auto& repfield = this_._internal_activeeffects().Get(i);
+            target =
+                ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                    3, repfield, repfield.GetCachedSize(),
+                    target, stream);
+          }
+
+          // repeated .Protocol.GameplayEffectSyncEntry appliedEffects = 4;
+          for (unsigned i = 0, n = static_cast<unsigned>(
+                                   this_._internal_appliedeffects_size());
+               i < n; i++) {
+            const auto& repfield = this_._internal_appliedeffects().Get(i);
+            target =
+                ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                    4, repfield, repfield.GetCachedSize(),
+                    target, stream);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_GAMEPLAY_EFFECT_SYNC_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_GAMEPLAY_EFFECT_SYNC_PACKET& this_ = static_cast<const SC_GAMEPLAY_EFFECT_SYNC_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_GAMEPLAY_EFFECT_SYNC_PACKET::ByteSizeLong() const {
+          const SC_GAMEPLAY_EFFECT_SYNC_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // repeated .Protocol.GameplayEffectSyncEntry activeEffects = 3;
+            {
+              total_size += 1UL * this_._internal_activeeffects_size();
+              for (const auto& msg : this_._internal_activeeffects()) {
+                total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+              }
+            }
+            // repeated .Protocol.GameplayEffectSyncEntry appliedEffects = 4;
+            {
+              total_size += 1UL * this_._internal_appliedeffects_size();
+              for (const auto& msg : this_._internal_appliedeffects()) {
+                total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+              }
+            }
+          }
+           {
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
+            }
+            // uint64 revision = 2;
+            if (this_._internal_revision() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_revision());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_GAMEPLAY_EFFECT_SYNC_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_GAMEPLAY_EFFECT_SYNC_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_GAMEPLAY_EFFECT_SYNC_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_internal_mutable_activeeffects()->MergeFrom(
+      from._internal_activeeffects());
+  _this->_internal_mutable_appliedeffects()->MergeFrom(
+      from._internal_appliedeffects());
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
+  }
+  if (from._internal_revision() != 0) {
+    _this->_impl_.revision_ = from._impl_.revision_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_GAMEPLAY_EFFECT_SYNC_PACKET::CopyFrom(const SC_GAMEPLAY_EFFECT_SYNC_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_GAMEPLAY_EFFECT_SYNC_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_GAMEPLAY_EFFECT_SYNC_PACKET::InternalSwap(SC_GAMEPLAY_EFFECT_SYNC_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.activeeffects_.InternalSwap(&other->_impl_.activeeffects_);
+  _impl_.appliedeffects_.InternalSwap(&other->_impl_.appliedeffects_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.revision_)
+      + sizeof(SC_GAMEPLAY_EFFECT_SYNC_PACKET::_impl_.revision_)
+      - PROTOBUF_FIELD_OFFSET(SC_GAMEPLAY_EFFECT_SYNC_PACKET, _impl_.netid_)>(
+          reinterpret_cast<char*>(&_impl_.netid_),
+          reinterpret_cast<char*>(&other->_impl_.netid_));
+}
+
+::google::protobuf::Metadata SC_GAMEPLAY_EFFECT_SYNC_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_BEACON_CINEMATIC_START_PACKET::_Internal {
+ public:
+};
+
+SC_BEACON_CINEMATIC_START_PACKET::SC_BEACON_CINEMATIC_START_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+}
+SC_BEACON_CINEMATIC_START_PACKET::SC_BEACON_CINEMATIC_START_PACKET(
+    ::google::protobuf::Arena* arena, const SC_BEACON_CINEMATIC_START_PACKET& from)
+    : SC_BEACON_CINEMATIC_START_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_BEACON_CINEMATIC_START_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_BEACON_CINEMATIC_START_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, cinematicinstanceid_),
+           0,
+           offsetof(Impl_, initiatornetid_) -
+               offsetof(Impl_, cinematicinstanceid_) +
+               sizeof(Impl_::initiatornetid_));
+}
+SC_BEACON_CINEMATIC_START_PACKET::~SC_BEACON_CINEMATIC_START_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_BEACON_CINEMATIC_START_PACKET::SharedDtor(MessageLite& self) {
+  SC_BEACON_CINEMATIC_START_PACKET& this_ = static_cast<SC_BEACON_CINEMATIC_START_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_BEACON_CINEMATIC_START_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_BEACON_CINEMATIC_START_PACKET(arena);
+}
+constexpr auto SC_BEACON_CINEMATIC_START_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_BEACON_CINEMATIC_START_PACKET),
+                                            alignof(SC_BEACON_CINEMATIC_START_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_BEACON_CINEMATIC_START_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_BEACON_CINEMATIC_START_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_BEACON_CINEMATIC_START_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_BEACON_CINEMATIC_START_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_BEACON_CINEMATIC_START_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_BEACON_CINEMATIC_START_PACKET>(), &SC_BEACON_CINEMATIC_START_PACKET::ByteSizeLong,
+            &SC_BEACON_CINEMATIC_START_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_BEACON_CINEMATIC_START_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_BEACON_CINEMATIC_START_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 6, 0, 0, 2> SC_BEACON_CINEMATIC_START_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    6, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967232,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    6,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_BEACON_CINEMATIC_START_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 cinematicInstanceId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematicinstanceid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematicinstanceid_)}},
+    // uint32 clientRequestId = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BEACON_CINEMATIC_START_PACKET, _impl_.clientrequestid_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.clientrequestid_)}},
+    // uint64 partyId = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BEACON_CINEMATIC_START_PACKET, _impl_.partyid_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.partyid_)}},
+    // uint64 sourceWorldId = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BEACON_CINEMATIC_START_PACKET, _impl_.sourceworldid_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.sourceworldid_)}},
+    // .Protocol.BeaconCinematicType cinematicType = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematictype_), 63>(),
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematictype_)}},
+    // uint64 initiatorNetId = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BEACON_CINEMATIC_START_PACKET, _impl_.initiatornetid_), 63>(),
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.initiatornetid_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 cinematicInstanceId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematicinstanceid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 clientRequestId = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.clientrequestid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint64 partyId = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.partyid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint64 sourceWorldId = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.sourceworldid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // .Protocol.BeaconCinematicType cinematicType = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematictype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // uint64 initiatorNetId = 6;
+    {PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.initiatornetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_BEACON_CINEMATIC_START_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.cinematicinstanceid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.initiatornetid_) -
+      reinterpret_cast<char*>(&_impl_.cinematicinstanceid_)) + sizeof(_impl_.initiatornetid_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_BEACON_CINEMATIC_START_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_BEACON_CINEMATIC_START_PACKET& this_ = static_cast<const SC_BEACON_CINEMATIC_START_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_BEACON_CINEMATIC_START_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_BEACON_CINEMATIC_START_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 cinematicInstanceId = 1;
+          if (this_._internal_cinematicinstanceid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_cinematicinstanceid(), target);
+          }
+
+          // uint32 clientRequestId = 2;
+          if (this_._internal_clientrequestid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_clientrequestid(), target);
+          }
+
+          // uint64 partyId = 3;
+          if (this_._internal_partyid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                3, this_._internal_partyid(), target);
+          }
+
+          // uint64 sourceWorldId = 4;
+          if (this_._internal_sourceworldid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                4, this_._internal_sourceworldid(), target);
+          }
+
+          // .Protocol.BeaconCinematicType cinematicType = 5;
+          if (this_._internal_cinematictype() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                5, this_._internal_cinematictype(), target);
+          }
+
+          // uint64 initiatorNetId = 6;
+          if (this_._internal_initiatornetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                6, this_._internal_initiatornetid(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_BEACON_CINEMATIC_START_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_BEACON_CINEMATIC_START_PACKET& this_ = static_cast<const SC_BEACON_CINEMATIC_START_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_BEACON_CINEMATIC_START_PACKET::ByteSizeLong() const {
+          const SC_BEACON_CINEMATIC_START_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 cinematicInstanceId = 1;
+            if (this_._internal_cinematicinstanceid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_cinematicinstanceid());
+            }
+            // uint64 partyId = 3;
+            if (this_._internal_partyid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_partyid());
+            }
+            // uint32 clientRequestId = 2;
+            if (this_._internal_clientrequestid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_clientrequestid());
+            }
+            // .Protocol.BeaconCinematicType cinematicType = 5;
+            if (this_._internal_cinematictype() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_cinematictype());
+            }
+            // uint64 sourceWorldId = 4;
+            if (this_._internal_sourceworldid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_sourceworldid());
+            }
+            // uint64 initiatorNetId = 6;
+            if (this_._internal_initiatornetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_initiatornetid());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_BEACON_CINEMATIC_START_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_BEACON_CINEMATIC_START_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_BEACON_CINEMATIC_START_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_cinematicinstanceid() != 0) {
+    _this->_impl_.cinematicinstanceid_ = from._impl_.cinematicinstanceid_;
+  }
+  if (from._internal_partyid() != 0) {
+    _this->_impl_.partyid_ = from._impl_.partyid_;
+  }
+  if (from._internal_clientrequestid() != 0) {
+    _this->_impl_.clientrequestid_ = from._impl_.clientrequestid_;
+  }
+  if (from._internal_cinematictype() != 0) {
+    _this->_impl_.cinematictype_ = from._impl_.cinematictype_;
+  }
+  if (from._internal_sourceworldid() != 0) {
+    _this->_impl_.sourceworldid_ = from._impl_.sourceworldid_;
+  }
+  if (from._internal_initiatornetid() != 0) {
+    _this->_impl_.initiatornetid_ = from._impl_.initiatornetid_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_BEACON_CINEMATIC_START_PACKET::CopyFrom(const SC_BEACON_CINEMATIC_START_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_BEACON_CINEMATIC_START_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_BEACON_CINEMATIC_START_PACKET::InternalSwap(SC_BEACON_CINEMATIC_START_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.initiatornetid_)
+      + sizeof(SC_BEACON_CINEMATIC_START_PACKET::_impl_.initiatornetid_)
+      - PROTOBUF_FIELD_OFFSET(SC_BEACON_CINEMATIC_START_PACKET, _impl_.cinematicinstanceid_)>(
+          reinterpret_cast<char*>(&_impl_.cinematicinstanceid_),
+          reinterpret_cast<char*>(&other->_impl_.cinematicinstanceid_));
+}
+
+::google::protobuf::Metadata SC_BEACON_CINEMATIC_START_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

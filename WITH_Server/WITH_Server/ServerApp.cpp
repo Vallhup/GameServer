@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
+#include <optional>
 #include <span>
 #include <thread>
 #include <stdlib.h>
@@ -30,9 +31,43 @@ namespace
 	constexpr const char* kLogCategory = "ServerApp";
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
 	constexpr double kFinalClearChoiceTimeoutSec = 15.0;
+	constexpr double kBeaconCinematicStartGuardSec = 30.0;
+	constexpr float kBeaconInteractionServerRadius = 3.0f;
 	// 엔딩/페이드 연출 완료를 기다리는 안전 타임아웃. 일부 클라가 연출 완료를
 	// 보고하지 않아도 이 시간 후에는 강제로 Plaza 전이한다.
 	constexpr double kEndingCinematicTimeoutSec = 20.0;
+
+	struct BeaconCinematicPolicy
+	{
+		Protocol::BeaconCinematicType cinematicType{
+			Protocol::BEACON_CINEMATIC_TYPE_UNSPECIFIED };
+		float interactionX{ 0.0f };
+		float interactionZ{ 0.0f };
+	};
+
+	std::optional<BeaconCinematicPolicy> ResolveBeaconCinematicPolicy(
+		WorldDefId worldDefId) noexcept
+	{
+		switch (worldDefId)
+		{
+		case WorldDefId::Village:
+			return BeaconCinematicPolicy{
+				.cinematicType =
+					Protocol::BEACON_CINEMATIC_TYPE_VILLAGE_EXIT,
+				.interactionX = 335.237946f,
+				.interactionZ = 590.663147f
+			};
+		case WorldDefId::Castle:
+			return BeaconCinematicPolicy{
+				.cinematicType =
+					Protocol::BEACON_CINEMATIC_TYPE_CASTLE_EXIT,
+				.interactionX = 338.464813f,
+				.interactionZ = 417.798187f
+			};
+		default:
+			return std::nullopt;
+		}
+	}
 
 	WorldDefId ResolveDemoNextWorld(WorldDefId currentWorldDefId) noexcept
 	{
@@ -115,6 +150,8 @@ bool ServerApp::Initialize()
 	_partyCommandQueue.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
+	_activeBeaconCinematicsByWorld.clear();
+	_nextBeaconCinematicInstanceId = 1;
 	_animationRegistry.Clear();
 	_lastTickTime = {};
 
@@ -176,6 +213,8 @@ void ServerApp::Shutdown() noexcept
 	_partyCommandQueue.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
+	_activeBeaconCinematicsByWorld.clear();
+	_nextBeaconCinematicInstanceId = 1;
 	_animationRegistry.Clear();
 	_lastTickTime = {};
 }
@@ -388,6 +427,176 @@ TransferId ServerApp::RequestDemoWorldTransition(
 	}
 
 	return transferId;
+}
+
+bool ServerApp::RequestBeaconCinematicStart(
+	SessionId sessionId,
+	uint32_t clientRequestId)
+{
+	if (!IsInitialized() || sessionId == 0 || clientRequestId == 0)
+	{
+		return false;
+	}
+
+	const WorldId sourceWorldId =
+		_sessionSystem.Flow().FindCurrentWorldId(sessionId);
+	WorldInstance* const sourceWorld =
+		_framework.FindWorld(sourceWorldId);
+	const WorldDef* const sourceWorldDef =
+		sourceWorld != nullptr ? sourceWorld->GetDef() : nullptr;
+	if (!sourceWorldId.IsValid() || sourceWorld == nullptr ||
+		sourceWorldDef == nullptr)
+	{
+		return false;
+	}
+
+	const std::optional<BeaconCinematicPolicy> policy =
+		ResolveBeaconCinematicPolicy(sourceWorldDef->id);
+	if (!policy.has_value())
+	{
+		FWLOG_WARN(
+			kLogCategory,
+			"Beacon cinematic start rejected: unsupported world "
+			"(sid=%u, worldDefId=%u)",
+			sessionId,
+			static_cast<uint32_t>(sourceWorldDef->id));
+		return false;
+	}
+
+	const PartyId partyId = _partyService.FindPartyBySession(sessionId);
+	const PartyRecord* const party = _partyService.FindParty(partyId);
+	if (party == nullptr ||
+		party->leaderSessionId != sessionId ||
+		party->lifecycle != PartyLifecycleState::InWorld)
+	{
+		FWLOG_WARN(
+			kLogCategory,
+			"Beacon cinematic start rejected: requester is not active party "
+			"leader (sid=%u, partyId=%llu)",
+			sessionId,
+			static_cast<unsigned long long>(partyId));
+		return false;
+	}
+
+	const NetId initiatorNetId =
+		_sessionSystem.Flow().FindControlledNetId(sessionId);
+	const NetBindingLocation initiatorBinding =
+		_framework.FindNetBinding(initiatorNetId);
+	if (!initiatorNetId.IsValid() ||
+		initiatorBinding.worldId != sourceWorldId ||
+		initiatorBinding.entity.IsNull())
+	{
+		return false;
+	}
+
+	ECSView sourceView = sourceWorld->GetRuntime().MakeView();
+	const WorldTransformComp* const initiatorTransform =
+		sourceView.GetComponent<WorldTransformComp>(initiatorBinding.entity);
+	if (initiatorTransform == nullptr)
+	{
+		return false;
+	}
+
+	const float deltaX =
+		initiatorTransform->position.x - policy->interactionX;
+	const float deltaZ =
+		initiatorTransform->position.z - policy->interactionZ;
+	if (deltaX * deltaX + deltaZ * deltaZ >
+		kBeaconInteractionServerRadius * kBeaconInteractionServerRadius)
+	{
+		FWLOG_WARN(
+			kLogCategory,
+			"Beacon cinematic start rejected: leader is outside interaction "
+			"range (sid=%u, worldId=%u, x=%.3f, z=%.3f)",
+			sessionId,
+			sourceWorldId.GetRaw(),
+			initiatorTransform->position.x,
+			initiatorTransform->position.z);
+		return false;
+	}
+
+	std::vector<SessionId> partySessions;
+	partySessions.reserve(party->members.size());
+	for (const PartyMember& member : party->members)
+	{
+		if (member.sessionId == 0 ||
+			member.presence != PartyMemberPresence::Online ||
+			_sessionSystem.Flow().FindCurrentWorldId(member.sessionId) !=
+				sourceWorldId ||
+			!CanBeginWorldTransfer(member.sessionId))
+		{
+			FWLOG_WARN(
+				kLogCategory,
+				"Beacon cinematic start rejected: party member unavailable "
+				"(partyId=%llu, memberSid=%u)",
+				static_cast<unsigned long long>(partyId),
+				member.sessionId);
+			return false;
+		}
+
+		partySessions.push_back(member.sessionId);
+	}
+
+	if (partySessions.empty())
+	{
+		return false;
+	}
+
+	const uint64_t sourceWorldKey = sourceWorldId.GetRaw();
+	if (const auto activeIt =
+		_activeBeaconCinematicsByWorld.find(sourceWorldKey);
+		activeIt != _activeBeaconCinematicsByWorld.end())
+	{
+		if (_nowSec < activeIt->second.expiresAtSec)
+		{
+			return false;
+		}
+		_activeBeaconCinematicsByWorld.erase(activeIt);
+	}
+
+	if (_nextBeaconCinematicInstanceId == 0)
+	{
+		_nextBeaconCinematicInstanceId = 1;
+	}
+	const uint64_t cinematicInstanceId =
+		_nextBeaconCinematicInstanceId++;
+
+	if (!ServerPacketStager::StageBeaconCinematicStartPacket(
+		_sessionSystem.Network(),
+		std::span<const SessionId>(
+			partySessions.data(),
+			partySessions.size()),
+		cinematicInstanceId,
+		clientRequestId,
+		static_cast<uint64_t>(partyId),
+		sourceWorldId.GetRaw(),
+		static_cast<uint32_t>(policy->cinematicType),
+		initiatorNetId.GetRaw()))
+	{
+		return false;
+	}
+
+	_activeBeaconCinematicsByWorld[sourceWorldKey] =
+		ActiveBeaconCinematic{
+			.partyId = partyId,
+			.sourceWorldId = sourceWorldId,
+			.cinematicInstanceId = cinematicInstanceId,
+			.cinematicType =
+				static_cast<uint32_t>(policy->cinematicType),
+			.expiresAtSec = _nowSec + kBeaconCinematicStartGuardSec
+		};
+
+	FWLOG_INFO(
+		kLogCategory,
+		"Beacon cinematic start staged "
+		"(instanceId=%llu, partyId=%llu, leaderSid=%u, worldId=%u, "
+		"members=%zu)",
+		static_cast<unsigned long long>(cinematicInstanceId),
+		static_cast<unsigned long long>(partyId),
+		sessionId,
+		sourceWorldId.GetRaw(),
+		partySessions.size());
+	return true;
 }
 
 bool ServerApp::SubmitFinalClearPvpChoice(
@@ -1068,6 +1277,9 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 
 	for (const WorldTransferCompletedEvent& completed : transferEvents.completed)
 	{
+		_activeBeaconCinematicsByWorld.erase(
+			completed.sourceWorldId.GetRaw());
+
 		if (completed.partyId != 0)
 		{
 			const PartyResult completeResult =

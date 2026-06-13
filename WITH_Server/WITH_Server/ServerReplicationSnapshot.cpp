@@ -138,6 +138,21 @@ void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 				*stats);
 		}
 
+		const GameplayEffectStateComp* const effects =
+			view.GetComponent<GameplayEffectStateComp>(entity);
+		const GameplayEffectReplicationComp* const effectReplication =
+			view.GetComponent<GameplayEffectReplicationComp>(entity);
+		if (effects != nullptr && effectReplication != nullptr)
+		{
+			(void)ServerPacketStager::StageGameplayEffectPacketToSession(
+				network,
+				sessionId,
+				entityNetId,
+				*effects,
+				*effectReplication,
+				false);
+		}
+
 		const AIDecisionComp* const decision =
 			view.GetComponent<AIDecisionComp>(entity);
 		if (decision != nullptr)

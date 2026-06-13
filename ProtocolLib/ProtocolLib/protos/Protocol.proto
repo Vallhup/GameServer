@@ -141,6 +141,11 @@ message CS_FINAL_ENDING_CINEMATIC_DONE_PACKET
 	FinalEndingCinematicContext context = 1;
 }
 
+message CS_BEACON_CINEMATIC_START_REQUEST_PACKET
+{
+    uint32 clientRequestId = 1;
+}
+
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
 
 message SC_TIME_SYNC_PACKET
@@ -399,4 +404,22 @@ message SC_TITLE_REPLICATION_PACKET
 message SC_PVP_ROUND_RESULT_PACKET
 {
 	uint64 winnerNetId = 1;
+}
+
+message SC_GAMEPLAY_EFFECT_SYNC_PACKET
+{
+	uint64 netid = 1;
+	uint64 revision = 2;
+	repeated GameplayEffectSyncEntry activeEffects = 3;
+	repeated GameplayEffectSyncEntry appliedEffects = 4;
+}
+
+message SC_BEACON_CINEMATIC_START_PACKET
+{
+    uint64 cinematicInstanceId = 1;
+    uint32 clientRequestId = 2;
+    uint64 partyId = 3;
+    uint64 sourceWorldId = 4;
+    BeaconCinematicType cinematicType = 5;
+    uint64 initiatorNetId = 6;
 }

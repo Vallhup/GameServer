@@ -89,6 +89,10 @@ public:
 		uint64_t voteId,
 		bool choosePvp) override;
 
+	bool RequestBeaconCinematicStart(
+		SessionId sessionId,
+		uint32_t clientRequestId) override;
+
 	bool SubmitFinalEndingCinematicDone(
 		SessionId sessionId,
 		uint32_t context) override;
@@ -125,6 +129,15 @@ private:
 		WorldId worldId{ WorldId::Invalid() };
 		double startedAtSec{ 0.0 };
 		bool ending{ false };
+	};
+
+	struct ActiveBeaconCinematic
+	{
+		PartyId partyId{ 0 };
+		WorldId sourceWorldId{ WorldId::Invalid() };
+		uint64_t cinematicInstanceId{ 0 };
+		uint32_t cinematicType{ 0 };
+		double expiresAtSec{ 0.0 };
 	};
 
 	// 엔딩/페이드 연출 후 Plaza로 전이하기 위한 대기 상태. 연출 신호를 보낸 뒤
@@ -237,9 +250,12 @@ private:
 	std::unordered_map<uint64_t, FinalClearChoiceVote> _finalClearChoiceVotes;
 	std::unordered_map<uint64_t, uint64_t> _finalClearChoiceVoteByWorld;
 	std::unordered_map<uint64_t, ActivePvpRound> _activePvpRounds;
+	std::unordered_map<uint64_t, ActiveBeaconCinematic>
+		_activeBeaconCinematicsByWorld;
 	// 키: partyId. 엔딩 연출 완료 대기 중인 파티들.
 	std::unordered_map<uint64_t, PendingEndingTransfer> _pendingEndingTransfers;
 	uint64_t _nextFinalClearChoiceVoteId{ 1 };
+	uint64_t _nextBeaconCinematicInstanceId{ 1 };
 
 	uint64_t _tickCount{ 0 };
 	uint64_t _frameIndex{ 0 };

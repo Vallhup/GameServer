@@ -113,6 +113,25 @@ void ServerDirtyReplicationService::BuildAndStage(
 				}
 			}
 
+			if (dirty.IsDirty(WorldDirtyType::GameplayEffect))
+			{
+				const GameplayEffectStateComp* effects =
+					view.GetComponent<GameplayEffectStateComp>(entity);
+				GameplayEffectReplicationComp* replication =
+					view.GetMutableComponent<GameplayEffectReplicationComp>(entity);
+				if (effects != nullptr && replication != nullptr)
+				{
+					(void)ServerPacketStager::StageGameplayEffectPacketToSessions(
+						network,
+						worldSessionIds,
+						netId,
+						*effects,
+						*replication,
+						true);
+					replication->pendingAppliedEffects.clear();
+				}
+			}
+
 			if (dirty.IsDirty(WorldDirtyType::Inventory))
 			{
 				const ConsumableInventoryComp* inventory =

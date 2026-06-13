@@ -53,6 +53,9 @@ struct TableStruct_DTO_2eproto {
 extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_DTO_2eproto;
 namespace Protocol {
+class GameplayEffectSyncEntry;
+struct GameplayEffectSyncEntryDefaultTypeInternal;
+extern GameplayEffectSyncEntryDefaultTypeInternal _GameplayEffectSyncEntry_default_instance_;
 class PartyJoinRequest;
 struct PartyJoinRequestDefaultTypeInternal;
 extern PartyJoinRequestDefaultTypeInternal _PartyJoinRequest_default_instance_;
@@ -490,6 +493,74 @@ inline const std::string& FinalEndingCinematicContext_Name(FinalEndingCinematicC
 inline bool FinalEndingCinematicContext_Parse(absl::string_view name, FinalEndingCinematicContext* value) {
   return ::google::protobuf::internal::ParseNamedEnum<FinalEndingCinematicContext>(
       FinalEndingCinematicContext_descriptor(), name, value);
+}
+enum GameplayEffectDurationPolicy : int {
+  GAMEPLAY_EFFECT_DURATION_INSTANT = 0,
+  GAMEPLAY_EFFECT_DURATION_TIMED = 1,
+  GAMEPLAY_EFFECT_DURATION_INFINITE = 2,
+  GameplayEffectDurationPolicy_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  GameplayEffectDurationPolicy_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool GameplayEffectDurationPolicy_IsValid(int value);
+extern const uint32_t GameplayEffectDurationPolicy_internal_data_[];
+constexpr GameplayEffectDurationPolicy GameplayEffectDurationPolicy_MIN = static_cast<GameplayEffectDurationPolicy>(0);
+constexpr GameplayEffectDurationPolicy GameplayEffectDurationPolicy_MAX = static_cast<GameplayEffectDurationPolicy>(2);
+constexpr int GameplayEffectDurationPolicy_ARRAYSIZE = 2 + 1;
+const ::google::protobuf::EnumDescriptor*
+GameplayEffectDurationPolicy_descriptor();
+template <typename T>
+const std::string& GameplayEffectDurationPolicy_Name(T value) {
+  static_assert(std::is_same<T, GameplayEffectDurationPolicy>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to GameplayEffectDurationPolicy_Name().");
+  return GameplayEffectDurationPolicy_Name(static_cast<GameplayEffectDurationPolicy>(value));
+}
+template <>
+inline const std::string& GameplayEffectDurationPolicy_Name(GameplayEffectDurationPolicy value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<GameplayEffectDurationPolicy_descriptor,
+                                                 0, 2>(
+      static_cast<int>(value));
+}
+inline bool GameplayEffectDurationPolicy_Parse(absl::string_view name, GameplayEffectDurationPolicy* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<GameplayEffectDurationPolicy>(
+      GameplayEffectDurationPolicy_descriptor(), name, value);
+}
+enum BeaconCinematicType : int {
+  BEACON_CINEMATIC_TYPE_UNSPECIFIED = 0,
+  BEACON_CINEMATIC_TYPE_VILLAGE_EXIT = 1,
+  BEACON_CINEMATIC_TYPE_CASTLE_EXIT = 2,
+  BeaconCinematicType_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  BeaconCinematicType_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool BeaconCinematicType_IsValid(int value);
+extern const uint32_t BeaconCinematicType_internal_data_[];
+constexpr BeaconCinematicType BeaconCinematicType_MIN = static_cast<BeaconCinematicType>(0);
+constexpr BeaconCinematicType BeaconCinematicType_MAX = static_cast<BeaconCinematicType>(2);
+constexpr int BeaconCinematicType_ARRAYSIZE = 2 + 1;
+const ::google::protobuf::EnumDescriptor*
+BeaconCinematicType_descriptor();
+template <typename T>
+const std::string& BeaconCinematicType_Name(T value) {
+  static_assert(std::is_same<T, BeaconCinematicType>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to BeaconCinematicType_Name().");
+  return BeaconCinematicType_Name(static_cast<BeaconCinematicType>(value));
+}
+template <>
+inline const std::string& BeaconCinematicType_Name(BeaconCinematicType value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<BeaconCinematicType_descriptor,
+                                                 0, 2>(
+      static_cast<int>(value));
+}
+inline bool BeaconCinematicType_Parse(absl::string_view name, BeaconCinematicType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<BeaconCinematicType>(
+      BeaconCinematicType_descriptor(), name, value);
 }
 
 // ===================================================================
@@ -1311,6 +1382,262 @@ class PartyJoinRequest final : public ::google::protobuf::Message
     double createdatsec_;
     double expiresatsec_;
     double closedatsec_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_DTO_2eproto;
+};
+// -------------------------------------------------------------------
+
+class GameplayEffectSyncEntry final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.GameplayEffectSyncEntry) */ {
+ public:
+  inline GameplayEffectSyncEntry() : GameplayEffectSyncEntry(nullptr) {}
+  ~GameplayEffectSyncEntry() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(GameplayEffectSyncEntry* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(GameplayEffectSyncEntry));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR GameplayEffectSyncEntry(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline GameplayEffectSyncEntry(const GameplayEffectSyncEntry& from) : GameplayEffectSyncEntry(nullptr, from) {}
+  inline GameplayEffectSyncEntry(GameplayEffectSyncEntry&& from) noexcept
+      : GameplayEffectSyncEntry(nullptr, std::move(from)) {}
+  inline GameplayEffectSyncEntry& operator=(const GameplayEffectSyncEntry& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline GameplayEffectSyncEntry& operator=(GameplayEffectSyncEntry&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const GameplayEffectSyncEntry& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const GameplayEffectSyncEntry* internal_default_instance() {
+    return reinterpret_cast<const GameplayEffectSyncEntry*>(
+        &_GameplayEffectSyncEntry_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 4;
+  friend void swap(GameplayEffectSyncEntry& a, GameplayEffectSyncEntry& b) { a.Swap(&b); }
+  inline void Swap(GameplayEffectSyncEntry* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(GameplayEffectSyncEntry* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  GameplayEffectSyncEntry* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<GameplayEffectSyncEntry>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const GameplayEffectSyncEntry& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const GameplayEffectSyncEntry& from) { GameplayEffectSyncEntry::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(GameplayEffectSyncEntry* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.GameplayEffectSyncEntry"; }
+
+ protected:
+  explicit GameplayEffectSyncEntry(::google::protobuf::Arena* arena);
+  GameplayEffectSyncEntry(::google::protobuf::Arena* arena, const GameplayEffectSyncEntry& from);
+  GameplayEffectSyncEntry(::google::protobuf::Arena* arena, GameplayEffectSyncEntry&& from) noexcept
+      : GameplayEffectSyncEntry(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kEffectKeyFieldNumber = 2,
+    kEffectIdFieldNumber = 1,
+    kInstanceIdFieldNumber = 3,
+    kStackCountFieldNumber = 4,
+    kRemainingDurationSecFieldNumber = 5,
+    kDurationPolicyFieldNumber = 6,
+  };
+  // string effectKey = 2;
+  void clear_effectkey() ;
+  const std::string& effectkey() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_effectkey(Arg_&& arg, Args_... args);
+  std::string* mutable_effectkey();
+  PROTOBUF_NODISCARD std::string* release_effectkey();
+  void set_allocated_effectkey(std::string* value);
+
+  private:
+  const std::string& _internal_effectkey() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_effectkey(
+      const std::string& value);
+  std::string* _internal_mutable_effectkey();
+
+  public:
+  // uint32 effectId = 1;
+  void clear_effectid() ;
+  ::uint32_t effectid() const;
+  void set_effectid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_effectid() const;
+  void _internal_set_effectid(::uint32_t value);
+
+  public:
+  // uint32 instanceId = 3;
+  void clear_instanceid() ;
+  ::uint32_t instanceid() const;
+  void set_instanceid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_instanceid() const;
+  void _internal_set_instanceid(::uint32_t value);
+
+  public:
+  // uint32 stackCount = 4;
+  void clear_stackcount() ;
+  ::uint32_t stackcount() const;
+  void set_stackcount(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_stackcount() const;
+  void _internal_set_stackcount(::uint32_t value);
+
+  public:
+  // float remainingDurationSec = 5;
+  void clear_remainingdurationsec() ;
+  float remainingdurationsec() const;
+  void set_remainingdurationsec(float value);
+
+  private:
+  float _internal_remainingdurationsec() const;
+  void _internal_set_remainingdurationsec(float value);
+
+  public:
+  // .Protocol.GameplayEffectDurationPolicy durationPolicy = 6;
+  void clear_durationpolicy() ;
+  ::Protocol::GameplayEffectDurationPolicy durationpolicy() const;
+  void set_durationpolicy(::Protocol::GameplayEffectDurationPolicy value);
+
+  private:
+  ::Protocol::GameplayEffectDurationPolicy _internal_durationpolicy() const;
+  void _internal_set_durationpolicy(::Protocol::GameplayEffectDurationPolicy value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.GameplayEffectSyncEntry)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      3, 6, 0,
+      50, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const GameplayEffectSyncEntry& from_msg);
+    ::google::protobuf::internal::ArenaStringPtr effectkey_;
+    ::uint32_t effectid_;
+    ::uint32_t instanceid_;
+    ::uint32_t stackcount_;
+    float remainingdurationsec_;
+    int durationpolicy_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -2358,6 +2685,168 @@ inline void PartyListEntry::_internal_set_joinable(bool value) {
   _impl_.joinable_ = value;
 }
 
+// -------------------------------------------------------------------
+
+// GameplayEffectSyncEntry
+
+// uint32 effectId = 1;
+inline void GameplayEffectSyncEntry::clear_effectid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.effectid_ = 0u;
+}
+inline ::uint32_t GameplayEffectSyncEntry::effectid() const {
+  // @@protoc_insertion_point(field_get:Protocol.GameplayEffectSyncEntry.effectId)
+  return _internal_effectid();
+}
+inline void GameplayEffectSyncEntry::set_effectid(::uint32_t value) {
+  _internal_set_effectid(value);
+  // @@protoc_insertion_point(field_set:Protocol.GameplayEffectSyncEntry.effectId)
+}
+inline ::uint32_t GameplayEffectSyncEntry::_internal_effectid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.effectid_;
+}
+inline void GameplayEffectSyncEntry::_internal_set_effectid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.effectid_ = value;
+}
+
+// string effectKey = 2;
+inline void GameplayEffectSyncEntry::clear_effectkey() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.effectkey_.ClearToEmpty();
+}
+inline const std::string& GameplayEffectSyncEntry::effectkey() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.GameplayEffectSyncEntry.effectKey)
+  return _internal_effectkey();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void GameplayEffectSyncEntry::set_effectkey(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.effectkey_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:Protocol.GameplayEffectSyncEntry.effectKey)
+}
+inline std::string* GameplayEffectSyncEntry::mutable_effectkey() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_effectkey();
+  // @@protoc_insertion_point(field_mutable:Protocol.GameplayEffectSyncEntry.effectKey)
+  return _s;
+}
+inline const std::string& GameplayEffectSyncEntry::_internal_effectkey() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.effectkey_.Get();
+}
+inline void GameplayEffectSyncEntry::_internal_set_effectkey(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.effectkey_.Set(value, GetArena());
+}
+inline std::string* GameplayEffectSyncEntry::_internal_mutable_effectkey() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.effectkey_.Mutable( GetArena());
+}
+inline std::string* GameplayEffectSyncEntry::release_effectkey() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.GameplayEffectSyncEntry.effectKey)
+  return _impl_.effectkey_.Release();
+}
+inline void GameplayEffectSyncEntry::set_allocated_effectkey(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.effectkey_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.effectkey_.IsDefault()) {
+    _impl_.effectkey_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:Protocol.GameplayEffectSyncEntry.effectKey)
+}
+
+// uint32 instanceId = 3;
+inline void GameplayEffectSyncEntry::clear_instanceid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instanceid_ = 0u;
+}
+inline ::uint32_t GameplayEffectSyncEntry::instanceid() const {
+  // @@protoc_insertion_point(field_get:Protocol.GameplayEffectSyncEntry.instanceId)
+  return _internal_instanceid();
+}
+inline void GameplayEffectSyncEntry::set_instanceid(::uint32_t value) {
+  _internal_set_instanceid(value);
+  // @@protoc_insertion_point(field_set:Protocol.GameplayEffectSyncEntry.instanceId)
+}
+inline ::uint32_t GameplayEffectSyncEntry::_internal_instanceid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.instanceid_;
+}
+inline void GameplayEffectSyncEntry::_internal_set_instanceid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instanceid_ = value;
+}
+
+// uint32 stackCount = 4;
+inline void GameplayEffectSyncEntry::clear_stackcount() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stackcount_ = 0u;
+}
+inline ::uint32_t GameplayEffectSyncEntry::stackcount() const {
+  // @@protoc_insertion_point(field_get:Protocol.GameplayEffectSyncEntry.stackCount)
+  return _internal_stackcount();
+}
+inline void GameplayEffectSyncEntry::set_stackcount(::uint32_t value) {
+  _internal_set_stackcount(value);
+  // @@protoc_insertion_point(field_set:Protocol.GameplayEffectSyncEntry.stackCount)
+}
+inline ::uint32_t GameplayEffectSyncEntry::_internal_stackcount() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.stackcount_;
+}
+inline void GameplayEffectSyncEntry::_internal_set_stackcount(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stackcount_ = value;
+}
+
+// float remainingDurationSec = 5;
+inline void GameplayEffectSyncEntry::clear_remainingdurationsec() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.remainingdurationsec_ = 0;
+}
+inline float GameplayEffectSyncEntry::remainingdurationsec() const {
+  // @@protoc_insertion_point(field_get:Protocol.GameplayEffectSyncEntry.remainingDurationSec)
+  return _internal_remainingdurationsec();
+}
+inline void GameplayEffectSyncEntry::set_remainingdurationsec(float value) {
+  _internal_set_remainingdurationsec(value);
+  // @@protoc_insertion_point(field_set:Protocol.GameplayEffectSyncEntry.remainingDurationSec)
+}
+inline float GameplayEffectSyncEntry::_internal_remainingdurationsec() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.remainingdurationsec_;
+}
+inline void GameplayEffectSyncEntry::_internal_set_remainingdurationsec(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.remainingdurationsec_ = value;
+}
+
+// .Protocol.GameplayEffectDurationPolicy durationPolicy = 6;
+inline void GameplayEffectSyncEntry::clear_durationpolicy() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.durationpolicy_ = 0;
+}
+inline ::Protocol::GameplayEffectDurationPolicy GameplayEffectSyncEntry::durationpolicy() const {
+  // @@protoc_insertion_point(field_get:Protocol.GameplayEffectSyncEntry.durationPolicy)
+  return _internal_durationpolicy();
+}
+inline void GameplayEffectSyncEntry::set_durationpolicy(::Protocol::GameplayEffectDurationPolicy value) {
+  _internal_set_durationpolicy(value);
+  // @@protoc_insertion_point(field_set:Protocol.GameplayEffectSyncEntry.durationPolicy)
+}
+inline ::Protocol::GameplayEffectDurationPolicy GameplayEffectSyncEntry::_internal_durationpolicy() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::GameplayEffectDurationPolicy>(_impl_.durationpolicy_);
+}
+inline void GameplayEffectSyncEntry::_internal_set_durationpolicy(::Protocol::GameplayEffectDurationPolicy value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.durationpolicy_ = value;
+}
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif  // __GNUC__
@@ -2440,6 +2929,18 @@ struct is_proto_enum<::Protocol::FinalEndingCinematicContext> : std::true_type {
 template <>
 inline const EnumDescriptor* GetEnumDescriptor<::Protocol::FinalEndingCinematicContext>() {
   return ::Protocol::FinalEndingCinematicContext_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::GameplayEffectDurationPolicy> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::GameplayEffectDurationPolicy>() {
+  return ::Protocol::GameplayEffectDurationPolicy_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::BeaconCinematicType> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::BeaconCinematicType>() {
+  return ::Protocol::BeaconCinematicType_descriptor();
 }
 
 }  // namespace protobuf

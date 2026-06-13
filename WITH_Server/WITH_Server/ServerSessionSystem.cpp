@@ -473,6 +473,21 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 				pending.playerNetId,
 				*stats);
 		}
+
+		const GameplayEffectStateComp* const effects =
+			view.GetComponent<GameplayEffectStateComp>(pending.entity);
+		const GameplayEffectReplicationComp* const effectReplication =
+			view.GetComponent<GameplayEffectReplicationComp>(pending.entity);
+		if (effects != nullptr && effectReplication != nullptr)
+		{
+			(void)ServerPacketStager::StageGameplayEffectPacketToSession(
+				_network,
+				sessionId,
+				pending.playerNetId,
+				*effects,
+				*effectReplication,
+				false);
+		}
 	}
 
 	ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(

@@ -12,6 +12,8 @@ public:
 		, _nextPartyRequestId(1)
 		, _nextRespawnRequestId(1)
 		, _nextTitleRequestId(1)
+		, _nextVoteId(1)
+		, _nextCinematicStartReqeustId(1)
 	{
 	}
 
@@ -52,6 +54,9 @@ public:
 	bool SendFinalClearChoiceSubmit(uint64_t voteId, bool choosePvp);
 
 	bool SendFinalEndingCinematicDone(const Protocol::FinalEndingCinematicContext& ctx);
+	
+	// TODO: Cinematic 상호작용할 때 호출
+	bool SendBeaconCinematicStartRequest();
 
 private:
 	bool TrySendInternal(SendBuffer* sendBuffer);
@@ -61,4 +66,5 @@ private:
 	uint32_t _nextRespawnRequestId;
 	uint32_t _nextTitleRequestId;
 	uint64_t _nextVoteId;
+	uint32_t _nextCinematicStartReqeustId;
 };
