@@ -26,6 +26,8 @@ public:
 	void Clear();
 
 	const vector<shared_ptr<GameObject>>& GetObjects() const { return objects; }
+	Mesh* GetMesh() const { return mesh; }
+	bool IsCastShadow() const { return castShadow; }
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetCBAddress(size_t idx) const { return objectCBs[idx]->GetGPUVirtualAddress(); }
 	void SetCastShadow(bool in) { castShadow = in; }

@@ -35,6 +35,7 @@ public:
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
+	const vector<shared_ptr<InstancingBatch>>& GetInstancingBatches() const { return instancingBatches; }
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 

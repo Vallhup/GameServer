@@ -11,6 +11,7 @@ enum class PSOType {
 	Compute,
 	ClusterLightCull,
 	Shadow,
+	PointShadow,
 	DebugLine,
 	Skybox,
 	Ssao,
@@ -63,6 +64,7 @@ private:
 	void InitializeComputeAnimationShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
 	void InitializeClusterLightCullShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
 	void InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
+	void InitializePointShadowPSO(ID3D12Device* device, ID3D12RootSignature* rootSig);
 	void InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig);
 	void InitializeSkyboxShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeSsaoShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);

@@ -276,6 +276,7 @@ exit 0</Command>
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="ImageUI.cpp" />
+    <ClCompile Include="RunDustEffectComponent.cpp" />
     <ClCompile Include="StartSceneUIController.cpp" />
     <ClCompile Include="SwordSpecialEffectComponent.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -384,6 +385,7 @@ exit 0</Command>
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="ImageUI.h" />
+    <ClInclude Include="RunDustEffectComponent.h" />
     <ClInclude Include="StartSceneUIController.h" />
     <ClInclude Include="SwordSpecialEffectComponent.h" />
     <ClInclude Include="Terrain.h" />

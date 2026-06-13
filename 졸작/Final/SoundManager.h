@@ -19,6 +19,7 @@ public:
     void SetBGMVolume(float volume);
 
     void PreloadSFX(const char* path);
+    void PreloadEverySFX();
     void PlaySFX(const char* path);
     void PlaySFX3D(const char* path, const XMFLOAT3& worldPos);
     void StopAllSFX();

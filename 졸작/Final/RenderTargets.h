@@ -24,6 +24,7 @@ public:
 
 	ID3D12DescriptorHeap* GetDeferredSRVHeap() const { return deferredSRVHeap.Get(); }
 	ID3D12DescriptorHeap* GetHDRSceneSRVHeap() const { return HDRSceneSRVHeap.Get(); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetPointShadowSRV() const { return pointShadowSRVHandle; }
 
 private:
 	void CreateDepthStencilBuffer(ID3D12Device* device);
@@ -52,6 +53,7 @@ private:
 
 	// Deferred SRV Heap
 	ComPtr<ID3D12DescriptorHeap> deferredSRVHeap;
+	D3D12_GPU_DESCRIPTOR_HANDLE pointShadowSRVHandle = {};
 
 	// HDR Scene
 	ComPtr<ID3D12Resource> HDRSceneRT;

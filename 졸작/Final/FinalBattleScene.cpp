@@ -76,17 +76,15 @@ void FinalBattleScene::InitializeSceneEnvironments()
 
 #pragma region Intialize Candles
 	auto* lm = coreRef->GetLightMgr();
-	const LightData* lights = lm->GetLights();
-	int lcount = lm->GetDeferredLightData().lightCount;
-
+	vector<XMFLOAT3> positions = lm->LoadCandlePositions(L"../Assets/FBXModel/GothicMap/GothicCandles.txt");
 	auto flameObject = make_shared<GameObject>();
 	flameObject->SetId(-1);
 	auto flame = flameObject->AddComponent<FlameComponent>();
-	flame->Initialize(coreRef->GetDevice(), 143);
+	flame->Initialize(coreRef->GetDevice(), positions.size());
 	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
 	flame->SetParticleSize(0.35f);
-	for (int i = 1; i < lcount; ++i)
-		flame->Spawn(lights[i].position);
+	for (size_t i = 0; i < positions.size(); ++i)
+		flame->Spawn(positions[i]);
 	AddGameObject(flameObject);
 #pragma endregion
 }

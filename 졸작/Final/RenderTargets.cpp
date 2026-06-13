@@ -167,7 +167,7 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 {
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 7; // Gbuffer(3) + depth(1) + shadow(1) + Ssao(1) + FogRT(1)
+	srvHeapDesc.NumDescriptors = 8; // Gbuffer(3) + depth(1) + shadow(1) + Ssao(1) + FogRT(1) + PointShadow(1)
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&deferredSRVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create Deferred SRV Heap");
@@ -214,6 +214,21 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 
 	device->CreateShaderResourceView(fogRT.Get(), nullptr, srvCpuHandle);
 	OutputDebugStringA("Fog RT SRV Created\n");
+	srvCpuHandle.ptr += srvSize;
+	srvGpuHandle.ptr += srvSize;
+
+	// 슬롯 7: point shadow cube array (t14, root param 4)
+	D3D12_SHADER_RESOURCE_VIEW_DESC pointShadowSrvDesc = {};
+	pointShadowSrvDesc.Format = DXGI_FORMAT_R16_UNORM;
+	pointShadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBEARRAY;
+	pointShadowSrvDesc.TextureCubeArray.MostDetailedMip = 0;
+	pointShadowSrvDesc.TextureCubeArray.MipLevels = 1;
+	pointShadowSrvDesc.TextureCubeArray.First2DArrayFace = 0;
+	pointShadowSrvDesc.TextureCubeArray.NumCubes = ShadowMappingManager::POINT_SHADOW_MAX_LIGHTS;
+	pointShadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	device->CreateShaderResourceView(shadowMgr->GetPointShadowResource(), &pointShadowSrvDesc, srvCpuHandle);
+	pointShadowSRVHandle = srvGpuHandle;
+	OutputDebugStringA("Point Shadow Cube Array SRV Created\n");
 
 	OutputDebugStringA("Deferred Rendering Descriptors created successfully!!\n");
 }

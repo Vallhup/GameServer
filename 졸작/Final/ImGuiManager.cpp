@@ -297,17 +297,24 @@ void ImGuiManager::DrawDebugUI()
 
                 ImGui::Separator();
                 ImGui::TextUnformatted("Overhead (Indoor) Shadow");
-                ImGui::Checkbox("Follow Nearest Light", &sm->GetOverheadFollowNearestLight());
                 ImGui::SliderFloat("Shadow Strength", &cs.overheadStrength, 0.0f, 1.0f);
                 ImGui::SliderFloat("Ambient Fill", &cs.overheadAmbientBoost, 1.0f, 4.0f);
-
-                if (sm->GetOverheadFollowNearestLight())
-                    ImGui::SliderFloat("Max Tilt (length)", &sm->GetOverheadTilt(), 0.0f, 3.0f);
-                else
-                    ImGui::SliderFloat3("Light Dir", &sm->GetOverheadLightDir().x, -1.0f, 1.0f);
-
+                ImGui::SliderFloat3("Light Dir", &sm->GetOverheadLightDir().x, -1.0f, 1.0f);
                 ImGui::SliderFloat("Half Size", &sm->GetOverheadHalfSize(), 10.0f, 120.0f);
                 ImGui::SliderFloat("Height", &sm->GetOverheadHeight(), 20.0f, 200.0f);
+
+                ImGui::Separator();
+                ImGui::TextUnformatted("Point Light Static Shadow (Final)");
+
+                if (ImGui::SliderFloat("Strength##point", &cs.pointShadowStrength, 0.0f, 1.0f))
+                    sm->UploadCsmConstants();
+
+                ImGui::SliderFloat("Near##point", &cs.pointShadowNear, 0.05f, 1.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                {
+                    sm->UploadCsmConstants();
+                    sm->SetPointShadowBaked(false);   
+                }
             }
         }
         ImGui::End();

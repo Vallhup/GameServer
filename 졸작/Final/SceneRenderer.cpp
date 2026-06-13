@@ -311,6 +311,33 @@ void SceneRenderer::RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT insta
     }
 }
 
+void SceneRenderer::RenderPointShadowChunk(DX12Core& core, InstancingBatch* batch, D3D12_GPU_VIRTUAL_ADDRESS instanceVA, UINT instanceCount)
+{
+    Mesh* mesh = batch->GetMesh();
+    if (!mesh || !mesh->GetVertexIndexBuffer() || instanceCount == 0) return;
+
+    auto cmdList = core.GetGraphicsCmdList();
+    cmdList->SetGraphicsRootShaderResourceView(12, instanceVA);
+
+    mesh->GetVertexIndexBuffer()->Bind(cmdList);
+
+    if (mesh->HasMultiMaterial())
+    {
+        const auto& subMeshes = mesh->GetSubMeshes();
+
+        for (size_t i = 0; i < subMeshes.size(); ++i)
+        {
+            cmdList->SetGraphicsRootConstantBufferView(1, batch->GetCBAddress(i));
+            mesh->GetVertexIndexBuffer()->DrawIndexedInstanced(cmdList, subMeshes[i].indexCount, instanceCount, subMeshes[i].startIndex);
+        }
+    }
+    else
+    {
+        cmdList->SetGraphicsRootConstantBufferView(1, batch->GetCBAddress(0));
+        mesh->GetVertexIndexBuffer()->DrawInstanced(cmdList, instanceCount);
+    }
+}
+
 void SceneRenderer::RenderCollisionMeshWireframe(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
 {
     auto cmdList = core.GetGraphicsCmdList();

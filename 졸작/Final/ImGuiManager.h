@@ -103,7 +103,7 @@ private:
     bool  showFpsCounter = false;
 
     // 그래픽 페이지 상태
-    bool  ssaoEnabled   = true;  
+    bool  ssaoEnabled   = true;
     float shadowDarkness = 70.0f;
     float fogPickX = 0.0f, fogPickY = 0.0f;  
     bool loginSuccess = false;

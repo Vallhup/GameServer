@@ -8,7 +8,7 @@ void ShadowMappingManager::Initialize(ID3D12Device* device)
 	SettingsForCSM();
 	CreateCSMResources(device);
 	CreateStaticCSMResources(device);
-	CreateAtlasResources();
+	CreatePointShadowResources(device);
 }
 
 void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
@@ -91,63 +91,7 @@ void ShadowMappingManager::UpdateOverheadShadow(const XMFLOAT3& center)
 	// 동적 캐스터만 슬라이스 0에 그려지고, 셰이더는 lightVP[0]만 샘플한다.
 	XMVECTOR c = XMLoadFloat3(&center);
 
-	// 성당 중심축 바닥 조명 (FinalMapLightData.txt에서 추출한 x≈0 강한 floor light 스파인).
-	// 그림자 방향만 여기서 끌어옴. 측면/벽/천장 조명은 제외 → 좌우로 튀는 현상 방지.
-	// TODO: 추후 모델러가 별도 데이터로 제공 예정. 그때 이 고정 배열을 교체.
-	static const XMFLOAT3 kCenterFloorLights[] = {
-		{ -0.117f, 8.25f, -14.93f },
-		{ -0.117f, 6.46f, -27.03f },
-		{  0.102f, 8.85f, -35.08f },
-		{  0.102f, 8.85f, -44.54f },
-		{ -0.117f, 6.90f, -51.95f },
-		{  0.015f, 8.24f, -72.63f },
-		{ -0.247f, 8.89f, -84.60f },
-		{  0.015f, 8.39f, -98.13f },
-	};
-
-	// 빛 진행 방향 = 하향(-Y) + 수평 lean. lean을 가장 가까운 중심 바닥 조명에서 끌어옴.
-	XMVECTOR dir;
-	if (overheadFollowNearestLight)
-	{
-		// 각 조명의 물리 lean(=수평거리/높이=tan 입사각)을 역제곱 거리 가중 평균으로 혼합.
-		// 단일 nearest의 전환 스냅을 없애 방향이 연속적으로 회전 → 튐 제거.
-		// 조명 바로 밑이면 lean≈0(짧음), 떨어질수록 lean↑(길어짐). overheadTilt = 최대 길이 클램프.
-		XMFLOAT2 targetLean = { overheadLightDir.x, overheadLightDir.z };  // fallback
-		float accX = 0.0f, accZ = 0.0f, wSum = 0.0f;
-		for (int i = 0; i < (int)_countof(kCenterFloorLights); ++i)
-		{
-			float dx = center.x - kCenterFloorLights[i].x;
-			float dz = center.z - kCenterFloorLights[i].z;
-			float vy = kCenterFloorLights[i].y - center.y;   // 조명이 위 → 양수
-			if (vy <= 1e-3f) continue;
-
-			float d2 = dx * dx + dz * dz;
-			float w = 1.0f / (d2 + 1.0f);   // 역제곱(eps=1: 조명 바로 위에서 발산 방지)
-			accX += (dx / vy) * w;
-			accZ += (dz / vy) * w;
-			wSum += w;
-		}
-		if (wSum > 0.0f)
-		{
-			float lx = accX / wSum;
-			float lz = accZ / wSum;
-			float leanLen = sqrtf(lx * lx + lz * lz);
-			if (leanLen > overheadTilt) { float s = overheadTilt / leanLen; lx *= s; lz *= s; }
-			targetLean = { lx, lz };
-		}
-
-		// 조명 전환 시 방향 튐 방지 — 매 프레임 부드럽게 수렴
-		const float smooth = 0.1f;
-		overheadSmoothedLean.x += (targetLean.x - overheadSmoothedLean.x) * smooth;
-		overheadSmoothedLean.y += (targetLean.y - overheadSmoothedLean.y) * smooth;
-
-		dir = XMVector3Normalize(XMVectorSet(overheadSmoothedLean.x, -1.0f, overheadSmoothedLean.y, 0.0f));
-	}
-	else
-	{
-		dir = XMVector3Normalize(XMLoadFloat3(&overheadLightDir));  // 수동 고정 방향
-	}
-
+	XMVECTOR dir = XMVector3Normalize(XMLoadFloat3(&overheadLightDir));  // 고정 방향
 	XMVECTOR eye = XMVectorSubtract(c, XMVectorScale(dir, overheadHeight)); // 빛이 오는 위치(center 위쪽)
 
 	// dir 기울기에 안정적인 up: 거의 수직이면 +Z, 많이 누우면 +Y 기준으로 직교 basis 구성
@@ -184,9 +128,11 @@ void ShadowMappingManager::SettingsForCSM()
 	csmConstants.shadowAmbientMin = 0.8f;
 	csmConstants.shadowFloor = 0.0f;
 	csmConstants.overheadMode = 0.0f;
-	csmConstants.overheadStrength = 0.5f;
+	csmConstants.overheadStrength = 0.25f;
 	csmConstants.overheadAmbientBoost = 1.5f;
-	csmConstants.shadowPad2 = { 0.0f, 0.0f, 0.0f };
+	csmConstants.pointShadowCount = 0.0f;
+	csmConstants.pointShadowStrength = 1.0f;
+	csmConstants.pointShadowNear = POINT_SHADOW_NEAR;
 }
 
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)
@@ -286,6 +232,121 @@ void ShadowMappingManager::CreateStaticCSMResources(ID3D12Device* device)
 	OutputDebugStringA("Static Shadow Map cache (cascade 2) created!!\n");
 }
 
-void ShadowMappingManager::CreateAtlasResources()
+void ShadowMappingManager::CreatePointShadowResources(ID3D12Device* device)
 {
+	const UINT sliceCount = POINT_SHADOW_MAX_LIGHTS * 6;
+
+	D3D12_RESOURCE_DESC desc = {};
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	desc.Width = POINT_SHADOW_MAP_SIZE;
+	desc.Height = POINT_SHADOW_MAP_SIZE;
+	desc.DepthOrArraySize = sliceCount;
+	desc.MipLevels = 1;
+	desc.Format = DXGI_FORMAT_R16_TYPELESS;
+	desc.SampleDesc.Count = 1;
+	desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_D16_UNORM;
+	clearValue.DepthStencil.Depth = 1.0f;
+
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProps, D3D12_HEAP_FLAG_NONE, &desc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue,
+		IID_PPV_ARGS(&pointShadowTexture));
+	MASSERT(SUCCEEDED(hr), "Failed to create point shadow cube array!!\n");
+
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.NumDescriptors = sliceCount;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&pointShadowDSVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create point shadow DSV Heap!!\n");
+
+	pointShadowDsvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	UINT dsvSize = pointShadowDsvSize;
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = pointShadowDSVHeap->GetCPUDescriptorHandleForHeapStart();
+
+	for (UINT i = 0; i < sliceCount; ++i)
+	{
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = DXGI_FORMAT_D16_UNORM;
+		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+		dsvDesc.Texture2DArray.MipSlice = 0;
+		dsvDesc.Texture2DArray.FirstArraySlice = i;
+		dsvDesc.Texture2DArray.ArraySize = 1;
+		device->CreateDepthStencilView(pointShadowTexture.Get(), &dsvDesc, handle);
+
+		handle.ptr += dsvSize;
+	}
+
+	pointShadowFaceCBPool = make_unique<UploadBuffer>();
+	pointShadowFaceCBPool->Initialize(device, CONSTANT_BUFFER_ALIGNMENT * sliceCount);
+
+	pointShadowInstancePool = make_unique<UploadBuffer>();
+	pointShadowInstancePool->Initialize(device, sizeof(XMMATRIX) * 65536);  // 4MB
+
+	OutputDebugStringA("Point shadow cube array created!!\n");
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE ShadowMappingManager::GetPointShadowDSV(int slice) const
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = pointShadowDSVHeap->GetCPUDescriptorHandleForHeapStart();
+	handle.ptr += static_cast<SIZE_T>(pointShadowDsvSize) * slice;
+	return handle;
+}
+
+D3D12_GPU_VIRTUAL_ADDRESS ShadowMappingManager::WritePointShadowFaceCB(int slice, const XMFLOAT3& lightPos, int face, float range)
+{
+	static const XMVECTORF32 kFaceDirs[6] = {
+		{ {  1,  0,  0, 0 } }, { { -1,  0,  0, 0 } },
+		{ {  0,  1,  0, 0 } }, { {  0, -1,  0, 0 } },
+		{ {  0,  0,  1, 0 } }, { {  0,  0, -1, 0 } },
+	};
+	static const XMVECTORF32 kFaceUps[6] = {
+		{ { 0, 1,  0, 0 } }, { { 0, 1,  0, 0 } },
+		{ { 0, 0, -1, 0 } }, { { 0, 0,  1, 0 } },
+		{ { 0, 1,  0, 0 } }, { { 0, 1,  0, 0 } },
+	};
+
+	XMVECTOR eye = XMLoadFloat3(&lightPos);
+	XMMATRIX view = XMMatrixLookToLH(eye, kFaceDirs[face], kFaceUps[face]);
+
+	float nearZ = csmConstants.pointShadowNear;
+	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV2, 1.0f, nearZ, max(range, nearZ + 0.01f));
+
+	CascadeShadowConstants faceConstants = {};
+	faceConstants.lightVP[0] = XMMatrixTranspose(XMMatrixMultiply(view, proj));
+
+	size_t offset = static_cast<size_t>(slice) * CONSTANT_BUFFER_ALIGNMENT;
+	pointShadowFaceCBPool->CopyData(&faceConstants, sizeof(CascadeShadowConstants), offset);
+	return pointShadowFaceCBPool->GetGPUVirtualAddress() + offset;
+}
+
+void ShadowMappingManager::TransitionPointShadowToDepthWrite(ID3D12GraphicsCommandList* cmd)
+{
+	if (!pointShadowInSrvState)
+		return;
+
+	D3D12_RESOURCE_BARRIER toDw = CD3DX12_RESOURCE_BARRIER::Transition(
+		pointShadowTexture.Get(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	cmd->ResourceBarrier(1, &toDw);
+	pointShadowInSrvState = false;
+}
+
+void ShadowMappingManager::TransitionPointShadowToShaderResource(ID3D12GraphicsCommandList* cmd)
+{
+	if (pointShadowInSrvState)
+		return;
+
+	D3D12_RESOURCE_BARRIER toSrv = CD3DX12_RESOURCE_BARRIER::Transition(
+		pointShadowTexture.Get(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	cmd->ResourceBarrier(1, &toSrv);
+	pointShadowInSrvState = true;
 }

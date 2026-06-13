@@ -83,7 +83,9 @@ cbuffer ShadowFrameCB : register(b5)
     float overheadMode;       // 1=실내 overhead 동적 그림자, 0=캐스케이드
     float overheadStrength;   // overhead 그림자 강도 (0=없음, 1=완전 어둠)
     float overheadAmbientBoost; // 실내 IBL ambient 배율 (대비 완화)
-    float3 shadowPad2;
+    float pointShadowCount;     // 베이크된 point light 수. lights[1..N] ↔ cube slice (i-1). 0이면 비활성
+    float pointShadowStrength;  // point 그림자 차폐 강도 (0=없음, 1=완전 어둠)
+    float pointShadowNear;      // 베이크 시 near plane (ref depth 복원용)
 };
 
 cbuffer FogConstants : register(b6)
@@ -206,6 +208,9 @@ StructuredBuffer<LightData> lights : register(t11);
 // Clustered Shading — PS read view
 StructuredBuffer<uint>  clusterLightIndices : register(t12);
 StructuredBuffer<uint2> clusterLightGrid    : register(t13);
+
+// Point light 정적 그림자 (cube array, 씬 진입 시 베이크). slice = lightIndex - 1
+TextureCubeArray pointShadowMaps : register(t14);
 
 // Clustered Shading — CS write view (same resources as t12/t13/counter)
 RWStructuredBuffer<uint>  clusterLightIndicesRW : register(u1);

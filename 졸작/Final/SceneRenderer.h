@@ -23,6 +23,7 @@ public:
     void RenderWater(DX12Core& core, Water* water);
     void RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer, InstancingBatch* batch);
     void RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer, InstancingBatch* batch);
+    void RenderPointShadowChunk(DX12Core& core, InstancingBatch* batch, D3D12_GPU_VIRTUAL_ADDRESS instanceVA, UINT instanceCount);
     void RenderCollisionMeshWireframe(DX12Core& core, const vector<shared_ptr<GameObject>>& objects);
 
 

@@ -103,6 +103,13 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
                 float3 radiance = lights[i].color * lights[i].intensity * attenuation;
 
                 lightContribution = CalculateCurrentPBR(N, V, L, baseColor, metallic, roughness, radiance);
+
+                // 정적 그림자 (베이크된 cube array, slice = i-1)
+                if (i >= 1 && float(i - 1) < pointShadowCount)
+                {
+                    float ps = SamplePointShadow(worldPos, N, lights[i].position, lights[i].range, i - 1);
+                    lightContribution *= lerp(1.0 - pointShadowStrength, 1.0, ps);
+                }
             }
         }
 

@@ -16,6 +16,10 @@
 #include "LookUpTextures.h"
 #include "Material.h"
 #include "BloomManager.h"
+#include "InstancingBatch.h"
+#include "GameObject.h"
+#include "Transform.h"
+#include "SceneRenderer.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -73,7 +77,15 @@ void DX12Core::Update()
 	if (SCENE_MANAGER->GetCurrentSceneType() == SceneType::Final)
 		shadowMgr->UpdateOverheadShadow(playerCurrentPos);
 	else
+	{
+		// Final을 떠나면 point shadow 비활성 + 재진입 시 재베이크
+		if (shadowMgr->IsPointShadowBaked())
+		{
+			shadowMgr->SetPointShadowBaked(false);
+			shadowMgr->GetCsmConstants().pointShadowCount = 0.0f;
+		}
 		shadowMgr->UpdateCascadeShadow(SCENE_MANAGER->GetCurrentScene()->GetCamera()->GetTargetPosition());
+	}
 }
 
 void DX12Core::BeginShadowPass(int cascadeIdx)
@@ -297,6 +309,122 @@ void DX12Core::EndOverheadShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT&
 
 	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
 	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
+}
+
+void DX12Core::BakePointShadows(const vector<shared_ptr<InstancingBatch>>& batches, SceneRenderer* renderer,
+	const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
+{
+	auto cmd = deviceCtx->GetGraphicsCmdList();
+
+	int lightCount = lightMgr->GetDeferredLightData().lightCount;
+	int pointCount = min(lightCount - 1, (int)ShadowMappingManager::POINT_SHADOW_MAX_LIGHTS);
+	if (pointCount <= 0)
+	{
+		shadowMgr->SetPointShadowBaked(true);
+		return;
+	}
+
+	shadowMgr->TransitionPointShadowToDepthWrite(cmd);
+
+	const LightData* lights = lightMgr->GetLights();
+	UploadBuffer* instancePool = shadowMgr->GetPointShadowInstancePool();
+	constexpr size_t kInstancePoolCapacity = sizeof(XMMATRIX) * 65536;
+	size_t instanceOffset = 0;
+
+	UINT mapSize = ShadowMappingManager::POINT_SHADOW_MAP_SIZE;
+	D3D12_VIEWPORT bakeVp = { 0, 0, (float)mapSize, (float)mapSize, 0.0f, 1.0f };
+	D3D12_RECT bakeRect = { 0, 0, (LONG)mapSize, (LONG)mapSize };
+	cmd->RSSetViewports(1, &bakeVp);
+	cmd->RSSetScissorRects(1, &bakeRect);
+
+	cmd->SetGraphicsRootSignature(GetRootSig()->Get());
+	Material::BindBindlessResources(cmd);   // ShadowPS의 알파텍스처/materialBuffer
+	cmd->SetGraphicsRootConstantBufferView(0, frameCB->GetGPUVirtualAddress());
+	cmd->SetGraphicsRoot32BitConstant(16, 0, 0);   // ShadowVS가 lightVP[0] 사용
+	cmd->SetPipelineState(shader->GetPSO(PSOType::PointShadow));
+
+	struct DrawChunk { InstancingBatch* batch; D3D12_GPU_VIRTUAL_ADDRESS va; UINT count; };
+	vector<DrawChunk> chunks;
+	vector<XMMATRIX> casterMatrices;
+
+	for (int li = 0; li < pointCount; ++li)
+	{
+		const LightData& light = lights[li + 1];
+		if (light.type != 1 || light.intensity <= 0.0f || light.range <= 0.0f)
+			continue;
+
+		BoundingSphere lightSphere(light.position, light.range);
+
+		// 라이트 영향권의 정적 캐스터 수집 (OBB vs range 구체) — 모든 면이 같은 캐스터 셋 공유
+		chunks.clear();
+		for (const auto& batch : batches)
+		{
+			if (!batch->IsCastShadow())
+				continue;
+
+			casterMatrices.clear();
+			for (const auto& obj : batch->GetObjects())
+			{
+				const BoundingOrientedBox& obb = obj->GetWorldBoundingBox();
+				bool hit;
+				if (obb.Extents.x > 0.0f)
+					hit = obb.Intersects(lightSphere);
+				else
+				{
+					const XMFLOAT3& p = obj->GetComponent<Transform>()->GetPosition();
+					float dx = p.x - light.position.x, dy = p.y - light.position.y, dz = p.z - light.position.z;
+					float reach = light.range + 20.0f;   // 바운딩 없는 인스턴스는 거리 기반 보수적 포함
+					hit = (dx * dx + dy * dy + dz * dz) < reach * reach;
+				}
+				if (hit)
+					casterMatrices.push_back(XMMatrixTranspose(obj->GetComponent<Transform>()->GetWorldMatrix()));
+			}
+
+			if (casterMatrices.empty())
+				continue;
+
+			size_t bytes = sizeof(XMMATRIX) * casterMatrices.size();
+			if (instanceOffset + bytes > kInstancePoolCapacity)
+			{
+				OutputDebugStringA("Point shadow bake instance pool overflowed!!\n");
+				break;
+			}
+
+			instancePool->CopyData(casterMatrices.data(), bytes, instanceOffset);
+			chunks.push_back({ batch.get(), instancePool->GetGPUVirtualAddress() + instanceOffset,
+				static_cast<UINT>(casterMatrices.size()) });
+			instanceOffset += bytes;
+		}
+
+		for (int face = 0; face < 6; ++face)
+		{
+			int slice = li * 6 + face;
+			D3D12_CPU_DESCRIPTOR_HANDLE dsv = shadowMgr->GetPointShadowDSV(slice);
+			cmd->OMSetRenderTargets(0, nullptr, FALSE, &dsv);
+			cmd->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+			if (chunks.empty())
+				continue;
+
+			cmd->SetGraphicsRootConstantBufferView(5,
+				shadowMgr->WritePointShadowFaceCB(slice, light.position, face, light.range));
+
+			for (const auto& chunk : chunks)
+				renderer->RenderPointShadowChunk(*this, chunk.batch, chunk.va, chunk.count);
+		}
+	}
+
+	shadowMgr->TransitionPointShadowToShaderResource(cmd);
+
+	shadowMgr->GetCsmConstants().pointShadowCount = static_cast<float>(pointCount);
+	shadowMgr->UploadCsmConstants();   // 이번 프레임 LightingPass부터 바로 반영
+	shadowMgr->SetPointShadowBaked(true);
+
+	cmd->RSSetViewports(1, &vp);
+	cmd->RSSetScissorRects(1, &rect);
+
+	OutputDebugStringA(("Point shadows baked: " + to_string(pointCount) + " lights, "
+		+ to_string(instanceOffset / sizeof(XMMATRIX)) + " caster instances\n").c_str());
 }
 
 void DX12Core::ForwardPass()
@@ -764,6 +892,7 @@ void DX12Core::LightingPass()
 	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(13, rtMgr->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(4, rtMgr->GetPointShadowSRV());
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
 

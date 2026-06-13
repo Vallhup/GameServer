@@ -9,6 +9,7 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeComputeAnimationShader(device, rootSig, L"../Shaders/Animation.hlsli");
     InitializeClusterLightCullShader(device, rootSig, L"../Shaders/ClusterCullCS.hlsli");
     InitializeShadowShader(device, rootSig, L"../Shaders/ShadowVS.hlsli", L"../Shaders/ShadowPS.hlsli");
+    InitializePointShadowPSO(device, rootSig);
     InitializeDebugLinePSO(device, rootSig);
     InitializeSkyboxShader(device, rootSig, L"../Shaders/SkyboxVS.hlsli", L"../Shaders/SkyboxPS.hlsli");
     InitializeSsaoShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/SsaoPS.hlsli");
@@ -231,6 +232,45 @@ void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* r
 
     HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Shadow)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Shadow PSO");
+}
+
+void Shader::InitializePointShadowPSO(ID3D12Device* device, ID3D12RootSignature* rootSig)
+{
+    // Shadow PSO와 같은 셰이더(ShadowVS/PS). 차이: DSV가 D16 큐브 배열 + acne 억제용 depth bias.
+    // InitializeShadowShader가 먼저 호출되어 블롭이 컴파일돼 있어야 한다.
+    D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "INDICES", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 76, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::ShadowVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ShadowVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::ShadowPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ShadowPS)]->GetBufferSize() };
+
+    CD3DX12_RASTERIZER_DESC rasterizerDesc(D3D12_DEFAULT);
+    rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+    rasterizerDesc.DepthBias = 32;
+    rasterizerDesc.SlopeScaledDepthBias = 1.5f;
+
+    psoDesc.RasterizerState = rasterizerDesc;
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.NumRenderTargets = 0;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+    psoDesc.DSVFormat = DXGI_FORMAT_D16_UNORM;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::PointShadow)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create Point Shadow PSO");
 }
 
 void Shader::InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig)
