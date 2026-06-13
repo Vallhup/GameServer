@@ -91,6 +91,7 @@ private:
 	void HandlePvpRoundResult(const Protocol::SC_PVP_ROUND_RESULT_PACKET& pvpResult);
 	void HandleGameplayEffectSync(const Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET& effectSync);
 	void HandleBeaconCinematicStart(const Protocol::SC_BEACON_CINEMATIC_START_PACKET& cinematicStart);
+	void HandleTitleReplication(const Protocol::SC_TITLE_REPLICATION_PACKET& title);
 
 	void UpdateDissolves();
 	void UpdateBreakerShields();

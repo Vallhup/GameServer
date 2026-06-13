@@ -72,7 +72,8 @@ void CharacterSpawnService::Clear() noexcept
 CharacterSpawnResult CharacterSpawnService::RequestCharacterSpawn(
 	const CharacterDataResult& data,
 	NetId reservedPlayerNetId,
-	uint64_t accountId)
+	uint64_t accountId,
+	TitleId equippedTitleId)
 {
 	if (data.sessionId == 0)
 	{
@@ -156,6 +157,7 @@ CharacterSpawnResult CharacterSpawnService::RequestCharacterSpawn(
 	params.rotation = data.spawnRotation;
 	params.netId = reservedPlayerNetId;
 	params.sessionId = data.sessionId;
+	params.equippedTitleId = equippedTitleId;
 
 	const AccountCombatStatOverride& statOverride =
 		_deps.accountCombatStatOverride;

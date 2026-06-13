@@ -7,6 +7,7 @@
 #include "CharacterDataService.h"
 #include "Entity.h"
 #include "Session.h"
+#include "TitleDef.h"
 #include "WorldId.h"
 #include "NetId.h"
 
@@ -77,7 +78,8 @@ public:
 	CharacterSpawnResult RequestCharacterSpawn(
 		const CharacterDataResult& data,
 		NetId reservedPlayerNetId,
-		uint64_t accountId);
+		uint64_t accountId,
+		TitleId equippedTitleId);
 
 	bool CancelPendingSpawn(SessionId sessionId) noexcept;
 

@@ -7,6 +7,7 @@
 #include "FrameworkRuntime.h"
 #include "NetworkRuntime.h"
 #include "Session.h"
+#include "TitleDef.h"
 #include "WorldId.h"
 #include "ECS/GameplayRuntimeComponents.h"
 
@@ -18,6 +19,12 @@ public:
 		Entity entity,
 		CharacterId& outCharacterId,
 		const WorldTransformComp*& outTransform);
+
+	static bool TryGetPlazaPlayerTitleState(
+		FrameworkRuntime& framework,
+		WorldId worldId,
+		Entity entity,
+		TitleId& outTitleId);
 
 	static void StageExistingWorldEntitiesForSession(
 		FrameworkRuntime& framework,

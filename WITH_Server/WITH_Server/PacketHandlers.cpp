@@ -21,6 +21,7 @@
 #include "RegisterAccount.h"
 #include "TitleCommands.h"
 #include "WorldDef.h"
+#include "WorldInstance.h"
 #include "NetworkRuntime.h"
 #include "NetworkTimingService.h"
 #include "ODBCDatabaseBackend.h"
@@ -111,6 +112,71 @@ namespace
     {
         (void)ctx;
         return 0;
+    }
+
+    TitleId ValidateEquippedTitleId(TitleId titleId) noexcept
+    {
+        if (titleId == InvalidTitleId)
+        {
+            return InvalidTitleId;
+        }
+
+        return GameDataCatalog::Current().Titles().Find(titleId) != nullptr
+            ? titleId
+            : InvalidTitleId;
+    }
+
+    bool IsPlazaWorld(
+        const FrameworkRuntime& framework,
+        WorldId worldId) noexcept
+    {
+        const WorldInstance* const world = framework.FindWorld(worldId);
+        const WorldDef* const worldDef =
+            world != nullptr ? world->GetDef() : nullptr;
+        return worldDef != nullptr && worldDef->id == WorldDefId::Plaza;
+    }
+
+    void ApplyEquippedTitleState(
+        PacketHandlerContext& svc,
+        SessionId sessionId,
+        TitleId titleId) noexcept
+    {
+        if (svc.sessionFlow == nullptr)
+        {
+            return;
+        }
+
+        SessionFlow* const flow = svc.sessionFlow->FindFlow(sessionId);
+        if (flow == nullptr)
+        {
+            return;
+        }
+
+        flow->equippedTitleId = titleId;
+        if (svc.framework == nullptr ||
+            !flow->controlledNetId.IsValid())
+        {
+            return;
+        }
+
+        const NetBindingLocation binding =
+            svc.framework->FindNetBinding(flow->controlledNetId);
+        WorldInstance* const world =
+            binding.IsValid()
+            ? svc.framework->FindWorld(binding.worldId)
+            : nullptr;
+        if (world == nullptr)
+        {
+            return;
+        }
+
+        ECSView view = world->GetRuntime().MakeView();
+        if (EquippedTitleStateComp* const state =
+            view.GetMutableComponent<EquippedTitleStateComp>(
+                binding.entity))
+        {
+            state->titleId = titleId;
+        }
     }
 
     // sessionId → worldScopeId 역산 (worldIdByScope span 순회)
@@ -1152,6 +1218,8 @@ ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx)
 
     LoginSucceeded succeededCommand{};
     succeededCommand.accountId = payload.accountId;
+    succeededCommand.equippedTitleId =
+        ValidateEquippedTitleId(payload.equippedTitleId);
     succeededCommand.controlledNetId = controlledNetId;
     const SessionFlowResult flowResult =
         svc.sessionFlow->Dispatch(sessionId, succeededCommand);
@@ -1456,11 +1524,14 @@ ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx)
     const NetId controlledNetId =
         flow != nullptr ? flow->controlledNetId : NetId::Invalid();
     const uint64_t accountId = flow != nullptr ? flow->accountId : 0;
+    const TitleId equippedTitleId =
+        flow != nullptr ? flow->equippedTitleId : InvalidTitleId;
     const CharacterSpawnResult spawnResult =
         svc.characterSpawn->RequestCharacterSpawn(
             dataResult,
             controlledNetId,
-            accountId);
+            accountId,
+            equippedTitleId);
     if (!spawnResult.Succeeded())
     {
         FWLOG_WARN(kLogCategory,
@@ -2617,6 +2688,11 @@ ExecCallResult HandleGetAccountTitlesResult(NodeExecContext& ctx)
         ? payload.equippedTitleId
         : InvalidTitleId;
 
+    ApplyEquippedTitleState(
+        svc,
+        completion.sessionId,
+        equippedTitleId);
+
     if (svc.network != nullptr)
     {
         (void)ServerPacketStager::StageStatUiBootstrapPacket(
@@ -2680,7 +2756,7 @@ ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx)
         return ExecCallResult::Success;
     }
 
-    const SessionFlow* const flow =
+    SessionFlow* const flow =
         svc.sessionFlow != nullptr
         ? svc.sessionFlow->FindFlow(completion.sessionId)
         : nullptr;
@@ -2694,6 +2770,16 @@ ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx)
 
     const bool success =
         payload.resultCode == kTitleEquipReasonSuccess;
+    const TitleId equippedTitleId = success
+        ? ValidateEquippedTitleId(payload.equippedTitleId)
+        : InvalidTitleId;
+    if (success)
+    {
+        ApplyEquippedTitleState(
+            svc,
+            completion.sessionId,
+            equippedTitleId);
+    }
     if (svc.network != nullptr)
     {
         (void)ServerPacketStager::StageTitleEquipResultPacket(
@@ -2701,7 +2787,7 @@ ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx)
             completion.sessionId,
             completion.clientRequestId,
             success,
-            payload.equippedTitleId,
+            equippedTitleId,
             payload.resultCode);
     }
 
@@ -2710,8 +2796,10 @@ ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx)
     // 본인 세션도 currentWorldId 세션 목록에 포함되므로 함께 통지된다.
     if (success &&
         svc.network != nullptr &&
+        svc.framework != nullptr &&
         flow->controlledNetId.IsValid() &&
-        flow->currentWorldId.IsValid())
+        flow->currentWorldId.IsValid() &&
+        IsPlazaWorld(*svc.framework, flow->currentWorldId))
     {
         std::vector<SessionId> worldSessionIds;
         svc.sessionFlow->CollectSessionsInWorld(
@@ -2721,7 +2809,7 @@ ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx)
             *svc.network,
             worldSessionIds,
             flow->controlledNetId,
-            payload.equippedTitleId);
+            equippedTitleId);
     }
 
     return ExecCallResult::Success;

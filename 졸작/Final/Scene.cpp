@@ -1076,3 +1076,10 @@ void Scene::HandleBeaconCinematicStart(const Protocol::SC_BEACON_CINEMATIC_START
 	// TODO: 해당 패킷 받으면 Cinematic 시작하도록 수정
 	const Protocol::BeaconCinematicType cinematicType = cinematicStart.cinematictype();
 }
+
+void Scene::HandleTitleReplication(const Protocol::SC_TITLE_REPLICATION_PACKET& title)
+{
+	// TODO: Plaza에서 장착한 칭호에 따라 이펙트
+	const int ownerId = NetId{ title.ownernetid() }.GetId();
+	const uint32_t titleId = title.titleid();
+}

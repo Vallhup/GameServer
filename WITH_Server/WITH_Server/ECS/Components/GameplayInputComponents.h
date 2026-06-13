@@ -2,6 +2,7 @@
 
 #include "GameplayComponentPrerequisites.h"
 #include "../../GameplayContentIds.h"
+#include "../../TitleDef.h"
 
 enum class PlayerAbilityInputType : uint8_t
 {
@@ -17,6 +18,11 @@ struct PlayerControlIdentityComp : Component
 {
 	NetId netId{ NetId::Invalid() };
 	SessionId ownerSessionId{ 0 };
+};
+
+struct EquippedTitleStateComp : Component
+{
+	TitleId titleId{ InvalidTitleId };
 };
 
 struct PlayerNetworkTimingComp : Component

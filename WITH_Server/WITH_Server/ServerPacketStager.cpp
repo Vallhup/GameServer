@@ -929,6 +929,23 @@ bool ServerPacketStager::StageTitleReplicationPacketToSessions(
 	return staged;
 }
 
+bool ServerPacketStager::StageTitleReplicationPacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	NetId ownerNetId,
+	TitleId titleId)
+{
+	Protocol::SC_TITLE_REPLICATION_PACKET packet;
+	packet.set_ownernetid(ownerNetId.GetRaw());
+	packet.set_titleid(static_cast<uint32_t>(titleId));
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_TITLE_REPLICATION,
+		packet);
+}
+
 bool ServerPacketStager::StageAnimationPacketToSession(
 	NetworkRuntime& network,
 	SessionId sessionId,

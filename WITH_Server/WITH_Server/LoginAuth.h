@@ -4,6 +4,7 @@
 #include <string>
 
 #include "DBData.h"
+#include "TitleDef.h"
 
 constexpr DBCommandTypeId kLoginAuthCommandTypeId = 1;
 constexpr DBPayloadTypeId kLoginAuthPayloadTypeId = 1;
@@ -27,6 +28,7 @@ struct LoginAuthPayload
 
 	uint64_t     accountId{ 0 };
 	uint32_t     failReason{ 0 };
+	TitleId      equippedTitleId{ InvalidTitleId };
 
 	// AccountNotFound 시 RegisterAccountCommand에 전달할 자격증명
 	std::wstring loginId;

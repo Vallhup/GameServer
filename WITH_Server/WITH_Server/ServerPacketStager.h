@@ -207,6 +207,12 @@ public:
 		NetId ownerNetId,
 		TitleId titleId);
 
+	static bool StageTitleReplicationPacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		NetId ownerNetId,
+		TitleId titleId);
+
 	static bool StageAnimationPacketToSession(
 		NetworkRuntime& network,
 		SessionId sessionId,

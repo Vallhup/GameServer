@@ -5,6 +5,7 @@
 #include "CharacterDef.h"
 #include "Entity.h"
 #include "Session.h"
+#include "TitleDef.h"
 #include "WorldId.h"
 #include "WorldIds.h"
 #include "NetId.h"
@@ -44,6 +45,7 @@ struct SessionFlow
 	// controlledNetId: 로그인 성공 시 할당, 월드 바인딩 이후 역인덱스에도 등록됨
 	// HasBinding()은 월드 바인딩 완료(currentWorldId 유효) 여부를 의미한다
 	uint64_t       accountId{ 0 };
+	TitleId        equippedTitleId{ InvalidTitleId };
 	NetId          controlledNetId{ NetId::Invalid() };
 	CharacterId    selectedCharacterId{ CharacterId::None };
 	WorldId        playerWorldId{ WorldId::Invalid() };

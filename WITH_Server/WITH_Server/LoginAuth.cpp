@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "LoginAuth.h"
 
+#include <limits>
+
 namespace
 {
 	std::wstring WidenAscii(std::string_view value)
@@ -56,8 +58,13 @@ void LoginAuthCommand::Execute(DBCommandContext& ctx) noexcept
 
 	int64_t accountIdRaw{ 0 };
 	int32_t resultCode{ -1 };
+	int32_t equippedTitleIdRaw{ 0 };
 	if (!stmt.GetInt64(1, accountIdRaw) ||
-		!stmt.GetInt32(2, resultCode))
+		!stmt.GetInt32(2, resultCode) ||
+		!stmt.GetInt32(3, equippedTitleIdRaw) ||
+		equippedTitleIdRaw < 0 ||
+		equippedTitleIdRaw > static_cast<int32_t>(
+			std::numeric_limits<TitleId>::max()))
 	{
 		ctx.CompleteError(
 			static_cast<uint32_t>(DBCommonErrorCode::QueryFail),
@@ -70,6 +77,8 @@ void LoginAuthCommand::Execute(DBCommandContext& ctx) noexcept
 	case 0: // 인증 성공
 	{
 		payload.accountId = static_cast<uint64_t>(accountIdRaw);
+		payload.equippedTitleId =
+			static_cast<TitleId>(equippedTitleIdRaw);
 		break;
 	}
 	case 1: // 비밀번호 불일치 또는 Status 비활성

@@ -462,6 +462,22 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 		characterId,
 		transform);
 
+	TitleId equippedTitleId{ InvalidTitleId };
+	const bool hasPlazaTitle =
+		ServerReplicationSnapshot::TryGetPlazaPlayerTitleState(
+			_framework,
+			pending.worldId,
+			pending.entity,
+			equippedTitleId);
+	if (hasPlazaTitle)
+	{
+		(void)ServerPacketStager::StageTitleReplicationPacketToSession(
+			_network,
+			sessionId,
+			pending.playerNetId,
+			equippedTitleId);
+	}
+
 	if (WorldInstance* const world = _framework.FindWorld(pending.worldId))
 	{
 		ECSView view = world->GetRuntime().MakeView();
@@ -525,6 +541,16 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 		pending.playerNetId,
 		characterId,
 		transform);
+	if (hasPlazaTitle)
+	{
+		(void)ServerPacketStager::StageTitleReplicationPacketToSessions(
+			_network,
+			std::span<const SessionId>(
+				otherReadySessionIds.data(),
+				otherReadySessionIds.size()),
+			pending.playerNetId,
+			equippedTitleId);
+	}
 
 	_pendingInitialEntries.erase(it);
 	return InitialWorldReadyResult::Accepted;

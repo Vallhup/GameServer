@@ -22,6 +22,7 @@ namespace
 		CharacterId characterId{ CharacterId::None };
 		DirectX::XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
 		DirectX::XMFLOAT4 rotation{ 0.0f, 0.0f, 0.0f, 1.0f };
+		TitleId equippedTitleId{ InvalidTitleId };
 		CombatStatInitialState combatStats{};
 		bool hasCombatStats{ false };
 	};
@@ -69,6 +70,12 @@ namespace
 			payload.characterId = spawn->characterId;
 			payload.position = transform->position;
 			payload.rotation = transform->rotation;
+			if (const EquippedTitleStateComp* const title =
+				context.sourceView.GetComponent<EquippedTitleStateComp>(
+					context.sourceEntity))
+			{
+				payload.equippedTitleId = title->titleId;
+			}
 
 			if (const CombatStatStateComp* const stats =
 				context.sourceView.GetComponent<CombatStatStateComp>(
@@ -111,6 +118,7 @@ namespace
 				: payload.rotation;
 			params.netId = context.netId;
 			params.sessionId = context.sessionId;
+			params.equippedTitleId = payload.equippedTitleId;
 			if (payload.hasCombatStats)
 			{
 				CombatStatInitialState combatStats = payload.combatStats;

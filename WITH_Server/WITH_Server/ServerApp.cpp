@@ -780,6 +780,22 @@ bool ServerApp::MarkClientWorldTransitionReady(
 				pending.playerNetId,
 				characterId,
 				transform);
+
+			TitleId equippedTitleId{ InvalidTitleId };
+			if (ServerReplicationSnapshot::TryGetPlazaPlayerTitleState(
+				_framework,
+				pending.targetWorldId,
+				playerBinding.entity,
+				equippedTitleId))
+			{
+				(void)ServerPacketStager::StageTitleReplicationPacketToSessions(
+					_sessionSystem.Network(),
+					std::span<const SessionId>(
+						otherReadySessionIds.data(),
+						otherReadySessionIds.size()),
+					pending.playerNetId,
+					equippedTitleId);
+			}
 		}
 	}
 

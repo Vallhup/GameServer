@@ -7,6 +7,7 @@
 #include <DirectXMath.h>
 
 #include "../CharacterDef.h"
+#include "../TitleDef.h"
 #include "EntityId.h"
 #include "NetId.h"
 #include "Session.h"
@@ -36,6 +37,7 @@ struct AssembleParams
 	NetId netId;
 
 	std::optional<SessionId> sessionId;
+	TitleId equippedTitleId{ InvalidTitleId };
 	std::optional<CombatStatInitialState> combatStatsOverride;
 };
 

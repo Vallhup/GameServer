@@ -351,6 +351,7 @@ void SessionFlowController::RegisterDefaultTransitions()
 		[](SessionFlowContext& ctx, const LoginSucceeded& command)
 		{
 			ctx.Flow().accountId = command.accountId;
+			ctx.Flow().equippedTitleId = command.equippedTitleId;
 			ctx.Flow().controlledNetId = command.controlledNetId;
 			return TransitionResult::To(SessionStateId::AwaitingCharacterSelect);
 		});

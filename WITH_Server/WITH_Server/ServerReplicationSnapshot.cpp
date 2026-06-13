@@ -5,6 +5,7 @@
 
 #include "RepComponent.h"
 #include "ServerPacketStager.h"
+#include "WorldDef.h"
 #include "WorldInstance.h"
 
 namespace
@@ -48,6 +49,41 @@ bool ServerReplicationSnapshot::TryGetReplicatedSpawnState(
 
 	outCharacterId = spawnType->characterId;
 	outTransform = view.GetComponent<WorldTransformComp>(entity);
+	return true;
+}
+
+bool ServerReplicationSnapshot::TryGetPlazaPlayerTitleState(
+	FrameworkRuntime& framework,
+	WorldId worldId,
+	Entity entity,
+	TitleId& outTitleId)
+{
+	outTitleId = InvalidTitleId;
+
+	WorldInstance* const world = framework.FindWorld(worldId);
+	const WorldDef* const worldDef =
+		world != nullptr ? world->GetDef() : nullptr;
+	if (world == nullptr ||
+		worldDef == nullptr ||
+		worldDef->id != WorldDefId::Plaza)
+	{
+		return false;
+	}
+
+	ECSView view = world->GetRuntime().MakeView();
+	if (view.GetComponent<PlayerControlIdentityComp>(entity) == nullptr)
+	{
+		return false;
+	}
+
+	const EquippedTitleStateComp* const title =
+		view.GetComponent<EquippedTitleStateComp>(entity);
+	if (title == nullptr)
+	{
+		return false;
+	}
+
+	outTitleId = title->titleId;
 	return true;
 }
 
@@ -114,6 +150,20 @@ void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 			entityNetId,
 			spawnType.characterId,
 			transform);
+
+		TitleId equippedTitleId{ InvalidTitleId };
+		if (TryGetPlazaPlayerTitleState(
+			framework,
+			worldId,
+			entity,
+			equippedTitleId))
+		{
+			(void)ServerPacketStager::StageTitleReplicationPacketToSession(
+				network,
+				sessionId,
+				entityNetId,
+				equippedTitleId);
+		}
 
 		const AnimationPlaybackStateComp* const playback =
 			view.GetComponent<AnimationPlaybackStateComp>(entity);

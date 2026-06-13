@@ -13,6 +13,7 @@ CharacterFeatureFlags PlayerControlAspect::RequiredFeature() const noexcept
 void PlayerControlAspect::RegisterStorages(WorldRuntime& runtime) const
 {
 	runtime.RegisterStorage<PlayerControlIdentityComp>();
+	runtime.RegisterStorage<EquippedTitleStateComp>();
 	runtime.RegisterStorage<PlayerNetworkTimingComp>();
 	runtime.RegisterStorage<PlayerNetworkCompensationComp>();
 	runtime.RegisterStorage<ConsumableInventoryComp>();
@@ -33,6 +34,11 @@ void PlayerControlAspect::Attach(
 		{
 			.netId			= params.netId,
 			.ownerSessionId = params.sessionId.value_or(0)
+		});
+	runtime.DeferredUpsertComponent<EquippedTitleStateComp>(
+		entity,
+		EquippedTitleStateComp{
+			.titleId = params.equippedTitleId
 		});
 
 	runtime.DeferredUpsertComponent<PlayerNetworkTimingComp>(
