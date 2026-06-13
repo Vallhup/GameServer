@@ -12,6 +12,18 @@
 
 class FrameworkRuntime;
 
+struct AccountCombatStatOverride
+{
+	uint64_t accountId{ 0 };
+	int32_t maxHp{ 1'000'000 };
+	int32_t attackPower{ 100'000 };
+
+	bool IsEnabled() const noexcept
+	{
+		return accountId != 0 && maxHp > 0 && attackPower >= 0;
+	}
+};
+
 struct PendingSessionCharacterSpawn
 {
 	SessionId sessionId{ 0 };
@@ -53,6 +65,7 @@ public:
 	struct Dependencies
 	{
 		FrameworkRuntime* framework{ nullptr };
+		AccountCombatStatOverride accountCombatStatOverride;
 	};
 
 public:
@@ -63,7 +76,8 @@ public:
 
 	CharacterSpawnResult RequestCharacterSpawn(
 		const CharacterDataResult& data,
-		NetId reservedPlayerNetId);
+		NetId reservedPlayerNetId,
+		uint64_t accountId);
 
 	bool CancelPendingSpawn(SessionId sessionId) noexcept;
 

@@ -114,7 +114,8 @@ ServerApp::ServerApp(Config config)
 	, _sessionSystem(ServerSessionSystem::Config{
 		.networkThreadCount = _config.networkThreadCount,
 		.listenPort = _config.listenPort,
-		.maxSessions = _config.maxSessions
+		.maxSessions = _config.maxSessions,
+		.accountCombatStatOverride = _config.accountCombatStatOverride
 	}, _framework, _startupWorldId, *this)
 	, _transferBinding(_framework, _sessionSystem.Flow())
 	, _partyService(*this)

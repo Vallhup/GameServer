@@ -42,6 +42,7 @@ public:
 		uint32_t maxSessions{ 1024 };
 		uint32_t maxWorlds{ 128 };
 
+		AccountCombatStatOverride accountCombatStatOverride;
 		ODBCDatabaseBackend::Config database;
 	};
 

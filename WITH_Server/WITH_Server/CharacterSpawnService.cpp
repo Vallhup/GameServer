@@ -5,11 +5,14 @@
 
 #include "Aspect/CharacterAspectRegistry.h"
 #include "Aspect/ICharacterAspect.h"
+#include "FrameworkLog.h"
 #include "FrameworkRuntime.h"
 #include "WorldInstance.h"
 
 namespace
 {
+	constexpr const char* kLogCategory = "CharacterSpawn";
+
 	CharacterSpawnResult MakeResult(
 		CharacterSpawnResultCode code,
 		SessionId sessionId,
@@ -26,6 +29,28 @@ namespace
 		result.entity = entity;
 		result.netId = netId;
 		return result;
+	}
+
+	CombatStatInitialState BuildCombatStatInitialState(
+		const CharacterDef& characterDef) noexcept
+	{
+		return CombatStatInitialState{
+			.currentHp = static_cast<int32_t>(characterDef.stat.maxHp),
+			.maxHp = static_cast<int32_t>(characterDef.stat.maxHp),
+			.currentStamina =
+				static_cast<int32_t>(characterDef.stat.maxStamina),
+			.maxStamina =
+				static_cast<int32_t>(characterDef.stat.maxStamina),
+			.currentPoise =
+				static_cast<int32_t>(characterDef.stat.maxPoise),
+			.maxPoise =
+				static_cast<int32_t>(characterDef.stat.maxPoise),
+			.attackPower =
+				static_cast<int32_t>(characterDef.stat.attackPower),
+			.defense = static_cast<int32_t>(characterDef.stat.defense),
+			.attackSpeed = characterDef.stat.attackSpeed,
+			.moveSpeed = characterDef.stat.moveSpeed
+		};
 	}
 }
 
@@ -46,7 +71,8 @@ void CharacterSpawnService::Clear() noexcept
 
 CharacterSpawnResult CharacterSpawnService::RequestCharacterSpawn(
 	const CharacterDataResult& data,
-	NetId reservedPlayerNetId)
+	NetId reservedPlayerNetId,
+	uint64_t accountId)
 {
 	if (data.sessionId == 0)
 	{
@@ -130,6 +156,26 @@ CharacterSpawnResult CharacterSpawnService::RequestCharacterSpawn(
 	params.rotation = data.spawnRotation;
 	params.netId = reservedPlayerNetId;
 	params.sessionId = data.sessionId;
+
+	const AccountCombatStatOverride& statOverride =
+		_deps.accountCombatStatOverride;
+	if (statOverride.IsEnabled() && statOverride.accountId == accountId)
+	{
+		CombatStatInitialState combatStats =
+			BuildCombatStatInitialState(*data.characterDef);
+		combatStats.currentHp = statOverride.maxHp;
+		combatStats.maxHp = statOverride.maxHp;
+		combatStats.attackPower = statOverride.attackPower;
+		params.combatStatsOverride = combatStats;
+
+		FWLOG_INFO(
+			kLogCategory,
+			"Account combat stat override applied (sid=%u, accountId=%llu, maxHp=%d, attackPower=%d)",
+			data.sessionId,
+			static_cast<unsigned long long>(accountId),
+			statOverride.maxHp,
+			statOverride.attackPower);
+	}
 
 	GetGlobalCharacterAspectRegistry().Assemble(
 		runtime,

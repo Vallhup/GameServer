@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "ServerApp.h"
 
+#include <charconv>
 #include <filesystem>
+#include <limits>
 #include <string>
 #include <string_view>
 
@@ -39,6 +41,24 @@ namespace
 				return argv[i + 1];
 		}
 		return nullptr;
+	}
+
+	template <typename T>
+	bool TryParseUnsigned(const char* value, T& outValue)
+	{
+		if (value == nullptr || *value == '\0')
+			return false;
+
+		T parsed{};
+		const char* const end =
+			value + std::char_traits<char>::length(value);
+		const auto [ptr, error] =
+			std::from_chars(value, end, parsed);
+		if (error != std::errc{} || ptr != end)
+			return false;
+
+		outValue = parsed;
+		return true;
 	}
 
 	// UTF-8(좁은) 문자열을 std::wstring 으로 변환.
@@ -135,6 +155,35 @@ int main(int argc, char** argv)
 		config.database.user = Widen(v);
 	if (const char* v = GetArgValue(argc, argv, "--db-pass"))
 		config.database.password = Widen(v);
+
+	if (const char* v = GetArgValue(argc, argv, "--admin-account-id"))
+	{
+		(void)TryParseUnsigned(
+			v,
+			config.accountCombatStatOverride.accountId);
+	}
+	if (const char* v = GetArgValue(argc, argv, "--admin-max-hp"))
+	{
+		uint32_t value{ 0 };
+		if (TryParseUnsigned(v, value) &&
+			value <= static_cast<uint32_t>(
+				std::numeric_limits<int32_t>::max()))
+		{
+			config.accountCombatStatOverride.maxHp =
+				static_cast<int32_t>(value);
+		}
+	}
+	if (const char* v = GetArgValue(argc, argv, "--admin-attack-power"))
+	{
+		uint32_t value{ 0 };
+		if (TryParseUnsigned(v, value) &&
+			value <= static_cast<uint32_t>(
+				std::numeric_limits<int32_t>::max()))
+		{
+			config.accountCombatStatOverride.attackPower =
+				static_cast<int32_t>(value);
+		}
+	}
 
 	ServerApp app(config);
 	app.Run();

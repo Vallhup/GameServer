@@ -32,7 +32,8 @@ ServerSessionSystem::ServerSessionSystem(
 		.startupWorldId = &_startupWorldId
 	})
 	, _characterSpawnService(CharacterSpawnService::Dependencies{
-		.framework = &_framework
+		.framework = &_framework,
+		.accountCombatStatOverride = _config.accountCombatStatOverride
 	})
 	, _sessionFlowController(SessionFlowDependencies{
 		.network            = &_network,

@@ -1181,6 +1181,12 @@ ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx)
     }
 
     // DB에서 복구된 파티가 있으면 이 account를 해당 파티 멤버 슬롯에 재바인딩한다.
+    FWLOG_INFO(
+        kLogCategory,
+        "Account authenticated (sid=%u, accountId=%llu)",
+        sessionId,
+        static_cast<unsigned long long>(payload.accountId));
+
     SubmitPartyCommand(PartyCommand{
         .kind = PartyCommandKind::RebindRestoredMember,
         .actorSessionId = sessionId,
@@ -1449,8 +1455,12 @@ ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx)
     const SessionFlow* const flow = svc.sessionFlow->FindFlow(sessionId);
     const NetId controlledNetId =
         flow != nullptr ? flow->controlledNetId : NetId::Invalid();
+    const uint64_t accountId = flow != nullptr ? flow->accountId : 0;
     const CharacterSpawnResult spawnResult =
-        svc.characterSpawn->RequestCharacterSpawn(dataResult, controlledNetId);
+        svc.characterSpawn->RequestCharacterSpawn(
+            dataResult,
+            controlledNetId,
+            accountId);
     if (!spawnResult.Succeeded())
     {
         FWLOG_WARN(kLogCategory,
