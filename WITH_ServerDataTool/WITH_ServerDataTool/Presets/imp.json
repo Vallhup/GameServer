@@ -18,64 +18,154 @@
   },
   "clips": [
     {
+      "name": "death_1",
+      "source": "monster_Imp_death_1_baked.bone",
+      "output": "imp_animation_death_1.json",
+      "loop": false
+    },
+    {
+      "name": "death_2",
+      "source": "monster_Imp_death_2_baked.bone",
+      "output": "imp_animation_death_2.json",
+      "loop": false
+    },
+    {
+      "name": "idle_1",
+      "source": "monster_Imp_idle_1_baked.bone",
+      "output": "imp_animation_idle_1.json",
+      "loop": true
+    },
+    {
+      "name": "idle_2",
+      "source": "monster_Imp_idle_2_baked.bone",
+      "output": "imp_animation_idle_2.json",
+      "loop": true
+    },
+    {
+      "name": "idle_3",
+      "source": "monster_Imp_idle_3_baked.bone",
+      "output": "imp_animation_idle_3.json",
+      "loop": true
+    },
+    {
+      "name": "idle_4",
+      "source": "monster_Imp_idle_4_baked.bone",
+      "output": "imp_animation_idle_4.json",
+      "loop": true
+    },
+    {
+      "name": "idle_5",
+      "source": "monster_Imp_idle_5_baked.bone",
+      "output": "imp_animation_idle_5.json",
+      "loop": true
+    },
+    {
+      "name": "idle_6",
+      "source": "monster_Imp_idle_6_baked.bone",
+      "output": "imp_animation_idle_6.json",
+      "loop": true
+    },
+    {
+      "name": "battlecry",
+      "source": "monster_Imp_idle_battlecry_baked.bone",
+      "output": "imp_animation_battlecry.json",
+      "loop": false
+    },
+    {
+      "name": "roaring",
+      "source": "monster_Imp_idle_roaring_baked.bone",
+      "output": "imp_animation_roaring.json",
+      "loop": false
+    },
+    {
+      "name": "jump",
+      "source": "monster_Imp_jump_baked.bone",
+      "output": "imp_animation_jump.json",
+      "loop": false
+    },
+    {
+      "name": "melee_1",
+      "source": "monster_Imp_melee_1_baked.bone",
+      "output": "imp_animation_melee_1.json",
+      "loop": false
+    },
+    {
+      "name": "melee_2",
+      "source": "monster_Imp_melee_2_baked.bone",
+      "output": "imp_animation_melee_2.json",
+      "loop": false
+    },
+    {
+      "name": "melee_3",
+      "source": "monster_Imp_melee_3_baked.bone",
+      "output": "imp_animation_melee_3.json",
+      "loop": false
+    },
+    {
+      "name": "melee_4",
+      "source": "monster_Imp_melee_4_baked.bone",
+      "output": "imp_animation_melee_4.json",
+      "loop": false
+    },
+    {
+      "name": "melee_5",
+      "source": "monster_Imp_melee_5_baked.bone",
+      "output": "imp_animation_melee_5.json",
+      "loop": false
+    },
+    {
+      "name": "react_front",
+      "source": "monster_Imp_react_front_baked.bone",
+      "output": "imp_animation_react_front.json",
+      "loop": false
+    },
+    {
+      "name": "react_left",
+      "source": "monster_Imp_react_left_baked.bone",
+      "output": "imp_animation_react_left.json",
+      "loop": false
+    },
+    {
+      "name": "react_right",
+      "source": "monster_Imp_react_right_baked.bone",
+      "output": "imp_animation_react_right.json",
+      "loop": false
+    },
+    {
       "name": "run",
       "source": "monster_Imp_run_baked.bone",
       "output": "imp_animation_run.json",
-      "loop":  true
+      "loop": true
+    },
+    {
+      "name": "stun",
+      "source": "monster_Imp_stun_baked.bone",
+      "output": "imp_animation_stun.json",
+      "loop": false
+    },
+    {
+      "name": "walk_back",
+      "source": "monster_Imp_walk_back_baked.bone",
+      "output": "imp_animation_walk_back.json",
+      "loop": true
+    },
+    {
+      "name": "walk_forward",
+      "source": "monster_Imp_walk_forward_baked.bone",
+      "output": "imp_animation_walk_forward.json",
+      "loop": true
+    },
+    {
+      "name": "walk_left",
+      "source": "monster_Imp_walk_left_baked.bone",
+      "output": "imp_animation_walk_left.json",
+      "loop": true
+    },
+    {
+      "name": "walk_right",
+      "source": "monster_Imp_walk_right_baked.bone",
+      "output": "imp_animation_walk_right.json",
+      "loop": true
     }
-    //{
-    //  "name": "melee_1",
-    //  "source": "monster_Imp_melee_1_baked.bone",
-    //  "output": "imp_animation_melee_1.json",
-    //  "loop": false
-    //},
-    //{
-    //  "name": "melee_2",
-    //  "source": "monster_Imp_melee_2_baked.bone",
-    //  "output": "imp_animation_melee_2.json",
-    //  "loop": false
-    //},
-    //{
-    //  "name": "melee_3",
-    //  "source": "monster_Imp_melee_3_baked.bone",
-    //  "output": "imp_animation_melee_3.json",
-    //  "loop": false
-    //},
-    //{
-    //  "name": "melee_4",
-    //  "source": "monster_Imp_melee_4_baked.bone",
-    //  "output": "imp_animation_melee_4.json",
-    //  "loop": false
-    //},
-    //{
-    //  "name": "melee_5",
-    //  "source": "monster_Imp_melee_5_baked.bone",
-    //  "output": "imp_animation_melee_5.json",
-    //  "loop": false
-    //},
-    //{
-    //  "name": "stun",
-    //  "source": "monster_Imp_stun_baked.bone",
-    //  "output": "imp_animation_stun.json",
-    //  "loop": false
-    //},
-    //{
-    //  "name": "walk_forward",
-    //  "source": "monster_Imp_walk_forward_baked.bone",
-    //  "output": "imp_animation_walk_forward.json",
-    //  "loop": true
-    //},
-    //{
-    //  "name": "walk_left",
-    //  "source": "monster_Imp_walk_left_baked.bone",
-    //  "output": "imp_animation_walk_left.json",
-    //  "loop": true
-    //},
-    //{
-    //  "name": "walk_right",
-    //  "source": "monster_Imp_walk_right_baked.bone",
-    //  "output": "imp_animation_walk_right.json",
-    //  "loop": true
-    //}
   ]
 }

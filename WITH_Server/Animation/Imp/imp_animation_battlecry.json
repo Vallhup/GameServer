@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "clipId": "Imp_idle_battlecry",
+  "clipId": "Imp_battlecry",
   "skeleton": "Imp",
   "fps": 30.3571,
   "numFrames": 85,

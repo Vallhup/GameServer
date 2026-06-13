@@ -21,7 +21,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 2.96666455,
+                "durationSec": 2.6333375,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -123,7 +123,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 3.9666667,
+                "durationSec": 3.06666541,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -227,7 +227,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 3.9666667,
+                "durationSec": 2.60000134,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -331,7 +331,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 3.9666667,
+                "durationSec": 2.46666718,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -422,7 +422,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 4.966674,
+                "durationSec": 3.36667,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -547,7 +547,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 3.79999471,
+                "durationSec": 2.66666675,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -651,7 +651,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 2.13333678,
+                "durationSec": 1.73333466,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -753,7 +753,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 3.30000329,
+                "durationSec": 2,
                 "policy": "FixedDuration",
                 "combatWindows": [
                     {
@@ -949,7 +949,7 @@
             },
             "costs": [],
             "timeline": {
-                "durationSec": 3.4,
+                "durationSec": 4.299994,
                 "policy": "FixedDuration",
                 "combatWindows": [],
                 "movementSegments": [

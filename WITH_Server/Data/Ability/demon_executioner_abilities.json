@@ -21,7 +21,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 2.6333375,
+        "durationSec": 1.7666688,
         "policy": "FixedDuration",
         "combatWindows": [
           {
@@ -122,7 +122,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 3.9666667,
+        "durationSec": 2.83333731,
         "policy": "FixedDuration",
         "combatWindows": [
             {
@@ -254,7 +254,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 2.96666455,
+        "durationSec": 2.46666718,
         "policy": "FixedDuration",
         "combatWindows": [
           {
@@ -355,7 +355,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 2.96666455,
+        "durationSec": 2.333331,
         "policy": "FixedDuration",
         "combatWindows": [
           {
@@ -456,7 +456,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 2.96666455,
+        "durationSec": 2.13333678,
         "policy": "FixedDuration",
         "combatWindows": [
           {
