@@ -21,6 +21,7 @@
 #include "ParryStreakComponent.h"
 #include "EffectManager.h"
 #include "SwordSpecialEffectComponent.h"
+#include "RunDustEffectComponent.h"
 #include "DissolveComponent.h"
 #include "GimmickDiamond.h"
 
@@ -210,11 +211,12 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	trail->SetColor({ 0.85f, 0.88f, 0.9f, 0.15f });
 	trail->SetLifetime(0.3f);
 
-	auto dust = character->AddComponent<FootDustComponent>();
-	dust->Initialize(coreRef->GetDevice(), 32);
-	dust->SetColor({ 0.15f, 0.15f, 0.15f, 1.0f });
-	dust->SetLifetime(0.35f);
-	dust->SetParticleSize(0.1f);
+	// FootDust 비활성화 — RunDustEffectComponent(Effekseer)로 대체
+	//auto dust = character->AddComponent<FootDustComponent>();
+	//dust->Initialize(coreRef->GetDevice(), 32);
+	//dust->SetColor({ 0.15f, 0.15f, 0.15f, 1.0f });
+	//dust->SetLifetime(0.35f);
+	//dust->SetParticleSize(0.1f);
 
 	auto flash = character->AddComponent<ParryFlashComponent>();
 	flash->Initialize(coreRef->GetDevice(), 1);
@@ -250,6 +252,8 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	blood->SetCountPerSlot(5);
 
 	character->AddComponent<SwordSpecialEffectComponent>();
+
+	character->AddComponent<RunDustEffectComponent>();
 
 	character->AddComponent<DissolveComponent>();
 	DissolveComponent::RegisterNoiseTexture(*coreRef);
@@ -311,6 +315,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 	const auto& desc = descs.at(type);
 	const wstring swordEffectName = swordEffectNames.at(type);
 	EFFECT_MANAGER->PreLoad(swordEffectName);
+	EFFECT_MANAGER->PreLoad(L"RunDust");
 
 	for (int i = 0; i < count; ++i)
 	{
@@ -320,6 +325,8 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		auto swordEffect = character->GetComponent<SwordSpecialEffectComponent>();
 		swordEffect->SetEffectName(swordEffectName);
 
+		auto runDust = character->GetComponent<RunDustEffectComponent>();
+
 		auto trail = character->GetComponent<TrailComponent>();
 
 		auto sfx = character->AddComponent<AnimationSfxComponent>();
@@ -328,8 +335,10 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		case CharacterType::Knight:
 			sfx->AddTrigger("Walk", 5, 7, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Walk", 22, 24, "../Assets/Music/SFX/Foot.mp3");
-			sfx->AddTrigger("Run", 6, 8, "../Assets/Music/SFX/Foot.mp3");
-			sfx->AddTrigger("Run", 14, 16, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 5, 7, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 13, 15, "../Assets/Music/SFX/Foot.mp3");
+			runDust->AddFootstep(13, 15, 50);    
+			runDust->AddFootstep(5, 7, 54);  
 			sfx->AddTrigger("AttackCombo1", 8, 10, "../Assets/Music/SFX/SwingSword.mp3");
 			sfx->AddTrigger("AttackCombo2", 11, 13, "../Assets/Music/SFX/SwingSword.mp3");
 			sfx->AddTrigger("AttackCombo3", 6, 8, "../Assets/Music/SFX/SwingSword.mp3");
@@ -342,8 +351,10 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		case CharacterType::Lancer:
 			sfx->AddTrigger("Walk", 9, 11, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Walk", 25, 27, "../Assets/Music/SFX/Foot.mp3");
-			sfx->AddTrigger("Run", 1, 3, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 0, 2, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Run", 8, 10, "../Assets/Music/SFX/Foot.mp3");
+			runDust->AddFootstep(8, 10, 50);
+			runDust->AddFootstep(0, 2, 54);
 			sfx->AddTrigger("AttackCombo1", 16, 18, "../Assets/Music/SFX/SwingSword.mp3");
 			sfx->AddTrigger("AttackCombo1", 25, 27, "../Assets/Music/SFX/SwingSword.mp3");
 			sfx->AddTrigger("AttackCombo2", 14, 16, "../Assets/Music/SFX/SwingSword.mp3");
@@ -357,8 +368,10 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		case CharacterType::Paladin:
 			sfx->AddTrigger("Walk", 10, 12, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Walk", 25, 27, "../Assets/Music/SFX/Foot.mp3");
-			sfx->AddTrigger("Run", 1, 3, "../Assets/Music/SFX/Foot.mp3");
-			sfx->AddTrigger("Run", 9, 11, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 0, 2, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 8, 10, "../Assets/Music/SFX/Foot.mp3");
+			runDust->AddFootstep(8, 10, 49);
+			runDust->AddFootstep(0, 2, 53);
 			sfx->AddTrigger("AttackCombo1", 20, 22, "../Assets/Music/SFX/SwingSword.mp3");
 			sfx->AddTrigger("AttackCombo2", 15, 17, "../Assets/Music/SFX/SwingSword.mp3");
 			sfx->AddTrigger("AttackCombo3", 19, 21, "../Assets/Music/SFX/SwingSword.mp3");
@@ -429,9 +442,12 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 		if (type == MonsterType::Tank)
 		{
 			EFFECT_MANAGER->PreLoad(L"Tank_Jump");
+			EFFECT_MANAGER->PreLoad(L"Tank_Attack");
 
 			auto sfx = monster->AddComponent<AnimationSfxComponent>();
 			sfx->AddEffectTrigger("Jump2", 70, 72, L"Tank_Jump");
+			sfx->AddEffectTrigger("Melee4", 25, 27, L"Tank_Attack");
+			sfx->AddEffectTrigger("Melee5", 33, 35, L"Tank_Attack");
 		}
 
 		monsterPools[type].push_back(monster);

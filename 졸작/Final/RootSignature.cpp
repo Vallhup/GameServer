@@ -54,7 +54,7 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(1);              // [1]  b1 - ObjectCB
     AddCBV(2);              // [2]  b2 - AnimationParams
     AddCBV(3);              // [3]  b3 - DeferredLight
-    AddCBV(4);              // [4]  b4 - reserved (legacy SunCB; sun moved to lights[0] via t11)
+    AddSRVTable(14, 1, 0);  // [4]  t14 - Point shadow cube array (구 b4 reserved 슬롯 재활용, deferredSRVHeap 슬롯 7)
     AddCBV(5);              // [5]  b5 - ShadowFrameCB
 
     AddBindlessTable(1);    // [6]  t0, space1 - Bindless

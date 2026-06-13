@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "TitleScene.h"
 #include "Material.h"
-#include "Input.h"
-#include "NetId.h"
 #include "Engine.h"
 #include "SoundManager.h"
 
@@ -25,6 +23,15 @@ void TitleScene::InitializeLogic()
 	// TODO
 	// 여기에서, 모든 캐릭터와 모든 몬스터의 MESH 미리 캐싱
 	
+	PreloadCommonTextures();
+	PreloadAllCharactersMeshes();
+	SOUND_MANAGER->PreloadEverySFX();
+
+	OutputDebugStringA("Data cached created!!\n");
+}
+
+void TitleScene::PreloadCommonTextures()
+{
 	ID3D12Device* device = coreRef->GetDevice();
 	ID3D12GraphicsCommandList* cmdList = coreRef->GetGraphicsCmdList();
 
@@ -41,7 +48,10 @@ void TitleScene::InitializeLogic()
 	Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rnormal.png");
 	Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/grass.png");
 	Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/terrainTexture.png");
+}
 
+void TitleScene::PreloadAllCharactersMeshes()
+{
 	const wchar_t* paths[] = {
 	  L"../Assets/FBXModel/Knight/knight6",
 	  L"../Assets/FBXModel/Lancer/lancer",
@@ -69,17 +79,4 @@ void TitleScene::InitializeLogic()
 
 	for (auto& obj : objs)
 		obj->GetComponent<Mesh>()->ReleaseUploadBuffers();
-
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Parry.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/ButtonPress.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CutMonster.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CutFinalBoss.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CharacterCut.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Foot.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/SwingSword.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Roll.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Guard.mp3");
-	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CinematicExplosion.mp3");
-
-	OutputDebugStringA("Data cached created!!\n");
 }

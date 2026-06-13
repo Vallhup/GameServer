@@ -73,6 +73,45 @@ float SampleOverheadShadow(float3 worldPos, float3 N)
     return lit / 9.0;
 }
 
+// Point light 정적 그림자 (cube array). 빛→픽셀 방향으로 HW 면 선택,
+// ref depth는 major axis 거리를 베이크와 같은 90° 투영(near=pointShadowNear, far=range)으로 복원.
+float SamplePointShadow(float3 worldPos, float3 N, float3 lightPos, float range, uint cubeIdx)
+{
+    float3 fromLight = (worldPos + N * 0.03) - lightPos;
+    float3 absDir = abs(fromLight);
+    float majorAxis = max(absDir.x, max(absDir.y, absDir.z));
+
+    float nearZ = pointShadowNear;
+    float farZ = max(range, nearZ + 0.01);
+    float ndcDepth = (farZ / (farZ - nearZ)) - (farZ * nearZ) / ((farZ - nearZ) * majorAxis);
+    float refDepth = saturate(ndcDepth) - 0.0005;
+
+    // PCF 5탭 — 큐브맵은 UV 오프셋이 없으므로 방향 벡터를 접선 방향으로 흔들어 샘플
+    float3 dir = normalize(fromLight);
+    float3 upRef = (abs(dir.y) > 0.9) ? float3(1, 0, 0) : float3(0, 1, 0);
+    float3 tangent = normalize(cross(upRef, dir));
+    float3 bitangent = cross(dir, tangent);
+
+    // 면 한 변이 방향공간 ~2.0 → 텍셀당 2/256. 1.5텍셀 반경으로 부드럽게
+    const float texelAngle = (2.0 / 256.0) * 1.5;
+
+    static const float2 kTaps[5] = {
+        float2( 0.0,  0.0),
+        float2(-0.7, -0.7), float2(0.7, -0.7),
+        float2(-0.7,  0.7), float2(0.7,  0.7),
+    };
+
+    float lit = 0.0;
+    [unroll]
+    for (int t = 0; t < 5; ++t)
+    {
+        float3 sampleDir = dir + (tangent * kTaps[t].x + bitangent * kTaps[t].y) * texelAngle;
+        lit += pointShadowMaps.SampleCmpLevelZero(
+            shadowCmpSampler, float4(sampleDir, (float)cubeIdx), refDepth);
+    }
+    return lit / 5.0;
+}
+
 float CalculateShadow(float3 worldPos, float3 N, float viewDepth)
 {
     float splits[3] = { cascadeSplit.x, cascadeSplit.y, cascadeSplit.z };

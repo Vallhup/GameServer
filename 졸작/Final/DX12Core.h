@@ -74,6 +74,8 @@ class LookUpTextures;
 class RootSignature;
 class Shader;
 class BloomManager;
+class InstancingBatch;
+class SceneRenderer;
 
 class DX12Core
 {
@@ -95,6 +97,10 @@ public:
 	void EndDynamicShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void BeginOverheadShadowPass();
 	void EndOverheadShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+
+	// Final(성당) point light 정적 그림자 — 씬 진입 후 1회 베이크 (라이트×6면 depth pass)
+	void BakePointShadows(const vector<shared_ptr<InstancingBatch>>& batches, SceneRenderer* renderer,
+		const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
 	void BeginGBufferPass();
 	void EndGBufferPass();

@@ -15,4 +15,8 @@ protected:
 	void InitializeLogic() override;
 
 	const char* GetBGMPath() const override;
+
+private:
+	void PreloadCommonTextures();
+	void PreloadAllCharactersMeshes();
 };

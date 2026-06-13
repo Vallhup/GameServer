@@ -99,6 +99,13 @@ void Engine::Render()
     auto* shadowMgr = graphics->GetShadowMgr();
 
     if (sceneManager->GetCurrentSceneType() == SceneType::Final) {
+        // 성당 point light 정적 그림자 — 씬 진입 후 1회 베이크 (라이트×6면, 이후 불변)
+        if (!shadowMgr->IsPointShadowBaked()) {
+            graphics->BakePointShadows(
+                sceneManager->GetCurrentScene()->GetInstancingBatches(),
+                sceneManager->GetSceneRenderer(), viewport, scissorRect);
+        }
+
         // 실내(성당): 태양 CSM 패스 전체 스킵 → overhead 동적 그림자 1패스만
         graphics->BeginOverheadShadowPass();
         sceneManager->RenderShadowDynamic();

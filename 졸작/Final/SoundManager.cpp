@@ -183,6 +183,20 @@ void SoundManager::PreloadSFX(const char* path)
     sfxCache[key] = sound;
 }
 
+void SoundManager::PreloadEverySFX()
+{
+    PreloadSFX("../Assets/Music/SFX/Parry.mp3");
+    PreloadSFX("../Assets/Music/SFX/ButtonPress.mp3");
+    PreloadSFX("../Assets/Music/SFX/CutMonster.mp3");
+    PreloadSFX("../Assets/Music/SFX/CutFinalBoss.mp3");
+    PreloadSFX("../Assets/Music/SFX/CharacterCut.mp3");
+    PreloadSFX("../Assets/Music/SFX/Foot.mp3");
+    PreloadSFX("../Assets/Music/SFX/SwingSword.mp3");
+    PreloadSFX("../Assets/Music/SFX/Roll.mp3");
+    PreloadSFX("../Assets/Music/SFX/Guard.mp3");
+    PreloadSFX("../Assets/Music/SFX/CinematicExplosion.mp3");
+}
+
 void SoundManager::PlaySFX(const char* path)
 {
     string key(path);
