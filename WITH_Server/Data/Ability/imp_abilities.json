@@ -27,7 +27,7 @@
           {
             "kind": "Attack",
             "startNormalized": 0.3,
-            "endNormalized": 0.38,
+            "endNormalized": 0.45,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
