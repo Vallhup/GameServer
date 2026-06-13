@@ -1,7 +1,6 @@
 <Solution>
   <Configurations>
     <Platform Name="x64" />
-    <Platform Name="x86" />
   </Configurations>
-  <Project Path="NavMesh/NavMesh.vcxproj" />
+  <Project Path="NavMesh/NavMesh.vcxproj" Id="73f0af29-35bc-4752-99d1-83f524f4c4ab" />
 </Solution>

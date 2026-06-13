@@ -38,7 +38,7 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 			// TODO(content): replace temporary navmesh path with Plaza map data.
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Plaza_NavMesh_v3.bin",
+				.navMeshBinPath = "../Map/Plaza_NavMesh_v4.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
@@ -240,10 +240,9 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},
-			// TODO(content): fill Village navmesh, navigation profile, and environment tags.
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Village_NavMesh_v12.bin",
+				.navMeshBinPath = "../Map/Village_NavMesh_v13.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
@@ -461,10 +460,9 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},
-			// TODO(content): fill Castle navmesh, navigation profile, and environment tags.
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Castle_NavMesh_v6.bin",
+				.navMeshBinPath = "../Map/Castle_NavMesh_v7.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
@@ -568,10 +566,9 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},
-			// TODO(content): fill Final navmesh, navigation profile, and environment tags.
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Cathedral_NavMesh_v3.bin",
+				.navMeshBinPath = "../Map/Cathedral_NavMesh_v4.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
@@ -621,9 +618,6 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 			.completionDelaySec = std::nullopt,
 			.autoCloseOnComplete = false,
 		},
-
-		// TODO(content): add scripted Plaza/Pvp choice link metadata after Final clear UI is defined.
-		.linkRules = {},
 		.executionModelKey = executionModelKey,
 		.transferProfileId = PlayerCharacterWorldTransferProfileId,
 	};
@@ -675,7 +669,7 @@ WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey)
 			},
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Cathedral_NavMesh_v3.bin",
+				.navMeshBinPath = "../Map/Cathedral_NavMesh_v4.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
@@ -725,8 +719,6 @@ WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey)
 			.completionDelaySec = std::nullopt,
 			.autoCloseOnComplete = false,
 		},
-
-		// TODO(content): replace Field kind with Arena when PvP rule data is introduced.
 		.linkRules = {},
 		.executionModelKey = executionModelKey,
 		.transferProfileId = PlayerCharacterWorldTransferProfileId,
