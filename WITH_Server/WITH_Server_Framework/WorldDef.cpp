@@ -31,7 +31,7 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 				{
 					.id = SpawnPointIds::PlazaPlayerStart,
 					.name = "Plaza.PlayerStart",
-					.position = WorldVec3Def{ 480.167800f, 5.508454f, 481.655600f },
+					.position = WorldVec3Def{ 502.362610f, 5.600996f, 482.074982f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				}
 			},
@@ -128,7 +128,7 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 				SpawnPointDef{
 					.id = SpawnPointIds::VillagePlayerStart,
 					.name = "Village.PlayerStart",
-					.position = WorldVec3Def{ 161.352478f, 48.737797f, 644.831543f },
+					.position = WorldVec3Def{ 159.286636f, 48.944988f, 649.457764f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
@@ -336,7 +336,7 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 				SpawnPointDef{
 					.id = SpawnPointIds::CastlePlayerStart,
 					.name = "Castle.PlayerStart",
-					.position = WorldVec3Def{ 327.722809f, 67.219727f, 226.415680f },
+					.position = WorldVec3Def{ 325.256653f, 67.439247f, 206.893997f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
@@ -651,19 +651,19 @@ WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey)
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartA,
 					.name = "Pvp.PlayerStart.A",
-					.position = WorldVec3Def{ -3.0f, 5.0f, -96.193400f },
+					.position = WorldVec3Def{ -5.534470f, 0.128176f, -26.368433f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartB,
 					.name = "Pvp.PlayerStart.B",
-					.position = WorldVec3Def{ 3.0f, 5.0f, -96.193400f },
+					.position = WorldVec3Def{ 5.679338f, 0.128176f, -26.370371f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartC,
 					.name = "Pvp.PlayerStart.C",
-					.position = WorldVec3Def{ 0.0f, 5.0f, -93.000000f },
+					.position = WorldVec3Def{ -0.068215f, 0.146487f, -12.604228f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "BossGimmickSystem.h"
 
+#include <array>
 #include <random>
 
 #include "../GameplaySystemUtil.h"
@@ -11,28 +12,25 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	constexpr float kPhaseTransitionObjectHp = 60.0f;
-	constexpr float kPhaseTransitionObjectRadius = 5.5f;
-	constexpr float kPhaseTransitionObjectRadiusJitter = 2.0f;
 	constexpr float kPhaseTransitionObjectHeight = 2.0f;
 	constexpr float kPhaseTransitionObjectHalfWidth = 0.75f;
-	constexpr float kPhaseTransitionObjectVerticalOffset = 1.6f;
 	constexpr float kPhaseTransitionImmunitySec = 13.4f;
 	constexpr float kGimmickFailureHpRestoreRatio = 0.2f;
+	constexpr std::array<XMFLOAT3, 3> kPhaseTransitionObjectPositions{
+		XMFLOAT3{ -12.092976f, 0.402838f, -25.184044f },
+		XMFLOAT3{ 12.221483f, 0.439460f, -25.724072f },
+		XMFLOAT3{ 0.015781f, 0.164797f, -2.055224f }
+	};
 
 	// 파훼 실패 즉사 판정 시점(초). 패턴 지속 시간과 독립이며 기믹 시작(Begin)에
 	// 동시에 시작한다. 두 기믹 패턴 지속(13.4/12.0)보다 작아 패턴 종료 전에 발생한다.
 	constexpr float kGimmickLethalTimeSec = 11.3f;
 
 	constexpr float kFinalSafeZoneRadius = 1.5f;
-	constexpr float kFinalSafeZoneDistance = 5.5f;
-	constexpr float kFinalSafeZoneDistanceJitter = 1.5f;
-	constexpr float kBossLockRefreshSec = 0.25f;
-
-	struct AlivePlayerEntry
-	{
-		Entity entity{ Entity::Null() };
-		XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
+	constexpr XMFLOAT3 kFinalSafeZonePosition{
+		0.025183f, 0.128176f, -34.714458f
 	};
+	constexpr float kBossLockRefreshSec = 0.25f;
 
 	struct PartyPlayerEntry
 	{
@@ -41,33 +39,15 @@ namespace
 		bool alive{ false };
 	};
 
-	float RandomRange(float minValue, float maxValue)
+	std::array<size_t, kPhaseTransitionObjectPositions.size()>
+		BuildShuffledPhaseTransitionPositionIndices()
 	{
 		thread_local std::mt19937 rng{ std::random_device{}() };
-		std::uniform_real_distribution<float> dist(minValue, maxValue);
-		return dist(rng);
-	}
-
-	std::vector<AlivePlayerEntry> CollectAlivePlayers(SystemContext& ctx)
-	{
-		std::vector<AlivePlayerEntry> players;
-		for (auto [entity, player, transform, stats] :
-			ctx.ecs.View<
-				PlayerControlIdentityComp,
-				WorldTransformComp,
-				CombatStatStateComp>())
-		{
-			if (player.ownerSessionId != 0 &&
-				stats.currentHp > 0 &&
-				!HasBlockingPendingState(ctx.ecs, entity))
-			{
-				players.push_back(AlivePlayerEntry{ entity, transform.position });
-			}
-		}
-		std::sort(players.begin(), players.end(), [](const auto& lhs, const auto& rhs) {
-			return lhs.entity.id < rhs.entity.id;
-		});
-		return players;
+		std::array<size_t, kPhaseTransitionObjectPositions.size()> indices{
+			0, 1, 2
+		};
+		std::shuffle(indices.begin(), indices.end(), rng);
+		return indices;
 	}
 
 	std::vector<PartyPlayerEntry> CollectPartyPlayers(SystemContext& ctx)
@@ -304,26 +284,6 @@ namespace
 				.position = position,
 				.radius = radius
 			});
-	}
-
-	XMFLOAT3 BuildRingPosition(
-		const XMFLOAT3& origin,
-		size_t index,
-		size_t count,
-		float baseRadius,
-		float radiusJitter)
-	{
-		const float step = count > 0
-			? (2.0f * kPi) / static_cast<float>(count)
-			: 0.0f;
-		const float angle = step * static_cast<float>(index) +
-			RandomRange(-0.35f, 0.35f);
-		const float radius = baseRadius + RandomRange(0.0f, radiusJitter);
-		return XMFLOAT3{
-			origin.x + std::cos(angle) * radius,
-			origin.y,
-			origin.z + std::sin(angle) * radius
-		};
 	}
 
 	Entity SpawnGimmickObject(
@@ -619,23 +579,21 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 {
 	(void)dtSec;
 
-	const WorldTransformComp* bossTransform =
-		ctx.ecs.GetComponent<WorldTransformComp>(boss);
-	if (bossTransform == nullptr)
-		return;
-
 	if (gimmick.stage == BossGimmickStage::Telegraph)
 	{
 		if (!gimmick.phaseTransitionObjectsSpawned)
 		{
-			const std::vector<AlivePlayerEntry> players =
-				CollectAlivePlayers(ctx);
-			for (size_t i = 0; i < players.size(); ++i)
+			const std::vector<PartyPlayerEntry> players =
+				CollectPartyPlayers(ctx);
+			const auto positionIndices =
+				BuildShuffledPhaseTransitionPositionIndices();
+			const size_t objectCount = std::min(
+				players.size(),
+				kPhaseTransitionObjectPositions.size());
+			for (size_t i = 0; i < objectCount; ++i)
 			{
-				XMFLOAT3 position =
-					BuildRingPosition(bossTransform->position, i, players.size(),
-						kPhaseTransitionObjectRadius, kPhaseTransitionObjectRadiusJitter);
-				position.y += kPhaseTransitionObjectVerticalOffset;
+				const XMFLOAT3 position =
+					kPhaseTransitionObjectPositions[positionIndices[i]];
 
 				const Entity object = SpawnGimmickObject(
 					ctx,
@@ -818,21 +776,11 @@ void BossGimmickSystem::TickFinalSafeZone(
 {
 	(void)dtSec;
 
-	const WorldTransformComp* bossTransform =
-		ctx.ecs.GetComponent<WorldTransformComp>(boss);
-	if (bossTransform == nullptr)
-		return;
-
 	if (gimmick.stage == BossGimmickStage::Telegraph)
 	{
 		if (!gimmick.finalSafeZoneSpawned)
 		{
-			const XMFLOAT3 position = BuildRingPosition(
-				bossTransform->position,
-				0,
-				1,
-				kFinalSafeZoneDistance,
-				kFinalSafeZoneDistanceJitter);
+			const XMFLOAT3 position = kFinalSafeZonePosition;
 			const Entity safeZone = SpawnSafeZone(ctx, boss, position);
 			if (!safeZone.IsNull())
 			{
