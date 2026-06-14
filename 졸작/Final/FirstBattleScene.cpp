@@ -121,10 +121,10 @@ void FirstBattleScene::InitializeSceneEnvironments()
 		L"../Assets/Effects/Textures/particle2.png");
 	light->SetColor({ 2.854f, 2.439f, 1.5f, 1.0f });
 	light->SetSize(2.0f);
-	light->Spawn({ 335.237946f, 77.0f, 590.663147f });
 	AddGameObject(beacon);
 
-	beaconLight = light;   
+	beaconLight = light;
+	beaconSpawnPos = { 335.237946f, 77.0f, 590.663147f };	
 #pragma endregion
 
 	EFFECT_MANAGER->PreLoad(L"Benediction");
@@ -165,7 +165,7 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 		}
 	}
 
-	if (myPlayer && !IsCinematicActive())
+	if (myPlayer && !IsCinematicActive() && beaconLight && beaconLight->IsAlive())
 	{
 		constexpr float BEACON_CX = 335.237946f;
 		constexpr float BEACON_CZ = 590.663147f;
@@ -193,8 +193,7 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 			if (controller->ConsumeBeaconConfirmed())
 			{
 				controller->SetInteractPrompt(false, {});
-				controller->HideHudForCinematic();
-				StartBeaconCinematic();
+				NETWORK_MANAGER->SendBeaconCinematicStartRequest();
 			}
 		}
 	}

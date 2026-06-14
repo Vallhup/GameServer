@@ -224,6 +224,20 @@ void Engine::ProcessWorldTransitionState()
         return;
     }
 
+    if (targetWorldDefId != 1)
+    {
+        if (auto* fade = uiManager->GetScreenFade())
+        {
+            if (fade->GetState() == State::Idle)
+            {
+                fade->FadeOut(1.0f);
+                return;
+            }
+            if (!fade->IsBlack())
+                return;
+        }
+    }
+
     SceneType targetScene;
     switch (targetWorldDefId) {
     case 1:     targetScene = SceneType::Plaza;   break;

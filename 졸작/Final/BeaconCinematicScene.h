@@ -50,6 +50,9 @@ protected:
 	void StartBeaconCinematic();
 	void UpdateBeaconCinematic(float deltaTime);
 
+	void OnBossDefeated() override;
+	void OnBeaconCinematicStart() override;
+
 private:
 	void UpdateCinematicCamera(const XMFLOAT3& look);
 	void ScatterAtmosphere();
@@ -57,8 +60,9 @@ private:
 	void ApplyBrighten(float t);
 
 protected:
-	SkyBox* cineSkyBox = nullptr;                 
-	BeaconLightComponent* beaconLight = nullptr;  
+	SkyBox* cineSkyBox = nullptr;
+	BeaconLightComponent* beaconLight = nullptr;
+	XMFLOAT3 beaconSpawnPos = {};                 
 
 	BeaconCine cineState = BeaconCine::None;
 	float      cineTimer = 0.0f;

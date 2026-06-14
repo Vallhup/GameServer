@@ -47,6 +47,8 @@ protected:
 	virtual void InitializeSceneMonsters() {}
 	virtual void UpdateScene(const float deltaTime) {}
 	virtual void RequestSceneChange() {}
+	virtual void OnBossDefeated() {}			
+	virtual void OnBeaconCinematicStart() {}	
 
 	virtual const char* GetBGMPath() const { return nullptr; }
 	virtual const char* GetBossBGMPath() const { return nullptr; }
@@ -95,6 +97,8 @@ private:
 
 	void UpdateDissolves();
 	void UpdateBreakerShields();
+	void UpdateTitleEffects();
+	void UpdateBuffEffects();
 
 protected:
 	DX12Core* coreRef = nullptr;
@@ -114,8 +118,15 @@ protected:
 	vector<shared_ptr<GimmickDiamond>> gimmickPool;
 	unordered_map<int, shared_ptr<GimmickDiamond>> activeGimmicks;
 	unordered_map<int, int> activeZoneBarriers;
-	unordered_map<int, int> activeBreakerShields;	
-	int shieldGateBossId = -1;						
+	unordered_map<int, int> activeBreakerShields;
+	int shieldGateBossId = -1;
+
+	unordered_map<int, int> titleIdByOwner;
+	unordered_map<int, int> activeTitleEffects;
+	const wstring* TitleEffectName(int titleId) const;
+
+	unordered_map<int, vector<int>> activeBuffEffects;	
+	const wstring* BuffEffectName(const string& effectKey) const;
 
 	shared_ptr<MainCharacter> myPlayer;
 	CharacterType myCharacterType = CharacterType::Knight;

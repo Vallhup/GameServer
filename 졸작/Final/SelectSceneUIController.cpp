@@ -132,7 +132,6 @@ void SelectSceneUIController::Update(float deltaTime)
 				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 				static constexpr CharacterId charIds[3] = { CharacterId::Knight, CharacterId::Lancer, CharacterId::Paladin };
 				NETWORK_MANAGER->SendCharacterSelectPacket(charIds[selectedChar]);
-				SCENE_MANAGER->RequestLoadingScene(SceneType::Plaza);
 			}
 		}
 		return;

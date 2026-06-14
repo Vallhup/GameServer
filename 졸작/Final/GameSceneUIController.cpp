@@ -1548,18 +1548,12 @@ void GameSceneUIController::UpdateStatueWindow()
 		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 		setWindow(ImageUIState::Hidden);
 
-		if (auto* fade = uiManager->GetScreenFade())
+		auto& transition = ENGINE.GetWorldTransitionController();
+		const uint32_t requestId = transition.CreateRequestId();
+		if (transition.BeginRequest(requestId))
 		{
-			fade->SetOnFadedOut([]() {
-				auto& transition = ENGINE.GetWorldTransitionController();
-				const uint32_t requestId = transition.CreateRequestId();
-				if (transition.BeginRequest(requestId))
-				{
-					if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
-						transition.Reset();
-				}
-			});
-			fade->FadeOut(1.0f);
+			if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
+				transition.Reset();
 		}
 	}
 	else if (statueCancelButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))

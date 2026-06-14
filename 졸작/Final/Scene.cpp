@@ -67,6 +67,10 @@ void Scene::Update(const float deltaTime)
 
 	UpdateBreakerShields();
 
+	UpdateTitleEffects();
+
+	UpdateBuffEffects();
+
 	UpdateDissolves();
 
 	// Temporarily test in GameScene Only
@@ -326,6 +330,18 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 	const wstring swordEffectName = swordEffectNames.at(type);
 	EFFECT_MANAGER->PreLoad(swordEffectName);
 	EFFECT_MANAGER->PreLoad(L"RunDust");
+
+	EFFECT_MANAGER->PreLoad(L"Title1");
+	EFFECT_MANAGER->PreLoad(L"Title2");
+	EFFECT_MANAGER->PreLoad(L"Title3");
+	EFFECT_MANAGER->PreLoad(L"Title6");
+	EFFECT_MANAGER->PreLoad(L"Title7");
+	EFFECT_MANAGER->PreLoad(L"Title8");
+
+	EFFECT_MANAGER->PreLoad(L"Healing");
+	EFFECT_MANAGER->PreLoad(L"Attack Increase");
+	EFFECT_MANAGER->PreLoad(L"Max HP Increase");
+	EFFECT_MANAGER->PreLoad(L"Defense Increase");
 
 	for (int i = 0; i < count; ++i)
 	{
@@ -594,14 +610,19 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 
 	if (auto typeIt = activeMonsterTypes.find(id); typeIt != activeMonsterTypes.end())
 	{
+		const MonsterType mt = typeIt->second;
+		const bool isBoss = (mt == MonsterType::Boss || mt == MonsterType::BigDemonWarrior || mt == MonsterType::Tank);
+
 		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 		{
-			const MonsterType mt = typeIt->second;
-			if (mt == MonsterType::Boss || mt == MonsterType::BigDemonWarrior || mt == MonsterType::Tank)
+			if (isBoss)
 				controller->RemoveBossHpBar();
 			else
 				controller->RemoveMonsterBar(id);
 		}
+
+		if (isBoss)
+			OnBossDefeated();	
 
 		if (auto* dis = it->second->GetComponent<DissolveComponent>())
 			dis->Start();
@@ -969,13 +990,7 @@ void Scene::HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_
 
 void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& choiceBegin)
 {
-	// Final Boss 처치 후 UI 띄우기 위해 보내는 패킷
-	// 아마 Id 3개는 딱히 필요 없을 거 같고, 
-	// eligibleCount는 혹시 진행도 같은 거 표시할 때 쓸 수 있을 듯
 	const uint64_t voteId = choiceBegin.voteid();
-	const uint64_t partyId = choiceBegin.partyid();
-	const uint64_t sourceWorldId = choiceBegin.sourceworldid();
-	const uint32_t eligibleCount = choiceBegin.eligiblecount();
 
 	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 		controller->ShowHeroChoice(voteId);
@@ -1045,41 +1060,130 @@ void Scene::HandleGameplayEffectSync(const Protocol::SC_GAMEPLAY_EFFECT_SYNC_PAC
 {
 	const int id = NetId{ effectSync.netid() }.GetId();
 
+	auto cit = activeCharacters.find(id);
+	if (cit == activeCharacters.end())
+		return;
+
+	const XMFLOAT3 pos = cit->second->GetComponent<Transform>()->GetPosition();
+
 	for (const auto& effect : effectSync.appliedeffects())
 	{
-		const std::string& key = effect.effectkey();
-
-		if (key == "Effect.KillBuff.LifeDrain")
+		if (const wstring* name = BuffEffectName(effect.effectkey()))
 		{
-			// 회복 획득 이펙트
-		}
-
-		else if (key == "Effect.Killbuff.PowerSurge")
-		{
-			// 공격력 증가 이펙트
-		}
-
-		else if (key == "Effect.KillBuff.IronWill")
-		{
-			// 최대 HP 증가 이펙트
-		}
-
-		else if (key == "Effect.KillBuff.SteelSkin")
-		{
-			// 방어력 증가 이펙트
+			const int handle = EFFECT_MANAGER->Play(*name, pos);
+			if (handle != -1)
+				activeBuffEffects[id].push_back(handle);
 		}
 	}
 }
 
+void Scene::UpdateBuffEffects()
+{
+	for (auto it = activeBuffEffects.begin(); it != activeBuffEffects.end(); )
+	{
+		auto cit = activeCharacters.find(it->first);
+		auto& handles = it->second;
+
+		for (auto h = handles.begin(); h != handles.end(); )
+		{
+			if (cit == activeCharacters.end() || !EFFECT_MANAGER->Exists(*h))
+			{
+				EFFECT_MANAGER->Stop(*h);
+				h = handles.erase(h);
+			}
+			else
+			{
+				EFFECT_MANAGER->SetLocation(*h, cit->second->GetComponent<Transform>()->GetPosition());
+				++h;
+			}
+		}
+
+		if (handles.empty())
+			it = activeBuffEffects.erase(it);
+		else
+			++it;
+	}
+}
+
+const wstring* Scene::BuffEffectName(const string& effectKey) const
+{
+	static const wstring healing = L"Healing", attack = L"Attack Increase",
+	                     maxHp = L"Max HP Increase", defense = L"Defense Increase";
+	if (effectKey == "Effect.KillBuff.LifeDrain")  return &healing;		
+	if (effectKey == "Effect.KillBuff.PowerSurge") return &attack;		
+	if (effectKey == "Effect.KillBuff.IronWill")   return &maxHp;		
+	if (effectKey == "Effect.KillBuff.SteelSkin")  return &defense;		
+	return nullptr;
+}
+
 void Scene::HandleBeaconCinematicStart(const Protocol::SC_BEACON_CINEMATIC_START_PACKET& cinematicStart)
 {
-	// TODO: 해당 패킷 받으면 Cinematic 시작하도록 수정
-	const Protocol::BeaconCinematicType cinematicType = cinematicStart.cinematictype();
+	OnBeaconCinematicStart();
 }
 
 void Scene::HandleTitleReplication(const Protocol::SC_TITLE_REPLICATION_PACKET& title)
 {
-	// TODO: Plaza에서 장착한 칭호에 따라 이펙트
 	const int ownerId = NetId{ title.ownernetid() }.GetId();
-	const uint32_t titleId = title.titleid();
+	const int titleId = static_cast<int>(title.titleid());
+
+	if (auto it = activeTitleEffects.find(ownerId); it != activeTitleEffects.end())
+	{
+		EFFECT_MANAGER->Stop(it->second);
+		activeTitleEffects.erase(it);
+	}
+
+	if (titleId == 0)	
+		titleIdByOwner.erase(ownerId);
+	else
+		titleIdByOwner[ownerId] = titleId;
+}
+
+void Scene::UpdateTitleEffects()
+{
+	for (auto it = titleIdByOwner.begin(); it != titleIdByOwner.end(); )
+	{
+		const int ownerId = it->first;
+
+		auto cit = activeCharacters.find(ownerId);
+		if (cit == activeCharacters.end())	
+		{
+			if (auto hit = activeTitleEffects.find(ownerId); hit != activeTitleEffects.end())
+			{
+				EFFECT_MANAGER->Stop(hit->second);
+				activeTitleEffects.erase(hit);
+			}
+			it = titleIdByOwner.erase(it);
+			continue;
+		}
+
+		const XMFLOAT3 pos = cit->second->GetComponent<Transform>()->GetPosition();
+		auto hit = activeTitleEffects.find(ownerId);
+
+		if (hit == activeTitleEffects.end() || !EFFECT_MANAGER->Exists(hit->second))
+		{
+			if (const wstring* name = TitleEffectName(it->second))
+				activeTitleEffects[ownerId] = EFFECT_MANAGER->Play(*name, pos);
+		}
+		else
+		{
+			EFFECT_MANAGER->SetLocation(hit->second, pos);
+		}
+		++it;
+	}
+}
+
+const wstring* Scene::TitleEffectName(int titleId) const
+{
+	static const wstring t1 = L"Title1", t2 = L"Title2", t3 = L"Title3",
+	                     t6 = L"Title6", t7 = L"Title7", t8 = L"Title8";
+	switch (titleId)
+	{
+	case 1: return &t1;
+	case 2: return &t2;
+	case 3: return &t3;
+	case 6: return &t6;
+	case 7: return &t7;
+	case 8: return &t8;
+	default: return nullptr;	// 0=미장착, 4·5=미완성
+	}
 }

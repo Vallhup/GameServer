@@ -113,12 +113,12 @@ void SecondBattleScene::InitializeSceneEnvironments()
 	light->Initialize(coreRef->GetDevice(), 2);
 	light->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(),
 		L"../Assets/Effects/Textures/particle2.png");
-	light->SetColor({ 1.043f, 2.890f, 2.369f, 1.0f });   
+	light->SetColor({ 1.043f, 2.890f, 2.369f, 1.0f });
 	light->SetSize(2.0f);
-	light->Spawn({ 338.464813f, 71.7f, 417.798187f });
 	AddGameObject(beacon);
 
 	beaconLight = light;
+	beaconSpawnPos = { 338.464813f, 71.7f, 417.798187f };	
 #pragma endregion
 
 	EFFECT_MANAGER->PreLoad(L"CosmicMist");
@@ -159,7 +159,7 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 		}
 	}
 
-	if (myPlayer && !IsCinematicActive())
+	if (myPlayer && !IsCinematicActive() && beaconLight && beaconLight->IsAlive())
 	{
 		constexpr float BEACON_CX = 338.464813f;
 		constexpr float BEACON_CZ = 417.798187f;
@@ -187,8 +187,7 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 			if (controller->ConsumeBeaconConfirmed())
 			{
 				controller->SetInteractPrompt(false, {});
-				controller->HideHudForCinematic();
-				StartBeaconCinematic();
+				NETWORK_MANAGER->SendBeaconCinematicStartRequest();
 			}
 		}
 	}

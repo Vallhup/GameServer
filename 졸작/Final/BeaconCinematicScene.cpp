@@ -2,12 +2,33 @@
 #include "BeaconCinematicScene.h"
 #include "Engine.h"
 #include "UIManager.h"
+#include "GameSceneUIController.h"
 #include "EffectManager.h"
 #include "SkyBox.h"
 #include "LightManager.h"
 #include "BeaconLightComponent.h"
 #include "Input.h"
 #include "SoundManager.h"
+
+void BeaconCinematicScene::OnBossDefeated()
+{
+	if (beaconLight)
+		beaconLight->Spawn(beaconSpawnPos);
+}
+
+void BeaconCinematicScene::OnBeaconCinematicStart()
+{
+	if (IsCinematicActive())
+		return;	
+
+	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+	{
+		controller->SetInteractPrompt(false, {});	
+		controller->HideHudForCinematic();
+	}
+
+	StartBeaconCinematic();
+}
 
 void BeaconCinematicScene::StartBeaconCinematic()
 {
