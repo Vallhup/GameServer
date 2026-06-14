@@ -175,6 +175,11 @@ void Scene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			return NetHelper::DispatchPacket<Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET>(header, data,
 				[this](const auto& packet) { HandleGameplayEffectSync(packet); });
 		}
+		case PacketType::SC_TITLE_REPLICATION:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_TITLE_REPLICATION_PACKET>(header, data,
+				[this](const auto& packet) { HandleTitleReplication(packet); });
+		}
 		case PacketType::SC_BEACON_CINEMATIC_START:
 		{
 			return NetHelper::DispatchPacket<Protocol::SC_BEACON_CINEMATIC_START_PACKET>(header, data,

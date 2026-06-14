@@ -924,6 +924,17 @@ void GameSceneUIController::Update(float deltaTime)
 
 			if (next == ImageUIState::Hidden)
 			{
+				if (ClientTitleState* titleState = ENGINE.GetTitleState();
+					titleState && titleState->IsLoaded())
+				{
+					const uint32_t selectedTitleId = titleState->GetSelectedTitleId();
+					if (selectedTitleId != titleState->GetEquippedTitleId())
+					{
+						if (auto* network = NETWORK_MANAGER)
+							network->SendTitleEquipRequestPacket(selectedTitleId);
+					}
+				}
+
 				statusTitleText->SetText(L"");
 			}
 			else
