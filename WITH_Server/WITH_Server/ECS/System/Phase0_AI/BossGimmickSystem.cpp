@@ -112,7 +112,8 @@ namespace
 			ctx.ecs.GetMutableComponent<PendingFinalBossDefeatedEventComp>(
 				victim))
 		{
-			finalBossDefeated->pending = true;
+			finalBossDefeated->awaitingDeathAnimation = true;
+			finalBossDefeated->pending = false;
 		}
 
 		if (AbilityInterruptQueueComp* const interruptQueue =

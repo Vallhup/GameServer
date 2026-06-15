@@ -31,6 +31,21 @@ namespace
 		return catalog.Abilities().GetAll().front();
 	}
 
+	const AbilityDef& FindFinalBossDeadAbility(
+		const GameplayContentCatalogSnapshot& catalog)
+	{
+		for (const AbilityDef& ability : catalog.Abilities().GetAll())
+		{
+			if (ability.key == "Ability.FinalBoss_Dead")
+			{
+				return ability;
+			}
+		}
+
+		assert(false && "Final boss dead ability must exist");
+		return catalog.Abilities().GetAll().front();
+	}
+
 	void RegisterRespawnTestStorages(WorldRuntime& runtime)
 	{
 		runtime.RegisterStorage<CombatStatStateComp>();
@@ -40,6 +55,7 @@ namespace
 		runtime.RegisterStorage<PlayerDeathCountConsumedTag>();
 		runtime.RegisterStorage<PendingDespawnTag>();
 		runtime.RegisterStorage<PendingPlayerDeathCountEventComp>();
+		runtime.RegisterStorage<PendingFinalBossDefeatedEventComp>();
 		runtime.RegisterStorage<PlayerDeathStateComp>();
 		runtime.RegisterStorage<WorldTransformComp>();
 		runtime.RegisterStorage<AnimationPlaybackStateComp>();
@@ -161,6 +177,28 @@ namespace
 		}
 	}
 
+	void QueuePendingFinalBossDefeat(
+		WorldRuntime& runtime,
+		Entity entity,
+		const AbilityDef& deadAbility,
+		float elapsedSec)
+	{
+		CombatStatStateComp stats{};
+		stats.currentHp = 0;
+		stats.maxHp = 100;
+		runtime.DeferredUpsertComponent(entity, stats);
+
+		AbilityStateComp ability{};
+		ability.abilityId = deadAbility.id;
+		ability.abilityInstanceId = 1;
+		ability.elapsedSec = elapsedSec;
+		runtime.DeferredUpsertComponent(entity, ability);
+
+		PendingFinalBossDefeatedEventComp defeatedEvent{};
+		defeatedEvent.awaitingDeathAnimation = true;
+		runtime.DeferredUpsertComponent(entity, defeatedEvent);
+	}
+
 	bool NearlyEqual(float lhs, float rhs)
 	{
 		return std::abs(lhs - rhs) < 0.0001f;
@@ -239,6 +277,8 @@ void RunRespawnSystemSmokeTests()
 	GameDataCatalog::Publish(gameDataCatalog);
 
 	const AbilityDef& deadAbility = FindKnightDeadAbility(catalog);
+	const AbilityDef& finalBossDeadAbility =
+		FindFinalBossDeadAbility(catalog);
 	WorldDef worldDef{};
 	worldDef.id = WorldDefId::Village;
 	WorldExecutionModel executionModel{};
@@ -417,6 +457,69 @@ void RunRespawnSystemSmokeTests()
 	assert(!plazaRuntime.MakeView().IsAlive(plazaPlayer));
 	assert(plazaRuntime.FlushLifecycleCommands());
 	plazaRuntime.Shutdown();
+
+	WorldDef finalWorldDef{};
+	finalWorldDef.id = WorldDefId::Final;
+	WorldRuntime finalRuntime(WorldRuntimeCreateParams{
+		.def = &finalWorldDef,
+		.executionModel = &executionModel
+		});
+	assert(finalRuntime.Initialize());
+	RegisterRespawnTestStorages(finalRuntime);
+	finalRuntime.FixStorages();
+
+	const Entity animatingBoss = finalRuntime.ReserveEntity();
+	const Entity finishedBoss = finalRuntime.ReserveEntity();
+	assert(!animatingBoss.IsNull());
+	assert(!finishedBoss.IsNull());
+	QueuePendingFinalBossDefeat(
+		finalRuntime,
+		animatingBoss,
+		finalBossDeadAbility,
+		finalBossDeadAbility.timeline.durationSec - 0.1f);
+	QueuePendingFinalBossDefeat(
+		finalRuntime,
+		finishedBoss,
+		finalBossDeadAbility,
+		finalBossDeadAbility.timeline.durationSec);
+
+	assert(finalRuntime.BeginFrame(0, 0.0, 1.0 / 30.0));
+	assert(finalRuntime.FlushFrameCommands());
+	assert(finalRuntime.FlushLifecycleCommands());
+	assert(finalRuntime.BeginFrame(1, 1.0 / 30.0, 1.0 / 30.0));
+
+	SystemContext finalCtx{
+		.runtime = finalRuntime,
+		.ecs = finalRuntime.MakeView(),
+		.dtSec = 1.0 / 30.0
+	};
+	system.Execute(finalCtx);
+
+	ECSView finalView = finalRuntime.MakeView();
+	const PendingFinalBossDefeatedEventComp* animatingEvent =
+		finalView.GetComponent<PendingFinalBossDefeatedEventComp>(animatingBoss);
+	PendingFinalBossDefeatedEventComp* finishedEvent =
+		finalView.GetMutableComponent<PendingFinalBossDefeatedEventComp>(
+			finishedBoss);
+	assert(animatingEvent != nullptr);
+	assert(animatingEvent->awaitingDeathAnimation);
+	assert(!animatingEvent->pending);
+	assert(finishedEvent != nullptr);
+	assert(!finishedEvent->awaitingDeathAnimation);
+	assert(finishedEvent->pending);
+
+	assert(finalRuntime.FlushFrameCommands());
+	assert(finalRuntime.MakeView().IsAlive(animatingBoss));
+	assert(finalRuntime.MakeView().IsAlive(finishedBoss));
+	finishedEvent->pending = false;
+	assert(finalRuntime.FlushLifecycleCommands());
+	assert(finalRuntime.BeginFrame(2, 2.0 / 30.0, 1.0 / 30.0));
+	system.Execute(finalCtx);
+	assert(finalRuntime.FlushFrameCommands());
+	assert(finalRuntime.MakeView().IsAlive(animatingBoss));
+	assert(!finalRuntime.MakeView().IsAlive(finishedBoss));
+	assert(finalRuntime.FlushLifecycleCommands());
+	finalRuntime.Shutdown();
 
 	GameDataCatalog::Clear();
 	GameplayContentCatalogSnapshot::ClearCurrent();

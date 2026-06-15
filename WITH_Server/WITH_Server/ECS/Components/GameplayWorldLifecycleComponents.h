@@ -18,6 +18,7 @@ struct PendingMonsterKillEventComp : Component
 
 struct PendingFinalBossDefeatedEventComp : Component
 {
+	bool awaitingDeathAnimation{ false };
 	bool pending{ false };
 };
 

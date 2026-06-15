@@ -155,11 +155,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<23> ResolveDeathAndDespawnSystem::kMetaStorage =
+const StaticSystemMetaStorage<24> ResolveDeathAndDespawnSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<ResolveDeathAndDespawnSystem>(),
 		"ResolveDeathAndDespawnSystem",
-		std::array<AccessSpec, 23>
+		std::array<AccessSpec, 24>
 	{
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<AbilityStateComp>()),
@@ -183,6 +183,7 @@ const StaticSystemMetaStorage<23> ResolveDeathAndDespawnSystem::kMetaStorage =
 		WriteImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
 		WriteImmediate(ComponentRes<StaminaRecoveryStateComp>()),
 		ReadImmediate(ComponentRes<SpawnTypeComp>()),
+		WriteImmediate(ComponentRes<PendingFinalBossDefeatedEventComp>()),
 		WriteDeferred(CommandBufferRes()),
 	});
 
@@ -263,6 +264,16 @@ void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 			abilityDef != nullptr &&
 			abilityDef->kind == AbilityKind::Dead &&
 			abilityState.elapsedSec >= abilityDef->timeline.durationSec;
+		PendingFinalBossDefeatedEventComp* const finalBossDefeated =
+			ctx.ecs.GetMutableComponent<PendingFinalBossDefeatedEventComp>(
+				entity);
+		if (deadAbilityFinished &&
+			finalBossDefeated != nullptr &&
+			finalBossDefeated->awaitingDeathAnimation)
+		{
+			finalBossDefeated->awaitingDeathAnimation = false;
+			finalBossDefeated->pending = true;
+		}
 
 		if (supportsPlayerRespawn &&
 			deadAbilityFinished &&
@@ -291,6 +302,7 @@ void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 			player->ownerSessionId != 0;
 
 		if (deadAbilityFinished &&
+			(finalBossDefeated == nullptr || !finalBossDefeated->pending) &&
 			!keepPvpCorpse &&
 			!ctx.ecs.HasComponent<PendingDespawnTag>(entity))
 		{

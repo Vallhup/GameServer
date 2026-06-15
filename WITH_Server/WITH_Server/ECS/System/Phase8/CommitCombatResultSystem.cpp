@@ -250,7 +250,8 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 				ctx.ecs.GetMutableComponent<PendingFinalBossDefeatedEventComp>(
 					entity))
 			{
-				finalBossDefeated->pending = true;
+				finalBossDefeated->awaitingDeathAnimation = true;
+				finalBossDefeated->pending = false;
 			}
 		}
 
