@@ -81,6 +81,7 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"VillageName", L"../Assets/UI/Textures/VillageName.png", core, resourceUpload);
 	RegisterUITexture(L"CastleName", L"../Assets/UI/Textures/CastleName.png", core, resourceUpload);
 	RegisterUITexture(L"FinalName", L"../Assets/UI/Textures/FinalName.png", core, resourceUpload);
+	RegisterUITexture(L"StayAlive", L"../Assets/UI/Textures/StayAlive.png", core, resourceUpload);
 
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
 	RegisterUITexture(L"StatusBack", L"../Assets/UI/Textures/StatusBack.png", core, resourceUpload);

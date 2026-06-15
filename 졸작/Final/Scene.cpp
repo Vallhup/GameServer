@@ -1179,16 +1179,18 @@ void Scene::UpdateTitleEffects()
 
 const wstring* Scene::TitleEffectName(int titleId) const
 {
-	static const wstring t1 = L"Title1", t2 = L"Title2", t3 = L"Title3",
-	                     t6 = L"Title6", t7 = L"Title7", t8 = L"Title8";
+	static const wstring t1 = L"Title1", t2 = L"Title2", t3 = L"Title3", t4 = L"Title4",
+						 t5 = L"Title5", t6 = L"Title6", t7 = L"Title7", t8 = L"Title8";
 	switch (titleId)
 	{
 	case 1: return &t1;
 	case 2: return &t2;
 	case 3: return &t3;
+	case 4: return &t4;
+	case 5: return &t5;
 	case 6: return &t6;
 	case 7: return &t7;
 	case 8: return &t8;
-	default: return nullptr;	// 0=미장착, 4·5=미완성
+	default: return nullptr;	
 	}
 }

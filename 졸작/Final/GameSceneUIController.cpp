@@ -34,7 +34,8 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitRespawnWindow();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
-	InitPartyMemberHud();   
+	InitPvpOverlay();
+	InitPartyMemberHud();
 	InitPartyWindow();
 	InitStatWindow();
 	InitMapWindow();
@@ -155,6 +156,30 @@ void GameSceneUIController::InitMapNameOverlay()
 	mapNameImage->SetHoriLength(WinSize.x * 0.4f);
 	mapNameImage->SetVertLength(WinSize.y * 0.1f);
 	widgets.push_back(mapNameImage);
+}
+
+void GameSceneUIController::InitPvpOverlay()
+{
+	if (sceneType != SceneType::Final) return;
+
+	pvpOverlayImage = make_shared<ImageUI>(uiManager, L"StayAlive", ImageUIState::Hidden);
+	pvpOverlayImage->SetPosition(WinSize.x * 0.3f, WinSize.y * 0.1f);
+	pvpOverlayImage->SetHoriLength(WinSize.x * 0.4f);
+	pvpOverlayImage->SetVertLength(WinSize.y * 0.2f);
+	widgets.push_back(pvpOverlayImage);
+}
+
+void GameSceneUIController::UpdatePvpOverlay(float deltaTime)
+{
+	if (!pvpOverlayPending) return;
+
+	pvpOverlayTimer -= deltaTime;
+	if (pvpOverlayTimer <= 0.0f)
+	{
+		pvpOverlayPending = false;
+		if (pvpOverlayImage)
+			pvpOverlayImage->ChangeState(ImageUIState::PulseOnce);
+	}
 }
 
 void GameSceneUIController::InitPartyWindow()
@@ -899,6 +924,7 @@ void GameSceneUIController::Update(float deltaTime)
 	UpdateBeaconWindow();
 	UpdateHeroChoiceWindow();
 	UpdateRespawnWindow(deltaTime);
+	UpdatePvpOverlay(deltaTime);
 
 	auto opened = [](const shared_ptr<ImageUI>& p) {
 		return p && p->GetState() != ImageUIState::Hidden;
@@ -1903,6 +1929,14 @@ void GameSceneUIController::ShowMapName()
 {
 	if (mapNameImage)
 		mapNameImage->ChangeState(ImageUIState::PulseOnce);
+}
+
+void GameSceneUIController::ShowPvpOverlay()
+{
+	if (!pvpOverlayImage) return;
+
+	pvpOverlayPending = true;
+	pvpOverlayTimer = PVP_OVERLAY_DELAY;
 }
 
 bool GameSceneUIController::IsStatWindowOn() const

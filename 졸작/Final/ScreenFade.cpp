@@ -46,6 +46,12 @@ void ScreenFade::Update(float deltaTime)
 		{
 			alpha = 0.0f;
 			state = State::Idle;
+			if (onFadedIn)
+			{
+				auto cb = onFadedIn;
+				onFadedIn = nullptr;
+				cb();
+			}
 		}
 		break;
 	}

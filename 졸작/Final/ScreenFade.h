@@ -16,6 +16,7 @@ public:
 	bool  IsBlack() const { return state == State::Black; }   
 
 	void SetOnFadedOut(std::function<void()> cb) { onFadedOut = std::move(cb); }
+	void SetOnFadedIn(std::function<void()> cb) { onFadedIn = std::move(cb); }
 
 private:
 	State state = State::Idle;
@@ -23,4 +24,5 @@ private:
 	float duration = 1.0f;
 	float elapsed = 0.0f;
 	std::function<void()> onFadedOut;
+	std::function<void()> onFadedIn;
 };

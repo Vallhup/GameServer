@@ -43,6 +43,8 @@ public:
 
 	void ShowMapName();
 
+	void ShowPvpOverlay();
+
 	void SetInteractPrompt(bool active, const XMFLOAT3& worldAnchor);
 
 	bool ConsumeBeaconConfirmed();
@@ -57,6 +59,8 @@ private:
 	void UpdateMonsterHpBars();
 	void InitLocalPlayerHUD();
 	void InitMapNameOverlay();
+	void InitPvpOverlay();
+	void UpdatePvpOverlay(float deltaTime);
 	void InitPartyWindow();
 	void InitStatWindow();
 	void RefreshTitleRibbon();
@@ -124,7 +128,12 @@ private:
 	float bossHpPercent = 1.0f;
 	bool bossInCombat = false;
 
-	shared_ptr<ImageUI> mapNameImage;  
+	shared_ptr<ImageUI> mapNameImage;
+
+	shared_ptr<ImageUI> pvpOverlayImage;
+	bool                pvpOverlayPending = false;
+	float               pvpOverlayTimer = 0.0f;
+	static constexpr float PVP_OVERLAY_DELAY = 3.0f;
 
 	shared_ptr<ImageUI> mapBackImage;
 	shared_ptr<ImageUI> mapImage;
