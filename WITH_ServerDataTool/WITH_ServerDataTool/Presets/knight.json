@@ -17,20 +17,95 @@
     "extremeTrimFraction": 0.03
   },
   "clips": [
-    { "name": "heavyattack", "source": "knight_animation_attack_baked.bone", "output": "knight_animation_heavyattack.json", "loop": false },
-    { "name": "lightattack1", "source": "knight_animation_attack_combo1_baked.bone", "output": "knight_animation_lightattack1.json", "loop": false },
-    { "name": "lightattack2", "source": "knight_animation_attack_combo2_baked.bone", "output": "knight_animation_lightattack2.json", "loop": false },
-    { "name": "lightattack3", "source": "knight_animation_attack_combo3_baked.bone", "output": "knight_animation_lightattack3.json", "loop": false },
-    { "name": "specialattack", "source": "knight_animation_attack_special_baked.bone", "output": "knight_animation_specialattack.json", "loop": false },
-    { "name": "death", "source": "knight_animation_death_baked.bone", "output": "knight_animation_death.json", "loop": false },
-    { "name": "drinking", "source": "knight_animation_drinking_baked.bone", "output": "knight_animation_drinking.json", "loop": false },
-    { "name": "guard", "source": "knight_animation_guard_baked.bone", "output": "knight_animation_guard.json", "loop": true },
-    { "name": "hit", "source": "knight_animation_hit_baked.bone", "output": "knight_animation_hit.json", "loop": false },
-    { "name": "idle", "source": "knight_animation_idle_baked.bone", "output": "knight_animation_idle.json", "loop": true },
-    { "name": "parry", "source": "knight_animation_parry_baked.bone", "output": "knight_animation_parry.json", "loop": false },
-    { "name": "dodge", "source": "knight_animation_roll_baked.bone", "output": "knight_animation_dodge.json", "loop": false },
-    { "name": "run", "source": "knight_animation_run_baked.bone", "output": "knight_animation_run.json", "loop": true },
-    { "name": "stun", "source": "knight_animation_stun_baked.bone", "output": "knight_animation_stun.json", "loop": false },
-    { "name": "walk", "source": "knight_animation_walk_baked.bone", "output": "knight_animation_walk.json", "loop": true }
+    {
+      "name": "heavyattack",
+      "source": "knight_animation_attack_strong_baked.bone",
+      "output": "knight_animation_heavyattack.json",
+      "loop": false
+    },
+    {
+      "name": "lightattack1",
+      "source": "knight_animation_attack_combo1_baked.bone",
+      "output": "knight_animation_lightattack1.json",
+      "loop": false
+    },
+    {
+      "name": "lightattack2",
+      "source": "knight_animation_attack_combo2_baked.bone",
+      "output": "knight_animation_lightattack2.json",
+      "loop": false
+    },
+    {
+      "name": "lightattack3",
+      "source": "knight_animation_attack_combo3_baked.bone",
+      "output": "knight_animation_lightattack3.json",
+      "loop": false
+    },
+    {
+      "name": "specialattack",
+      "source": "knight_animation_attack_special_baked.bone",
+      "output": "knight_animation_specialattack.json",
+      "loop": false
+    },
+    {
+      "name": "death",
+      "source": "knight_animation_death_baked.bone",
+      "output": "knight_animation_death.json",
+      "loop": false
+    },
+    {
+      "name": "drinking",
+      "source": "knight_animation_drinking_baked.bone",
+      "output": "knight_animation_drinking.json",
+      "loop": false
+    },
+    {
+      "name": "guard",
+      "source": "knight_animation_guard_baked.bone",
+      "output": "knight_animation_guard.json",
+      "loop": true
+    },
+    {
+      "name": "hit",
+      "source": "knight_animation_hit_baked.bone",
+      "output": "knight_animation_hit.json",
+      "loop": false
+    },
+    {
+      "name": "idle",
+      "source": "knight_animation_idle_baked.bone",
+      "output": "knight_animation_idle.json",
+      "loop": true
+    },
+    {
+      "name": "parry",
+      "source": "knight_animation_parry_baked.bone",
+      "output": "knight_animation_parry.json",
+      "loop": false
+    },
+    {
+      "name": "dodge",
+      "source": "knight_animation_roll_baked.bone",
+      "output": "knight_animation_dodge.json",
+      "loop": false
+    },
+    {
+      "name": "run",
+      "source": "knight_animation_run_baked.bone",
+      "output": "knight_animation_run.json",
+      "loop": true
+    },
+    {
+      "name": "stun",
+      "source": "knight_animation_stun_baked.bone",
+      "output": "knight_animation_stun.json",
+      "loop": false
+    },
+    {
+      "name": "walk",
+      "source": "knight_animation_walk_baked.bone",
+      "output": "knight_animation_walk.json",
+      "loop": true
+    }
   ]
 }

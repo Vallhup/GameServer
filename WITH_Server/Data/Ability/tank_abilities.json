@@ -24,38 +24,38 @@
                 "durationSec": 2.6333375,
                 "policy": "FixedDuration",
                 "combatWindows": [
-                    {
-                        "kind": "Attack",
-                        "startNormalized": 0.1,
-                        "endNormalized": 0.48,
-                        "sourceHitBones": [ 15 ],
-                        "applyEffectKey": null,
-                        "appliesTo": "FrontPhysical",
-                        "spatialFilter": {
-                            "facingHalfAngleDeg": 78,
-                            "minDistance": null,
-                            "maxDistance": 2.8,
-                            "verticalTolerance": 2.1,
-                            "referenceFrame": "LockedActionDirection"
-                        },
-                        "effect": {
-                            "type": "AttackHit",
-                            "attackHit": {
-                                "damageScale": 1.45,
-                                "bonusDamage": 8,
-                                "staminaDamageScale": 1.5,
-                                "bonusStaminaDamage": 4.5,
-                                "poiseDamageScale": 0,
-                                "bonusPoiseDamage": 0,
-                                "knockbackDistance": 0.8,
-                                "hitStopSec": 0.07,
-                                "parryable": true,
-                                "guardable": true
-                            },
-                            "parryResponse": null,
-                            "guardResponse": null
-                        }
+                  {
+                    "kind": "Attack",
+                    "startNormalized": 0.3,
+                    "endNormalized": 0.48,
+                    "sourceHitBones": [ 15 ],
+                    "applyEffectKey": null,
+                    "appliesTo": "FrontPhysical",
+                    "spatialFilter": {
+                      "facingHalfAngleDeg": 78,
+                      "minDistance": null,
+                      "maxDistance": 2.8,
+                      "verticalTolerance": 2.1,
+                      "referenceFrame": "LockedActionDirection"
+                    },
+                    "effect": {
+                      "type": "AttackHit",
+                      "attackHit": {
+                        "damageScale": 1.45,
+                        "bonusDamage": 8,
+                        "staminaDamageScale": 1.5,
+                        "bonusStaminaDamage": 4.5,
+                        "poiseDamageScale": 0,
+                        "bonusPoiseDamage": 0,
+                        "knockbackDistance": 0.8,
+                        "hitStopSec": 0.07,
+                        "parryable": true,
+                        "guardable": true
+                      },
+                      "parryResponse": null,
+                      "guardResponse": null
                     }
+                  }
                 ],
                 "movementSegments": [
                     {
@@ -126,40 +126,76 @@
                 "durationSec": 3.06666541,
                 "policy": "FixedDuration",
                 "combatWindows": [
-                    {
-                        "kind": "Attack",
-                        "startNormalized": 0.01,
-                        "endNormalized": 1.0,
-                        "sourceHitBones": [
-                            6, 15
-                        ],
-                        "applyEffectKey": null,
-                        "appliesTo": "FrontPhysical",
-                        "spatialFilter": {
-                            "facingHalfAngleDeg": 105,
-                            "minDistance": null,
-                            "maxDistance": 4.6,
-                            "verticalTolerance": 2.6,
-                            "referenceFrame": "LockedActionDirection"
-                        },
-                        "effect": {
-                            "type": "AttackHit",
-                            "attackHit": {
-                                "damageScale": 1.65,
-                                "bonusDamage": 9,
-                                "staminaDamageScale": 1.725,
-                                "bonusStaminaDamage": 4.5,
-                                "poiseDamageScale": 0,
-                                "bonusPoiseDamage": 0,
-                                "knockbackDistance": 0.9,
-                                "hitStopSec": 0.08,
-                                "parryable": true,
-                                "guardable": true
-                            },
-                            "parryResponse": null,
-                            "guardResponse": null
-                        }
+                  {
+                    "kind": "Attack",
+                    "startNormalized": 0.01,
+                    "endNormalized": 0.4,
+                    "sourceHitBones": [
+                      6,
+                      15
+                    ],
+                    "applyEffectKey": null,
+                    "appliesTo": "FrontPhysical",
+                    "spatialFilter": {
+                      "facingHalfAngleDeg": 105,
+                      "minDistance": null,
+                      "maxDistance": 4.6,
+                      "verticalTolerance": 2.6,
+                      "referenceFrame": "LockedActionDirection"
+                    },
+                    "effect": {
+                      "type": "AttackHit",
+                      "attackHit": {
+                        "damageScale": 1.65,
+                        "bonusDamage": 9,
+                        "staminaDamageScale": 1.725,
+                        "bonusStaminaDamage": 4.5,
+                        "poiseDamageScale": 0,
+                        "bonusPoiseDamage": 0,
+                        "knockbackDistance": 0.9,
+                        "hitStopSec": 0.08,
+                        "parryable": true,
+                        "guardable": true
+                      },
+                      "parryResponse": null,
+                      "guardResponse": null
                     }
+                  },
+                  {
+                    "kind": "Attack",
+                    "startNormalized": 0.5,
+                    "endNormalized": 0.6,
+                    "sourceHitBones": [
+                      6,
+                      15
+                    ],
+                    "applyEffectKey": null,
+                    "appliesTo": "FrontPhysical",
+                    "spatialFilter": {
+                      "facingHalfAngleDeg": 105,
+                      "minDistance": null,
+                      "maxDistance": 4.6,
+                      "verticalTolerance": 2.6,
+                      "referenceFrame": "LockedActionDirection"
+                    },
+                    "effect": {
+                      "type": "AttackHit",
+                      "attackHit": {
+                        "damageScale": 1.65,
+                        "bonusDamage": 9,
+                        "staminaDamageScale": 1.725,
+                        "bonusStaminaDamage": 4.5,
+                        "poiseDamageScale": 0,
+                        "bonusPoiseDamage": 0,
+                        "knockbackDistance": 0.9,
+                        "hitStopSec": 0.08,
+                        "parryable": true,
+                        "guardable": true
+                      },
+                      "parryResponse": null,
+                      "guardResponse": null
+                    }
+                  }
                 ],
                 "movementSegments": [
                     {
@@ -270,7 +306,7 @@
                         "startNormalized": 0.05,
                         "endNormalized": 0.18,
                         "movementMode": "ForwardFixedDistance",
-                        "moveDistance": 0.45,
+                        "moveDistance": 1.0,
                         "rotationMode": "FaceTarget",
                         "rotationRate": 2.7,
                         "verticalMovementMode": "None",
@@ -427,42 +463,8 @@
                 "combatWindows": [
                     {
                         "kind": "Attack",
-                        "startNormalized": 0.20,
-                        "endNormalized": 0.27,
-                        "sourceHitBones": [
-                            15
-                        ],
-                        "applyEffectKey": null,
-                        "appliesTo": "FrontPhysical",
-                        "spatialFilter": {
-                            "facingHalfAngleDeg": 110,
-                            "minDistance": null,
-                            "maxDistance": 4.6,
-                            "verticalTolerance": 2.1,
-                            "referenceFrame": "LockedActionDirection"
-                        },
-                        "effect": {
-                            "type": "AttackHit",
-                            "attackHit": {
-                                "damageScale": 1.15,
-                                "bonusDamage": 7,
-                                "staminaDamageScale": 1.2,
-                                "bonusStaminaDamage": 4.5,
-                                "poiseDamageScale": 0,
-                                "bonusPoiseDamage": 0,
-                                "knockbackDistance": 0.75,
-                                "hitStopSec": 0.07,
-                                "parryable": true,
-                                "guardable": true
-                            },
-                            "parryResponse": null,
-                            "guardResponse": null
-                        }
-                    },
-                    {
-                        "kind": "Attack",
-                        "startNormalized": 0.27,
-                        "endNormalized": 0.36,
+                        "startNormalized": 0.30,
+                        "endNormalized": 0.60,
                         "sourceHitBones": [
                             15
                         ],
@@ -587,10 +589,10 @@
                 ],
                 "movementSegments": [
                     {
-                        "startNormalized": 0.30,
-                        "endNormalized": 0.57,
-                        "movementMode": "ForwardFixedDistance",
-                        "moveDistance": 4.0,
+                        "startNormalized": 0.01,
+                        "endNormalized": 0.35,
+                        "movementMode": "DashToTarget",
+                        "moveDistance": null,
                         "rotationMode": "FaceTarget",
                         "rotationRate": 2.5,
                         "verticalMovementMode": "None",
