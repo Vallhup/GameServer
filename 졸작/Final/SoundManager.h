@@ -9,11 +9,11 @@ public:
     void Update(float deltaTime);
     void Release();
 
-    void PlayBGM(const char* path, float fadeInSeconds = 0.0f);
+    void PlayBGM(const char* path, float fadeInSeconds = 0.0f, bool loop = true);
     void StopBGM(float fadeSeconds = 0.0f);
 
 private:
-    void StartBGM(const char* path, float fadeInSeconds);
+    void StartBGM(const char* path, float fadeInSeconds, bool loop);
 
 public:
     void SetBGMVolume(float volume);
@@ -48,6 +48,7 @@ private:
 
     string pendingBGMPath;
     float  pendingFadeIn = 0.0f;
+    bool   pendingLoop = true;
     bool   hasPendingBGM = false;
 
     unordered_map<string, Sound*> bgmCache;

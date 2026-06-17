@@ -23,6 +23,7 @@ enum class EndingPhase
 	BeatDelay, StoryIn, StoryHold, StoryOut,
 	SwapDelay,
 	EndDelay, EndFade,
+	CreditsRoll, CreditsHold,
 };
 
 struct MonsterBarTarget { 
@@ -84,8 +85,10 @@ private:
 	void InitPvpOverlay();
 	void UpdatePvpOverlay(float deltaTime);
 	void InitEnding();
+	void InitCredits();
 	void UpdateEnding(float deltaTime);
-	void StartEnding(vector<EndingBeat> beats, const char* bgmPath, Protocol::FinalEndingCinematicContext doneContext);
+	void StartEnding(vector<EndingBeat> beats, const char* bgmPath,
+		Protocol::FinalEndingCinematicContext doneContext);
 	void CenterStoryImage(const wstring& texName);
 	void InitPartyWindow();
 	void InitStatWindow();
@@ -170,12 +173,21 @@ private:
 	size_t              endingBeatIndex = 0;
 	Protocol::FinalEndingCinematicContext endingDoneContext =
 		Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_FINAL_CLEAR;
-	static constexpr float ENDING_BG_DELAY   = 2.0f;  // 배경 등장/교체 후 스토리까지
-	static constexpr float ENDING_STORY_HOLD = 6.0f;  // 스토리 유지
-	static constexpr float ENDING_STORY_GAP  = 1.0f;  // 같은 배경에서 다음 스토리까지
-	static constexpr float ENDING_SWAP_DELAY = 1.0f;  // 스토리 사라진 뒤 배경 교체까지
-	static constexpr float ENDING_END_DELAY  = 2.0f;  // 마지막 스토리 후 암전까지
-	static constexpr float ENDING_FADE       = 2.0f;  // 스토리 페이드 인/아웃
+	static constexpr float ENDING_BG_DELAY   = 2.0f;  
+	static constexpr float ENDING_STORY_HOLD = 6.0f;  
+	static constexpr float ENDING_STORY_GAP  = 1.0f;  
+	static constexpr float ENDING_SWAP_DELAY = 1.0f;  
+	static constexpr float ENDING_END_DELAY  = 2.0f;  
+	static constexpr float ENDING_FADE       = 2.0f;  
+
+	vector<shared_ptr<TextUI>> creditLines;
+	float creditScrollOffset = 0.0f;  
+	float creditScrollSpeed  = 0.0f;  
+	float creditScrollEnd    = 0.0f;  
+	float creditLineHeight   = 0.0f;
+	static constexpr float CREDIT_SCROLL_SECONDS = 80.0f;  
+	static constexpr float CREDIT_END_HOLD       = 8.0f;   
+	static constexpr float CREDIT_FONT_SCALE     = 1.2f;   
 
 	shared_ptr<ImageUI> mapBackImage;
 	shared_ptr<ImageUI> mapImage;
