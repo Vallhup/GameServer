@@ -124,6 +124,12 @@ private:
 		double deadlineSec{ 0.0 };
 	};
 
+	struct PendingFinalClearChoiceStart
+	{
+		WorldId sourceWorldId{ WorldId::Invalid() };
+		double startAtSec{ 0.0 };
+	};
+
 	struct ActivePvpRound
 	{
 		PartyId partyId{ 0 };
@@ -177,6 +183,7 @@ private:
 		WorldId sourceWorldId);
 	bool ApplyFinalBossDefeatedEvents(
 		const FrameworkRuntime::FrameResult& frameResult);
+	void TickPendingFinalClearChoiceStarts();
 	void TickFinalClearChoiceVotes();
 	bool StartFinalClearChoiceVote(WorldId sourceWorldId);
 	bool ResolveFinalClearChoiceVote(
@@ -248,6 +255,8 @@ private:
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;
 	std::unordered_map<SessionId, PendingClientTransition> _pendingClientTransitions;
+	std::unordered_map<uint64_t, PendingFinalClearChoiceStart>
+		_pendingFinalClearChoiceStartByWorld;
 	std::unordered_map<uint64_t, FinalClearChoiceVote> _finalClearChoiceVotes;
 	std::unordered_map<uint64_t, uint64_t> _finalClearChoiceVoteByWorld;
 	std::unordered_map<uint64_t, ActivePvpRound> _activePvpRounds;

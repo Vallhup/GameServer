@@ -31,6 +31,7 @@ namespace
 	constexpr const char* kLogCategory = "ServerApp";
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
 	constexpr double kFinalClearChoiceTimeoutSec = 15.0;
+	constexpr double kFinalClearChoiceBeginDelaySec = 3.0;
 	constexpr double kBeaconCinematicStartGuardSec = 30.0;
 	constexpr float kBeaconInteractionServerRadius = 3.0f;
 	// 엔딩/페이드 연출 완료를 기다리는 안전 타임아웃. 일부 클라가 연출 완료를
@@ -1151,6 +1152,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 		return;
 	}
 
+	TickPendingFinalClearChoiceStarts();
 	TickFinalClearChoiceVotes();
 	TickPendingEndingTransfers();
 
@@ -1607,16 +1609,55 @@ bool ServerApp::ApplyFinalBossDefeatedEvents(
 			continue;
 		}
 
-		if (!StartFinalClearChoiceVote(event.worldId))
+		const uint64_t worldKey = event.worldId.GetRaw();
+		if (_finalClearChoiceVoteByWorld.contains(worldKey) ||
+			_pendingFinalClearChoiceStartByWorld.contains(worldKey))
 		{
-			FWLOG_WARN(kLogCategory,
-				"Final clear choice start failed (worldId=%u, bossNetId=%u)",
-				event.worldId.GetRaw(),
-				event.bossNetId.GetRaw());
+			continue;
 		}
+
+		_pendingFinalClearChoiceStartByWorld.emplace(
+			worldKey,
+			PendingFinalClearChoiceStart{
+				.sourceWorldId = event.worldId,
+				.startAtSec = _nowSec + kFinalClearChoiceBeginDelaySec
+			});
 	}
 
 	return true;
+}
+
+void ServerApp::TickPendingFinalClearChoiceStarts()
+{
+	std::vector<uint64_t> dueWorldKeys;
+	for (const auto& [worldKey, pending] :
+		_pendingFinalClearChoiceStartByWorld)
+	{
+		if (_nowSec >= pending.startAtSec)
+		{
+			dueWorldKeys.push_back(worldKey);
+		}
+	}
+
+	for (const uint64_t worldKey : dueWorldKeys)
+	{
+		const auto pendingIt =
+			_pendingFinalClearChoiceStartByWorld.find(worldKey);
+		if (pendingIt == _pendingFinalClearChoiceStartByWorld.end())
+		{
+			continue;
+		}
+
+		const WorldId sourceWorldId = pendingIt->second.sourceWorldId;
+		_pendingFinalClearChoiceStartByWorld.erase(pendingIt);
+
+		if (!StartFinalClearChoiceVote(sourceWorldId))
+		{
+			FWLOG_WARN(kLogCategory,
+				"Final clear choice delayed start failed (worldId=%llu)",
+				static_cast<unsigned long long>(sourceWorldId.GetRaw()));
+		}
+	}
 }
 
 void ServerApp::TickFinalClearChoiceVotes()

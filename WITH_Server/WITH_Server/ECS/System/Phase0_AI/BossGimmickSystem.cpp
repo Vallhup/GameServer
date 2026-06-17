@@ -17,9 +17,9 @@ namespace
 	constexpr float kPhaseTransitionImmunitySec = 13.4f;
 	constexpr float kGimmickFailureHpRestoreRatio = 0.2f;
 	constexpr std::array<XMFLOAT3, 3> kPhaseTransitionObjectPositions{
-		XMFLOAT3{ -12.092976f, 0.402838f, -25.184044f },
-		XMFLOAT3{ 12.221483f, 0.439460f, -25.724072f },
-		XMFLOAT3{ 0.015781f, 0.164797f, -2.055224f }
+		XMFLOAT3{ -12.092976f, 2.002838f, -25.184044f },
+		XMFLOAT3{ 12.221483f, 2.039460f, -25.724072f },
+		XMFLOAT3{ 0.015781f, 1.764797f, -2.055224f }
 	};
 
 	// 파훼 실패 즉사 판정 시점(초). 패턴 지속 시간과 독립이며 기믹 시작(Begin)에
