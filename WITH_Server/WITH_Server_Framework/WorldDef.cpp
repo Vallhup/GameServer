@@ -32,7 +32,7 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 					.id = SpawnPointIds::PlazaPlayerStart,
 					.name = "Plaza.PlayerStart",
 					.position = WorldVec3Def{ 502.362610f, 5.600996f, 482.074982f },
-					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+					.rotation = WorldQuatDef{ 0.0f, 0.70710678f, 0.0f, 0.70710678f },
 				}
 			},
 			// TODO(content): replace temporary navmesh path with Plaza map data.
@@ -129,7 +129,7 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 					.id = SpawnPointIds::VillagePlayerStart,
 					.name = "Village.PlayerStart",
 					.position = WorldVec3Def{ 159.286636f, 48.944988f, 649.457764f },
-					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+					.rotation = WorldQuatDef{ 0.0f, -0.17364818f, 0.0f, 0.98480775f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::VillageMonster01,
@@ -337,7 +337,7 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 					.id = SpawnPointIds::CastlePlayerStart,
 					.name = "Castle.PlayerStart",
 					.position = WorldVec3Def{ 325.256653f, 67.439247f, 206.893997f },
-					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+					.rotation = WorldQuatDef{ 0.0f, 1.0f, 0.0f, 0.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::CastleMonster01,
@@ -557,7 +557,7 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 					.id = SpawnPointIds::FinalPlayerStart,
 					.name = "Final.PlayerStart",
 					.position = WorldVec3Def{ 0.0f, 5.0f, -96.193400f },
-					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+					.rotation = WorldQuatDef{ 0.0f, 1.0f, 0.0f, 0.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::FinalMonster01,
