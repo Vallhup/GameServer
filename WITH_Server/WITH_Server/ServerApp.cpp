@@ -35,7 +35,7 @@ namespace
 	constexpr float kBeaconInteractionServerRadius = 3.0f;
 	// 엔딩/페이드 연출 완료를 기다리는 안전 타임아웃. 일부 클라가 연출 완료를
 	// 보고하지 않아도 이 시간 후에는 강제로 Plaza 전이한다.
-	constexpr double kEndingCinematicTimeoutSec = 20.0;
+	constexpr double kEndingCinematicTimeoutSec = 180.0;
 
 	struct BeaconCinematicPolicy
 	{

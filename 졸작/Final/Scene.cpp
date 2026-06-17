@@ -170,6 +170,11 @@ void Scene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			return NetHelper::DispatchPacket<Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET>(header, data,
 				[this](const auto& packet) { HandleFinalClearChoiceResult(packet); });
 		}
+		case PacketType::SC_PVP_ROUND_RESULT:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_PVP_ROUND_RESULT_PACKET>(header, data,
+				[this](const auto& packet) { HandlePvpRoundResult(packet); });
+		}
 		case PacketType::SC_GAMEPLAY_EFFECT_SYNC:
 		{
 			return NetHelper::DispatchPacket<Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET>(header, data,
@@ -1003,62 +1008,22 @@ void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BE
 
 void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult)
 {
-	const uint64_t voteId = choiceResult.voteid();
-	const uint32_t targetWorldDefId = choiceResult.targetworlddefid();
-	const uint64_t pvpChooserNetId = choiceResult.pvpchoosernetid();
-
 	const Protocol::FinalClearChoiceOutcome outcome = choiceResult.outcome();
-	const Protocol::FinalClearChoiceReason reason = choiceResult.reason();
 
 	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 		controller->HideHeroChoice();
 
-	// 서버에서 보내주는 결과에 따라 PvP 진입 or 엔딩 연출
-	switch (outcome) {
-	case Protocol::FINAL_CLEAR_OUTCOME_PVP:
+	if (outcome == Protocol::FINAL_CLEAR_OUTCOME_ENDING)
 	{
-		// PvP 진입
-		break;
-	}
-	case Protocol::FINAL_CLEAR_OUTCOME_ENDING:
-	{
-		// 엔딩 -> Plaza 전이
-		
-		// 1. TODO : 엔딩 연출 재생
-		{
-
-		}
-
-		// 2. 연출 종료 서버 동기화
-		NETWORK_MANAGER->SendFinalEndingCinematicDone(
-			Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_FINAL_CLEAR);
-
-		// 3. (이후 흐름) 서버에서 SC_WORKD_TRANSIGION_BEGIN(Plaza) 보내주면 Plaza 전이
-		break;
-	}
-	case Protocol::FINAL_CLEAR_OUTCOME_UNSPECIFIED:
-	default:
-	{
-		// 비정상 값
-		break;
-	}
+		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+			controller->PlayHappyEnding();
 	}
 }
 
 void Scene::HandlePvpRoundResult(const Protocol::SC_PVP_ROUND_RESULT_PACKET& pvpResult)
 {
-	// PvP 종료 (최종 1명 생존)하면 보내주는 패킷
-	const NetId winnerNetId{ pvpResult.winnernetid() };
-	const int winnerId = winnerNetId.GetId();
-
-	// 1. TODO : 엔딩 연출 재생
-	{
-		
-	}
-	
-	// 2. 연출 종료 서버 동기화
-	NETWORK_MANAGER->SendFinalEndingCinematicDone(
-		Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END);
+	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+		controller->PlayPvpEnding();
 }
 
 void Scene::HandleGameplayEffectSync(const Protocol::SC_GAMEPLAY_EFFECT_SYNC_PACKET& effectSync)

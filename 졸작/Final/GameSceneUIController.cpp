@@ -43,6 +43,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitKeyGuide();
 	InitSettingWindow();
 	InitJoinRequestPopup();
+	InitEnding();
 }
 
 void GameSceneUIController::InitMonsterHpBars()
@@ -179,6 +180,179 @@ void GameSceneUIController::UpdatePvpOverlay(float deltaTime)
 		pvpOverlayPending = false;
 		if (pvpOverlayImage)
 			pvpOverlayImage->ChangeState(ImageUIState::PulseOnce);
+	}
+}
+
+void GameSceneUIController::InitEnding()
+{
+	if (sceneType != SceneType::Final) return;
+
+	endingBg = make_shared<ImageUI>(uiManager, L"HappyEnding1", ImageUIState::Hidden);
+	endingBg->SetPosition(0.0f, 0.0f);
+	endingBg->SetHoriLength(WinSize.x);
+	endingBg->SetVertLength(WinSize.y);
+	widgets.push_back(endingBg);
+
+	endingStory = make_shared<ImageUI>(uiManager, L"HappyEndingStory1", ImageUIState::Hidden);
+	endingStory->SetFadeDuration(ENDING_FADE);
+	endingStory->SetPulseSpeed(1.0f);
+	widgets.push_back(endingStory);
+
+	endingBlack = make_shared<ImageUI>(uiManager, L"Black", ImageUIState::Hidden);
+	endingBlack->SetPulseSpeed(1.0f); 
+	endingBlack->SetPosition(0.0f, 0.0f);
+	endingBlack->SetHoriLength(WinSize.x);
+	endingBlack->SetVertLength(WinSize.y);
+	widgets.push_back(endingBlack);
+}
+
+void GameSceneUIController::CenterStoryImage(const wstring& texName)
+{
+	endingStory->SetTexture(texName);
+	endingStory->SetPosition(0.0f, 0.0f);
+	endingStory->SetHoriLength(WinSize.x);
+	endingStory->SetVertLength(WinSize.y);
+}
+
+void GameSceneUIController::StartEnding(vector<EndingBeat> beats, const char* bgmPath, Protocol::FinalEndingCinematicContext doneContext)
+{
+	if (!endingBg || !endingStory || beats.empty()) return;
+
+	endingBeats = move(beats);
+	endingBeatIndex = 0;
+	endingDoneContext = doneContext;
+
+	endingBg->SetTexture(endingBeats[0].bg);
+	endingBg->ChangeState(ImageUIState::Hidden);
+	endingStory->ChangeState(ImageUIState::Hidden);
+	endingBlack->ChangeState(ImageUIState::FadingIn);
+
+	SOUND_MANAGER->PlayBGM(bgmPath, 1.0f);
+
+	endingPhase = EndingPhase::IntroBlackIn;
+}
+
+void GameSceneUIController::PlayHappyEnding()
+{
+	StartEnding(
+		{ { L"HappyEnding1", L"HappyEndingStory1" },
+		  { L"HappyEnding2", L"HappyEndingStory2" } },
+		"../Assets/Music/BGM/NonPVPCredit.mp3",
+		Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_FINAL_CLEAR);
+}
+
+void GameSceneUIController::PlayPvpEnding()
+{
+	StartEnding(
+		{ { L"PVPEnding1", L"PVPEndingStory1" },
+		  { L"",          L"PVPEndingStory2" },
+		  { L"PVPEnding2", L"PVPEndingStory3" } },
+		"../Assets/Music/BGM/PVPCredit.mp3",
+		Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_PVP_ROUND_END);
+}
+
+void GameSceneUIController::UpdateEnding(float deltaTime)
+{
+	if (endingPhase == EndingPhase::None) return;
+
+	endingTimer -= deltaTime;
+	const bool storyHidden  = endingStory->GetState() == ImageUIState::Hidden;
+	const bool storyVisible = endingStory->GetState() == ImageUIState::Visible;
+
+	switch (endingPhase)
+	{
+	case EndingPhase::IntroBlackIn:
+		if (endingBlack->GetState() == ImageUIState::Visible)
+		{
+			endingBg->ChangeState(ImageUIState::Visible);
+			endingBlack->ChangeState(ImageUIState::FadingOut);
+			endingPhase = EndingPhase::IntroReveal;
+		}
+		break;
+
+	case EndingPhase::IntroReveal:
+		if (endingBlack->GetState() == ImageUIState::Hidden)
+		{
+			endingTimer = ENDING_BG_DELAY;
+			endingPhase = EndingPhase::BeatDelay;
+		}
+		break;
+
+	case EndingPhase::BeatDelay:
+		if (endingTimer <= 0.0f)
+		{
+			CenterStoryImage(endingBeats[endingBeatIndex].story);
+			endingStory->ChangeState(ImageUIState::FadingIn);
+			endingPhase = EndingPhase::StoryIn;
+		}
+		break;
+
+	case EndingPhase::StoryIn:
+		if (storyVisible)
+		{
+			endingTimer = ENDING_STORY_HOLD;
+			endingPhase = EndingPhase::StoryHold;
+		}
+		break;
+
+	case EndingPhase::StoryHold:
+		if (endingTimer <= 0.0f)
+		{
+			endingStory->ChangeState(ImageUIState::FadingOut);
+			endingPhase = EndingPhase::StoryOut;
+		}
+		break;
+
+	case EndingPhase::StoryOut:
+		if (storyHidden)
+		{
+			++endingBeatIndex;
+			if (endingBeatIndex >= endingBeats.size())
+			{
+				endingTimer = ENDING_END_DELAY;
+				endingPhase = EndingPhase::EndDelay;
+			}
+			else if (!endingBeats[endingBeatIndex].bg.empty())
+			{
+				endingTimer = ENDING_SWAP_DELAY;
+				endingPhase = EndingPhase::SwapDelay;
+			}
+			else
+			{
+				endingTimer = ENDING_STORY_GAP;
+				endingPhase = EndingPhase::BeatDelay;
+			}
+		}
+		break;
+
+	case EndingPhase::SwapDelay:
+		if (endingTimer <= 0.0f)
+		{
+			endingBg->SetTexture(endingBeats[endingBeatIndex].bg);
+			endingTimer = ENDING_BG_DELAY;
+			endingPhase = EndingPhase::BeatDelay;
+		}
+		break;
+
+	case EndingPhase::EndDelay:
+		if (endingTimer <= 0.0f)
+		{
+			endingBlack->ChangeState(ImageUIState::FadingIn);
+			endingPhase = EndingPhase::EndFade;
+		}
+		break;
+
+	case EndingPhase::EndFade:
+		if (endingBlack->GetState() == ImageUIState::Visible)
+		{
+			endingPhase = EndingPhase::None;
+
+			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
+		}
+		break;
+
+	default:
+		break;
 	}
 }
 
@@ -925,6 +1099,7 @@ void GameSceneUIController::Update(float deltaTime)
 	UpdateHeroChoiceWindow();
 	UpdateRespawnWindow(deltaTime);
 	UpdatePvpOverlay(deltaTime);
+	UpdateEnding(deltaTime);
 
 	auto opened = [](const shared_ptr<ImageUI>& p) {
 		return p && p->GetState() != ImageUIState::Hidden;
