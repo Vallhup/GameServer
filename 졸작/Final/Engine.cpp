@@ -12,6 +12,7 @@
 #include "EffectManager.h"
 #include "ImGuiManager.h"
 #include "UIManager.h"
+#include "GameSceneUIController.h"
 #include "DeviceContext.h"
 #include "SwapChain.h"
 #include "ShadowMappingManager.h"
@@ -261,8 +262,7 @@ void Engine::EnterPvpReuse()
         if (!tr.HasPendingReady()) return;
 
         const uint64_t transferId = tr.GetTransferId();
-        if (NETWORK_MANAGER &&
-            NETWORK_MANAGER->SendWorldTransitionReadyPacket(transferId))
+        if (NETWORK_MANAGER && NETWORK_MANAGER->SendWorldTransitionReadyPacket(transferId))
         {
             tr.MarkReadySent();
             tr.Complete();
@@ -276,6 +276,13 @@ void Engine::EnterPvpReuse()
     if (auto* fade = uiManager->GetScreenFade())
     {
         worldTransitionController.MarkLoadingStarted();
+
+        fade->SetOnFadedIn([this]() {
+            SOUND_MANAGER->PlayBGM("../Assets/Music/BGM/PVPBGM.mp3", 0.5f);
+            if (auto* controller = uiManager->GetController<GameSceneUIController>(SceneType::Final))
+                controller->ShowPvpOverlay();
+        });
+
         fade->SetOnFadedOut([fade, doReady]() {
             doReady();
             fade->FadeIn(3.0f);

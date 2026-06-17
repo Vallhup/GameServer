@@ -10,7 +10,26 @@ enum class MonsterType;
 
 enum class PartyView { Lobby, Created };
 
-struct MonsterBarTarget { GameObject* obj = nullptr; float hpPercent = 1.0f; bool inCombat = false; };
+struct EndingBeat
+{
+	wstring bg;    
+	wstring story; 
+};
+
+enum class EndingPhase
+{
+	None,
+	IntroBlackIn, IntroReveal,
+	BeatDelay, StoryIn, StoryHold, StoryOut,
+	SwapDelay,
+	EndDelay, EndFade,
+};
+
+struct MonsterBarTarget { 
+	GameObject* obj = nullptr; 
+	float hpPercent = 1.0f; 
+	bool inCombat = false; 
+};
 
 class GameSceneUIController : public UIController
 {
@@ -43,13 +62,18 @@ public:
 
 	void ShowMapName();
 
+	void ShowPvpOverlay();
+
 	void SetInteractPrompt(bool active, const XMFLOAT3& worldAnchor);
 
 	bool ConsumeBeaconConfirmed();
 
 	void HideHudForCinematic();
 
-	void ShowHeroChoice(uint64_t voteId);	
+	void PlayHappyEnding();
+	void PlayPvpEnding();
+
+	void ShowHeroChoice(uint64_t voteId);
 	void HideHeroChoice();					
 
 private:
@@ -57,6 +81,12 @@ private:
 	void UpdateMonsterHpBars();
 	void InitLocalPlayerHUD();
 	void InitMapNameOverlay();
+	void InitPvpOverlay();
+	void UpdatePvpOverlay(float deltaTime);
+	void InitEnding();
+	void UpdateEnding(float deltaTime);
+	void StartEnding(vector<EndingBeat> beats, const char* bgmPath, Protocol::FinalEndingCinematicContext doneContext);
+	void CenterStoryImage(const wstring& texName);
 	void InitPartyWindow();
 	void InitStatWindow();
 	void RefreshTitleRibbon();
@@ -124,7 +154,28 @@ private:
 	float bossHpPercent = 1.0f;
 	bool bossInCombat = false;
 
-	shared_ptr<ImageUI> mapNameImage;  
+	shared_ptr<ImageUI> mapNameImage;
+
+	shared_ptr<ImageUI> pvpOverlayImage;
+	bool                pvpOverlayPending = false;
+	float               pvpOverlayTimer = 0.0f;
+	static constexpr float PVP_OVERLAY_DELAY = 3.0f;
+
+	shared_ptr<ImageUI> endingBg;
+	shared_ptr<ImageUI> endingStory;
+	shared_ptr<ImageUI> endingBlack;
+	EndingPhase         endingPhase = EndingPhase::None;
+	float               endingTimer = 0.0f;
+	vector<EndingBeat>  endingBeats;
+	size_t              endingBeatIndex = 0;
+	Protocol::FinalEndingCinematicContext endingDoneContext =
+		Protocol::FINAL_ENDING_CINEMATIC_CONTEXT_FINAL_CLEAR;
+	static constexpr float ENDING_BG_DELAY   = 2.0f;  // 배경 등장/교체 후 스토리까지
+	static constexpr float ENDING_STORY_HOLD = 6.0f;  // 스토리 유지
+	static constexpr float ENDING_STORY_GAP  = 1.0f;  // 같은 배경에서 다음 스토리까지
+	static constexpr float ENDING_SWAP_DELAY = 1.0f;  // 스토리 사라진 뒤 배경 교체까지
+	static constexpr float ENDING_END_DELAY  = 2.0f;  // 마지막 스토리 후 암전까지
+	static constexpr float ENDING_FADE       = 2.0f;  // 스토리 페이드 인/아웃
 
 	shared_ptr<ImageUI> mapBackImage;
 	shared_ptr<ImageUI> mapImage;

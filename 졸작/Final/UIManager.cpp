@@ -81,6 +81,18 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"VillageName", L"../Assets/UI/Textures/VillageName.png", core, resourceUpload);
 	RegisterUITexture(L"CastleName", L"../Assets/UI/Textures/CastleName.png", core, resourceUpload);
 	RegisterUITexture(L"FinalName", L"../Assets/UI/Textures/FinalName.png", core, resourceUpload);
+	RegisterUITexture(L"StayAlive", L"../Assets/UI/Textures/StayAlive.png", core, resourceUpload);
+
+	RegisterUITexture(L"HappyEnding1", L"../Assets/UI/Textures/HappyEnding1.png", core, resourceUpload);
+	RegisterUITexture(L"HappyEnding2", L"../Assets/UI/Textures/HappyEnding2.png", core, resourceUpload);
+	RegisterUITexture(L"HappyEndingStory1", L"../Assets/UI/Textures/HappyEndingStory1.png", core, resourceUpload);
+	RegisterUITexture(L"HappyEndingStory2", L"../Assets/UI/Textures/HappyEndingStory2.png", core, resourceUpload);
+
+	RegisterUITexture(L"PVPEnding1", L"../Assets/UI/Textures/PVPEnding1.png", core, resourceUpload);
+	RegisterUITexture(L"PVPEnding2", L"../Assets/UI/Textures/PVPEnding2.png", core, resourceUpload);
+	RegisterUITexture(L"PVPEndingStory1", L"../Assets/UI/Textures/PVPEndingStory1.png", core, resourceUpload);
+	RegisterUITexture(L"PVPEndingStory2", L"../Assets/UI/Textures/PVPEndingStory2.png", core, resourceUpload);
+	RegisterUITexture(L"PVPEndingStory3", L"../Assets/UI/Textures/PVPEndingStory3.png", core, resourceUpload);
 
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
 	RegisterUITexture(L"StatusBack", L"../Assets/UI/Textures/StatusBack.png", core, resourceUpload);
