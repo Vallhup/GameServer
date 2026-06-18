@@ -8,7 +8,7 @@ class MainCharacter : public GameObject
 public:
 	void Update(float deltaTime) override;
 
-	void SetAsLocalPlayer(Camera* cam);
+	void SetAsLocalPlayer(Camera* cam, float charYawRad);
 
 private:
 	void BasicMove();

@@ -163,9 +163,9 @@ void MainCharacter::BasicDrinking()
 	}
 }
 
-void MainCharacter::SetAsLocalPlayer(Camera* cam)
+void MainCharacter::SetAsLocalPlayer(Camera* cam, float charYawRad)
 {
 	camera = cam;
-	camera->InitCameraPositionFromCharacter(GetComponent<Transform>()->GetPosition());
+	camera->InitCameraPositionFromCharacter(GetComponent<Transform>()->GetPosition(), charYawRad);
 }
 

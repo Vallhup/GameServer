@@ -12,7 +12,7 @@ public:
 	~Camera();
 
 	void Initialize(HWND hWnd);
-	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
+	void InitCameraPositionFromCharacter(const XMFLOAT3& pos, float charYawRad);
 
 	void Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer);
 

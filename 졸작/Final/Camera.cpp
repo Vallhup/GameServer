@@ -47,9 +47,11 @@ void Camera::Initialize(HWND hWnd)
     UpdateForwardAndRight();
 }
 
-void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
+void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos, float charYawRad)
 {
     desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
+
+    yaw = XMConvertToDegrees(charYawRad);
 
     desiredDistance = currentDistance = zoomDistance = 4.5f;
     float radYaw = XMConvertToRadians(yaw);
