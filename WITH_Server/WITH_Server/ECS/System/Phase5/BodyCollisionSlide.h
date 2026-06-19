@@ -123,4 +123,68 @@ namespace BodyCollisionSlide
 			.z = preHitTangent.z + remainingSlide.z - resolvedTangent.z
 		};
 	}
+
+	inline XZDelta ComputeTangentPreservingAdjustment(
+		float desiredMotionX,
+		float desiredMotionZ,
+		float resolvedMotionX,
+		float resolvedMotionZ,
+		float surfaceNormalX,
+		float surfaceNormalZ,
+		float epsilon = 1.0e-5f) noexcept
+	{
+		const float normalLengthSq =
+			surfaceNormalX * surfaceNormalX +
+			surfaceNormalZ * surfaceNormalZ;
+		if (normalLengthSq <= epsilon * epsilon)
+		{
+			return {};
+		}
+
+		const float inverseNormalLength =
+			1.0f / std::sqrt(normalLengthSq);
+		const float normalX = surfaceNormalX * inverseNormalLength;
+		const float normalZ = surfaceNormalZ * inverseNormalLength;
+		const float desiredNormalMotion =
+			desiredMotionX * normalX + desiredMotionZ * normalZ;
+		if (desiredNormalMotion >= -epsilon)
+		{
+			return {};
+		}
+
+		const float resolvedNormalMotion =
+			resolvedMotionX * normalX + resolvedMotionZ * normalZ;
+		const float hitRatio = std::clamp(
+			resolvedNormalMotion / desiredNormalMotion,
+			0.0f,
+			1.0f);
+		const float remainingRatio = 1.0f - hitRatio;
+
+		const XZDelta preHitTangent = ProjectOntoSurfaceTangent(
+			desiredMotionX * hitRatio,
+			desiredMotionZ * hitRatio,
+			surfaceNormalX,
+			surfaceNormalZ,
+			false,
+			epsilon);
+		const XZDelta remainingSlide = ProjectOntoSurfaceTangent(
+			desiredMotionX * remainingRatio,
+			desiredMotionZ * remainingRatio,
+			surfaceNormalX,
+			surfaceNormalZ,
+			false,
+			epsilon);
+		const XZDelta resolvedTangent = ProjectOntoSurfaceTangent(
+			resolvedMotionX,
+			resolvedMotionZ,
+			surfaceNormalX,
+			surfaceNormalZ,
+			false,
+			epsilon);
+
+		return {
+			.x = preHitTangent.x + remainingSlide.x - resolvedTangent.x,
+			.z = preHitTangent.z + remainingSlide.z - resolvedTangent.z
+		};
+	}
 }

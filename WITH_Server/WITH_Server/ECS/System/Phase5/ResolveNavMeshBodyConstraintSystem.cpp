@@ -255,7 +255,7 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 		if (LengthXZ(correctionX, correctionZ) > kOverlapEpsilon)
 		{
 			const BodyCollisionSlide::XZDelta slideAdjustment =
-				BodyCollisionSlide::ComputeSpeedPreservingAdjustment(
+				BodyCollisionSlide::ComputeTangentPreservingAdjustment(
 					candidatePos[0] - startPos[0],
 					candidatePos[2] - startPos[2],
 					resultPos[0] - startPos[0],

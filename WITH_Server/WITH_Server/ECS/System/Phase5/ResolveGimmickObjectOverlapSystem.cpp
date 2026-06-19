@@ -321,7 +321,7 @@ void ResolveGimmickObjectOverlapSystem::Execute(SystemContext& ctx)
 		player.transform->position.z += totalCorrectionZ;
 
 		const BodyCollisionSlide::XZDelta slideDelta =
-			BodyCollisionSlide::ComputeSpeedPreservingAdjustment(
+			BodyCollisionSlide::ComputeTangentPreservingAdjustment(
 				player.preCollision->candidatePosition.x -
 					player.preCollision->prevPosition.x,
 				player.preCollision->candidatePosition.z -
