@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <shared_mutex>
 #include <span>
 #include <unordered_map>
 #include <vector>
@@ -31,8 +32,8 @@ public:
 
 	void RemoveClosedSessions() noexcept;
 
-	uint32_t GetSessionCount() const noexcept { return static_cast<uint32_t>(_sessions.size()); }
-	bool IsEmpty() const noexcept { return _sessions.empty(); }
+	uint32_t GetSessionCount() const noexcept;
+	bool IsEmpty() const noexcept;
 
 	void FillSessionIds(std::vector<SessionId>& outSessionIds) const;
 	std::span<const std::unique_ptr<Session>> GetSessions() const noexcept;
@@ -45,6 +46,7 @@ private:
 	bool RemoveAt(size_t index) noexcept;
 
 private:
+	mutable std::shared_mutex _mutex;
 	SessionId _nextSessionId{ 1 };
 	std::vector<std::unique_ptr<Session>> _sessions;
 	std::unordered_map<SessionId, size_t> _sessionIndex;

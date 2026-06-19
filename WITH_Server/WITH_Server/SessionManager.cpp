@@ -17,6 +17,8 @@ Session* SessionManager::CreateSession(IocpConnection* connection)
 		std::make_unique<Session>(sessionId, connection);
 
 	Session* const sessionPtr = session.get();
+
+	std::unique_lock lock(_mutex);
 	_sessionIndex.try_emplace(sessionId, _sessions.size());
 	_sessions.push_back(std::move(session));
 	return sessionPtr;
@@ -24,6 +26,7 @@ Session* SessionManager::CreateSession(IocpConnection* connection)
 
 Session* SessionManager::FindSession(SessionId sessionId) noexcept
 {
+	std::shared_lock lock(_mutex);
 	const size_t* const index = FindIndex(sessionId);
 	if (index == nullptr)
 	{
@@ -35,6 +38,7 @@ Session* SessionManager::FindSession(SessionId sessionId) noexcept
 
 const Session* SessionManager::FindSession(SessionId sessionId) const noexcept
 {
+	std::shared_lock lock(_mutex);
 	const size_t* const index = FindIndex(sessionId);
 	if (index == nullptr)
 	{
@@ -48,7 +52,10 @@ bool SessionManager::MarkClosed(
 	SessionId sessionId,
 	SessionCloseReason reason) noexcept
 {
-	Session* const session = FindSession(sessionId);
+	std::unique_lock lock(_mutex);
+	const size_t* const index = FindIndex(sessionId);
+	Session* const session =
+		index != nullptr ? _sessions[*index].get() : nullptr;
 	if (session == nullptr)
 	{
 		return false;
@@ -60,6 +67,7 @@ bool SessionManager::MarkClosed(
 
 bool SessionManager::RemoveSession(SessionId sessionId) noexcept
 {
+	std::unique_lock lock(_mutex);
 	const size_t* const index = FindIndex(sessionId);
 	if (index == nullptr)
 	{
@@ -71,6 +79,7 @@ bool SessionManager::RemoveSession(SessionId sessionId) noexcept
 
 void SessionManager::RemoveClosedSessions() noexcept
 {
+	std::unique_lock lock(_mutex);
 	size_t index = 0;
 	while (index < _sessions.size())
 	{
@@ -87,6 +96,7 @@ void SessionManager::RemoveClosedSessions() noexcept
 
 void SessionManager::FillSessionIds(std::vector<SessionId>& outSessionIds) const
 {
+	std::shared_lock lock(_mutex);
 	outSessionIds.clear();
 	outSessionIds.reserve(_sessions.size());
 
@@ -99,6 +109,18 @@ void SessionManager::FillSessionIds(std::vector<SessionId>& outSessionIds) const
 
 		outSessionIds.push_back(session->GetSessionId());
 	}
+}
+
+uint32_t SessionManager::GetSessionCount() const noexcept
+{
+	std::shared_lock lock(_mutex);
+	return static_cast<uint32_t>(_sessions.size());
+}
+
+bool SessionManager::IsEmpty() const noexcept
+{
+	std::shared_lock lock(_mutex);
+	return _sessions.empty();
 }
 
 std::span<const std::unique_ptr<Session>> SessionManager::GetSessions() const noexcept
