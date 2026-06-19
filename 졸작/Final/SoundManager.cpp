@@ -28,10 +28,10 @@ void SoundManager::Update(float deltaTime)
             fadeChannel->stop();
             fadeChannel = nullptr;
 
-            if (hasPendingBGM)   
+            if (hasPendingBGM)
             {
                 hasPendingBGM = false;
-                StartBGM(pendingBGMPath.c_str(), pendingFadeIn);
+                StartBGM(pendingBGMPath.c_str(), pendingFadeIn, pendingLoop);
                 pendingBGMPath.clear();
             }
         }
@@ -87,7 +87,7 @@ void SoundManager::Release()
     }
 }
 
-void SoundManager::PlayBGM(const char* path, float fadeInSeconds)
+void SoundManager::PlayBGM(const char* path, float fadeInSeconds, bool loop)
 {
     if (currentBGMPath == path)
         return;
@@ -96,14 +96,15 @@ void SoundManager::PlayBGM(const char* path, float fadeInSeconds)
     {
         pendingBGMPath = path;
         pendingFadeIn = fadeInSeconds;
+        pendingLoop = loop;
         hasPendingBGM = true;
         return;
     }
 
-    StartBGM(path, fadeInSeconds);
+    StartBGM(path, fadeInSeconds, loop);
 }
 
-void SoundManager::StartBGM(const char* path, float fadeInSeconds)
+void SoundManager::StartBGM(const char* path, float fadeInSeconds, bool loop)
 {
     if (bgmChannel)
     {
@@ -128,6 +129,7 @@ void SoundManager::StartBGM(const char* path, float fadeInSeconds)
 
     currentBGMPath = path;
     system->playSound(bgmCache[key], bgmGroup, false, &bgmChannel);
+    bgmChannel->setMode(loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
 
     if (fadeInSeconds > 0.0f)
     {

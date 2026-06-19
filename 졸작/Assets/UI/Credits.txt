@@ -1,0 +1,168 @@
+Who Is The Hero - WITH
+(누가 영웅인가 - 함께)
+
+
+
+
+
+[DirectX Client]
+이정호
+
+[IOCP Server]
+손동환
+
+[Model & Design]
+이다찬
+
+
+
+
+
+
+
+[Client Skills]
+
+Hybrid Rendering (Deferred + Forward)
+
+Clustered Shading
+
+Physically Based Rendering (PBR)
+
+Image-Based Lighting (IBL)
+
+Cascaded Shadow Maps (CSM)
+
+Omnidirectional Point Shadow (Cube Array)
+
+Volumetric Fog (Ray Marching)
+
+Screen-Space Ambient Occlusion (SSAO)
+
+Bloom
+
+HDR Tone Mapping
+
+LUT Color Grading
+
+Gamma Correction
+
+Vertex Animation
+
+Particle Based Effects
+
+Effekseer Particle Effects Integration
+
+GPU-Driven Light Culling (Compute)
+
+GPU Instancing
+
+Frustum & Distance Culling
+
+Static / Dynamic Shadow Caching
+
+Stationary Light (Point Light)
+
+Object Pooling
+
+Bindless Resources
+
+Mesh Caching
+
+Component-based Architecture
+
+Scene Management & World Transition
+
+
+
+
+
+
+
+[Server Skills]
+
+ECS Core
+
+System Metadata-based Dependency Analysis Algorithm
+
+TaskGraph
+
+Game World Management
+
+Server authoritative Logic
+
+Login
+
+Session Management
+
+Game Logic
+
+Character Movement
+
+Sliding Vector
+
+NavMesh & Terrain
+
+Combat State
+
+Animation-based Collision Handling
+
+Monster AI Pattern & Gimmicks
+
+
+
+
+
+
+
+[Designer Skills]
+
+플레이어 캐릭터 3종류, 최종 보스 캐릭터 디자인, 모델링, 애니메이션 제작 
+
+UI 제작
+
+시네마틱 영상 제작
+
+사운드 리소스 에셋 소싱
+
+맵 에셋 커스텀 및 최적화
+
+몬스터 에셋 커스텀
+
+Effekseer 이펙트 커스텀
+
+
+
+
+
+
+
+
+
+
+[Special Thanks]
+
+송인희 교수님
+
+
+
+
+
+
+
+
+
+
+[총 제작 기간]
+
+2025. 07. 29 ~ 2026. 06. 21
+
+
+
+
+
+
+
+
+
+
+THE END

@@ -12,7 +12,7 @@ public:
 	~Camera();
 
 	void Initialize(HWND hWnd);
-	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
+	void InitCameraPositionFromCharacter(const XMFLOAT3& pos, float charYawRad);
 
 	void Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer);
 
@@ -40,6 +40,11 @@ public:
 	void SetTerrain(const Terrain* t) { terrain = t; }
 
 	void SetCinematicView(DX12Core& core, const XMFLOAT3& eye, const XMFLOAT3& lookAt);
+
+	void EnterFocusView(const XMFLOAT3& eye, const XMFLOAT3& lookAt);
+	void ExitFocusView();
+	bool IsFocusView() const { return focusActive; }
+
 	void SetCursor(bool in);
 	void ReleaseMouse();
 
@@ -59,6 +64,8 @@ private:
 	void UpdateZoomKick(float deltaTime);
 	float GetZoomKick() const;
 	float GetZoomBell() const;
+
+	void UpdateFocusView(DX12Core& core, float deltaTime);
 
 	void UpdateCameraMatrices(DX12Core& core);
 	void UpdateForwardAndRight();
@@ -134,4 +141,11 @@ private:
 	float screenBrightness = 1.0f;       
 
 	const Terrain* terrain = nullptr;
+
+	bool focusActive = false;
+	bool focusExiting = false;
+	float focusT = 0.0f;
+	XMFLOAT3 focusEye{};
+	XMFLOAT3 focusLookAt{};
+	static constexpr float FOCUS_DURATION = 0.6f;
 };

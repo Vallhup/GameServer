@@ -164,9 +164,12 @@ void GameSceneUIController::InitPvpOverlay()
 	if (sceneType != SceneType::Final) return;
 
 	pvpOverlayImage = make_shared<ImageUI>(uiManager, L"StayAlive", ImageUIState::Hidden);
-	pvpOverlayImage->SetPosition(WinSize.x * 0.3f, WinSize.y * 0.1f);
-	pvpOverlayImage->SetHoriLength(WinSize.x * 0.4f);
-	pvpOverlayImage->SetVertLength(WinSize.y * 0.2f);
+	const float texAspect = 3220.0f / 1280.0f;
+	const float overlayWidth = WinSize.x * 0.4f;
+	const float overlayHeight = overlayWidth / texAspect;
+	pvpOverlayImage->SetPosition((WinSize.x - overlayWidth) * 0.5f, (WinSize.y - overlayHeight) * 0.5f);
+	pvpOverlayImage->SetHoriLength(overlayWidth);
+	pvpOverlayImage->SetVertLength(overlayHeight);
 	widgets.push_back(pvpOverlayImage);
 }
 
@@ -199,11 +202,63 @@ void GameSceneUIController::InitEnding()
 	widgets.push_back(endingStory);
 
 	endingBlack = make_shared<ImageUI>(uiManager, L"Black", ImageUIState::Hidden);
-	endingBlack->SetPulseSpeed(1.0f); 
+	endingBlack->SetPulseSpeed(1.0f);
 	endingBlack->SetPosition(0.0f, 0.0f);
 	endingBlack->SetHoriLength(WinSize.x);
 	endingBlack->SetVertLength(WinSize.y);
 	widgets.push_back(endingBlack);
+
+	InitCredits();
+}
+
+void GameSceneUIController::InitCredits()
+{
+	vector<wstring> lines;
+	
+	ifstream file("../Assets/UI/Credits.txt", ios::binary);
+	if (file)
+	{
+		string bytes((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+
+		wstring wide;
+		if (!bytes.empty())
+		{
+			int n = MultiByteToWideChar(CP_UTF8, 0, bytes.data(), (int)bytes.size(), nullptr, 0);
+			wide.resize(n);
+			MultiByteToWideChar(CP_UTF8, 0, bytes.data(), (int)bytes.size(), wide.data(), n);
+		}
+
+		wstring cur;
+		for (wchar_t c : wide)
+		{
+			if (c == L'\n') { 
+				lines.push_back(cur); 
+				cur.clear(); 
+			}
+			else if (c != L'\r') 
+				cur += c;
+		}
+		lines.push_back(cur);
+	}
+	
+
+	const float scale = CREDIT_FONT_SCALE * (WinSize.y / 1080.0f);
+	auto* fd = uiManager->GetFont(L"MalgunGothic");
+	creditLineHeight = fd ? fd->font->GetLineSpacing() * scale : WinSize.y * 0.05f;
+
+	for (const wstring& line : lines)
+	{
+		auto text = make_shared<TextUI>(uiManager, L"Credit", L"MalgunGothic");
+		text->SetScale(scale);
+		text->SetTextColor(Colors::White);
+		text->SetText(line);
+
+		const float w = (fd && !line.empty()) ? XMVectorGetX(fd->font->MeasureString(line.c_str(), false)) * scale : 0.0f;
+		text->SetPosition((WinSize.x - w) * 0.5f, WinSize.y);
+
+		widgets.push_back(text);
+		creditLines.push_back(text);
+	}
 }
 
 void GameSceneUIController::CenterStoryImage(const wstring& texName)
@@ -227,7 +282,8 @@ void GameSceneUIController::StartEnding(vector<EndingBeat> beats, const char* bg
 	endingStory->ChangeState(ImageUIState::Hidden);
 	endingBlack->ChangeState(ImageUIState::FadingIn);
 
-	SOUND_MANAGER->PlayBGM(bgmPath, 1.0f);
+	SOUND_MANAGER->StopBGM(3.0f);
+	SOUND_MANAGER->PlayBGM(bgmPath, 0.0f, false);  
 
 	endingPhase = EndingPhase::IntroBlackIn;
 }
@@ -345,8 +401,45 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 	case EndingPhase::EndFade:
 		if (endingBlack->GetState() == ImageUIState::Visible)
 		{
-			endingPhase = EndingPhase::None;
+			if (creditLines.empty())
+			{
+				endingPhase = EndingPhase::None;
+				NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
+			}
+			else
+			{
+				const size_t n = creditLines.size();
+				creditScrollOffset = 0.0f;
+				creditScrollEnd = WinSize.y * 0.5f + (n - 1) * creditLineHeight;
+				creditScrollSpeed = creditScrollEnd / CREDIT_SCROLL_SECONDS;
+				endingPhase = EndingPhase::CreditsRoll;
+			}
+		}
+		break;
 
+	case EndingPhase::CreditsRoll:
+	{
+		creditScrollOffset += creditScrollSpeed * deltaTime;
+		const bool reached = creditScrollOffset >= creditScrollEnd;
+		if (reached) creditScrollOffset = creditScrollEnd;
+
+		for (size_t i = 0; i < creditLines.size(); ++i)
+			creditLines[i]->SetPosition(
+				creditLines[i]->GetPosX(),
+				WinSize.y - creditScrollOffset + i * creditLineHeight);
+
+		if (reached)
+		{
+			endingTimer = CREDIT_END_HOLD;
+			endingPhase = EndingPhase::CreditsHold;
+		}
+		break;
+	}
+
+	case EndingPhase::CreditsHold:
+		if (endingTimer <= 0.0f)
+		{
+			endingPhase = EndingPhase::None;
 			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
 		}
 		break;
@@ -893,6 +986,14 @@ void GameSceneUIController::InitMapWindow()
 	mapImage->SetHoriLength(WinSize.y * (1140.0f/1080.0f));
 	mapImage->SetVertLength(WinSize.y);
 	widgets.push_back(mapImage);
+
+	const float mapRight = WinSize.x * 0.2031f + WinSize.y * (1140.0f / 1080.0f);
+	mapLegendText = make_shared<TextUI>(uiManager, L"MapLegend", L"VerdanaBold");
+	mapLegendText->SetText(L"");
+	mapLegendText->SetTextColor(Colors::Red);
+	mapLegendText->SetScale(WinSize.y / 1080.0f * 0.6f);
+	mapLegendText->SetPosition(mapRight + WinSize.x * 0.01f, WinSize.y * 0.025f);
+	widgets.push_back(mapLegendText);
 }
 
 void GameSceneUIController::InitEscWindow()
@@ -1095,6 +1196,7 @@ void GameSceneUIController::Update(float deltaTime)
 	UpdateMonsterHpBars();
 	UpdateInteractPrompt();
 	UpdateStatueWindow();
+	UpdateBoardFocus();
 	UpdateBeaconWindow();
 	UpdateHeroChoiceWindow();
 	UpdateRespawnWindow(deltaTime);
@@ -1362,6 +1464,8 @@ void GameSceneUIController::Update(float deltaTime)
 
 			mapBackImage->ChangeState(next);
 			mapImage->ChangeState(next);
+			if (mapLegendText)
+				mapLegendText->SetText(next == ImageUIState::Visible ? L"O - Start Position\nX - Target Position" : L"");
 		}
 	}
 
@@ -1639,6 +1743,14 @@ void GameSceneUIController::SetInteractPrompt(bool active, const XMFLOAT3& world
 	interactWorldAnchor = worldAnchor;
 }
 
+void GameSceneUIController::SetBoardPrompt(bool active, const XMFLOAT3& anchor, const XMFLOAT3& focusEye, const XMFLOAT3& focusLook)
+{
+	boardActive = active;
+	boardAnchor = anchor;
+	boardFocusEye = focusEye;
+	boardFocusLook = focusLook;
+}
+
 void GameSceneUIController::UpdateInteractPrompt()
 {
 	if (!interactCircle) return;
@@ -1647,7 +1759,14 @@ void GameSceneUIController::UpdateInteractPrompt()
 		(statueWindow && statueWindow->GetState() != ImageUIState::Hidden) ||
 		(beaconWindow && beaconWindow->GetState() != ImageUIState::Hidden);
 
-	if (!interactActive || windowOpen || !IsMyPartyLeader())
+	const bool statuePrompt = interactActive && IsMyPartyLeader() && !boardFocused;
+	const bool boardPrompt = boardActive && !boardFocused;
+
+	XMFLOAT3 promptAnchor;
+	if (statuePrompt)       promptAnchor = interactWorldAnchor;
+	else if (boardPrompt)   promptAnchor = boardAnchor;
+
+	if ((!statuePrompt && !boardPrompt) || windowOpen)
 	{
 		interactCircle->ChangeState(ImageUIState::Hidden);
 		interactKeyText->SetText(L"");
@@ -1666,7 +1785,7 @@ void GameSceneUIController::UpdateInteractPrompt()
 	}
 
 	const XMMATRIX viewProj = camera->GetViewMatrix() * camera->GetProjectionMatrix();
-	const XMVECTOR c = XMVector4Transform(XMVectorSetW(XMLoadFloat3(&interactWorldAnchor), 1.0f), viewProj);
+	const XMVECTOR c = XMVector4Transform(XMVectorSetW(XMLoadFloat3(&promptAnchor), 1.0f), viewProj);
 	const float w = XMVectorGetW(c);
 	if (w <= 0.0001f)   
 	{
@@ -1738,7 +1857,7 @@ void GameSceneUIController::UpdateStatueWindow()
 
 	const bool open = statueWindow->GetState() != ImageUIState::Hidden;
 
-	if (!interactActive || !IsMyPartyLeader())
+	if (!interactActive || !IsMyPartyLeader() || boardFocused)
 	{
 		if (open) setWindow(ImageUIState::Hidden);
 		return;
@@ -1772,6 +1891,31 @@ void GameSceneUIController::UpdateStatueWindow()
 	{
 		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 		setWindow(ImageUIState::Hidden);
+	}
+}
+
+void GameSceneUIController::UpdateBoardFocus()
+{
+	if (sceneType != SceneType::Plaza) return;
+
+	Scene* scene = SCENE_MANAGER->GetCurrentScene();
+	Camera* camera = scene ? scene->GetCamera() : nullptr;
+	if (!camera) return;
+
+	if (boardFocused)
+	{
+		if (INPUT.GetKeyDown('F'))
+		{
+			camera->ExitFocusView();
+			boardFocused = false;
+		}
+		return;
+	}
+
+	if (boardActive && INPUT.GetKeyDown('F'))
+	{
+		camera->EnterFocusView(boardFocusEye, boardFocusLook);
+		boardFocused = true;
 	}
 }
 

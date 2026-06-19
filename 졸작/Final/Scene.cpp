@@ -344,6 +344,8 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 	EFFECT_MANAGER->PreLoad(L"Title1");
 	EFFECT_MANAGER->PreLoad(L"Title2");
 	EFFECT_MANAGER->PreLoad(L"Title3");
+	EFFECT_MANAGER->PreLoad(L"Title4");
+	EFFECT_MANAGER->PreLoad(L"Title5");
 	EFFECT_MANAGER->PreLoad(L"Title6");
 	EFFECT_MANAGER->PreLoad(L"Title7");
 	EFFECT_MANAGER->PreLoad(L"Title8");
@@ -578,14 +580,14 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			if (auto* dis = player->GetComponent<DissolveComponent>()) dis->Reset();
 			auto transform = player->GetComponent<Transform>();
 			transform->SetInitPosition(add.x(), add.y(), add.z());
-			transform->SetTargetRotation(add.yaw());
+			transform->SetRotation(0.f, add.yaw(), 0.f);
 			activeCharacters[id] = player;
 
 			if (id == INPUT.GetClientID())
 			{
 				myPlayer = player;
 				myCharacterType = charcterIter->second;
-				myPlayer->SetAsLocalPlayer(cam.get());
+				myPlayer->SetAsLocalPlayer(cam.get(), add.yaw());
 				IMGUI.SetMyPlayer(myPlayer.get());
 				if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 					controller->SetLocalCharacterType(myCharacterType);
