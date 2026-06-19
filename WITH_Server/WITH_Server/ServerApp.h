@@ -172,6 +172,8 @@ private:
 
 	void RunWorldFrames(double dtSec);
 	void FlushOutbound();
+	bool StageWorldTransferSourceRemovals(
+		const WorldTransferEventBatch& transferEvents);
 	bool StageWorldTransitionBeginPackets(
 		const WorldTransferEventBatch& transferEvents);
 	void ApplyPartyWorldTransferEvents(

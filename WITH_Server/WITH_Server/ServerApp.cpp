@@ -1112,6 +1112,13 @@ void ServerApp::RunWorldFrames(double dtSec)
 		return;
 	}
 
+	if (!StageWorldTransferSourceRemovals(transferEvents))
+	{
+		FWLOG_ERROR(kLogCategory, "World transfer source removal staging failed");
+		Stop();
+		return;
+	}
+
 	ApplyPartyWorldTransferEvents(transferEvents);
 
 	if (!StageWorldTransitionBeginPackets(transferEvents))
@@ -1192,6 +1199,48 @@ void ServerApp::RunWorldFrames(double dtSec)
 void ServerApp::FlushOutbound()
 {
 	_sessionSystem.FlushOutbound();
+}
+
+bool ServerApp::StageWorldTransferSourceRemovals(
+	const WorldTransferEventBatch& transferEvents)
+{
+	std::vector<SessionId> sourceSessionIds;
+
+	for (const WorldTransferCompletedEvent& completed : transferEvents.completed)
+	{
+		_sessionSystem.Flow().CollectSessionsInWorld(
+			completed.sourceWorldId,
+			sourceSessionIds);
+		if (sourceSessionIds.empty())
+		{
+			continue;
+		}
+
+		for (const ImportedTransferEntity& imported : completed.importedEntities)
+		{
+			if (!imported.netId.IsValid())
+			{
+				continue;
+			}
+
+			if (!ServerPacketStager::StageSpawnRemovePacketToSessions(
+				_sessionSystem.Network(),
+				std::span<const SessionId>(sourceSessionIds),
+				imported.netId))
+			{
+				FWLOG_ERROR(kLogCategory,
+					"World transfer source removal packet stage failed "
+					"(transferId=%u, sid=%u, sourceWorldId=%u, netId=%u)",
+					completed.transferId,
+					imported.sessionId,
+					completed.sourceWorldId.GetRaw(),
+					imported.netId.GetRaw());
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 bool ServerApp::StageWorldTransitionBeginPackets(
