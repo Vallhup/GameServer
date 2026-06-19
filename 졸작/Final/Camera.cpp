@@ -68,6 +68,12 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos, float charYawR
 
 void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer)
 {
+    if (focusActive)
+    {
+        UpdateFocusView(core, deltaTime);
+        return;
+    }
+
     UpdateInputtoCamLogic(core, deltaTime);
     UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
     UpdateZoomKick(deltaTime);
@@ -264,6 +270,44 @@ void Camera::SetCinematicView(DX12Core& core, const XMFLOAT3& eye, const XMFLOAT
     currentTargetPos = lookAt;
     desiredTargetPos = lookAt;
     UpdateCameraMatrices(core);
+}
+
+void Camera::EnterFocusView(const XMFLOAT3& eye, const XMFLOAT3& lookAt)
+{
+    focusEye = eye;
+    focusLookAt = lookAt;
+    focusActive = true;
+    focusExiting = false;
+}
+
+void Camera::ExitFocusView()
+{
+    focusExiting = true;
+}
+
+void Camera::UpdateFocusView(DX12Core& core, float deltaTime)
+{
+    const float dir = focusExiting ? -1.0f : 1.0f;
+    focusT = clamp(focusT + dir * (deltaTime / FOCUS_DURATION), 0.0f, 1.0f);
+    const float s = focusT * focusT * (3.0f - 2.0f * focusT);
+
+    const float radYaw = XMConvertToRadians(yaw);
+    const float radPitch = XMConvertToRadians(-pitch);
+    const XMFLOAT3 orbitLook = desiredTargetPos;
+    const XMFLOAT3 orbitEye{
+        orbitLook.x + currentDistance * cos(radPitch) * sin(radYaw),
+        orbitLook.y + currentDistance * sin(radPitch),
+        orbitLook.z + currentDistance * cos(radPitch) * cos(radYaw)
+    };
+
+    XMStoreFloat3(&position, XMVectorLerp(XMLoadFloat3(&orbitEye), XMLoadFloat3(&focusEye), s));
+    XMStoreFloat3(&targetPosition, XMVectorLerp(XMLoadFloat3(&orbitLook), XMLoadFloat3(&focusLookAt), s));
+    currentTargetPos = targetPosition;
+
+    UpdateCameraMatrices(core);
+
+    if (focusExiting && focusT <= 0.0f)
+        focusActive = false;
 }
 
 void Camera::UpdateCameraMatrices(DX12Core& core)

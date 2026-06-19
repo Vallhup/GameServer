@@ -66,6 +66,7 @@ public:
 	void ShowPvpOverlay();
 
 	void SetInteractPrompt(bool active, const XMFLOAT3& worldAnchor);
+	void SetBoardPrompt(bool active, const XMFLOAT3& anchor, const XMFLOAT3& focusEye, const XMFLOAT3& focusLook);
 
 	bool ConsumeBeaconConfirmed();
 
@@ -102,6 +103,7 @@ private:
 	void UpdateInteractPrompt();
 	void InitStatueWindow();
 	void UpdateStatueWindow();
+	void UpdateBoardFocus();
 	void InitBeaconWindow();
 	void UpdateBeaconWindow();
 	void InitHeroChoiceWindow();
@@ -191,6 +193,7 @@ private:
 
 	shared_ptr<ImageUI> mapBackImage;
 	shared_ptr<ImageUI> mapImage;
+	shared_ptr<TextUI>  mapLegendText;
 
 	shared_ptr<ImageUI> partyBook;
 	shared_ptr<ImageUI> partyListBox;
@@ -234,6 +237,12 @@ private:
 	bool                interactActive = false;
 	float               interactScale = 1.0f;
 	XMFLOAT3            interactWorldAnchor{};
+
+	bool                boardActive = false;
+	bool                boardFocused = false;
+	XMFLOAT3            boardAnchor{};
+	XMFLOAT3            boardFocusEye{};
+	XMFLOAT3            boardFocusLook{};
 
 	shared_ptr<ImageUI> statueWindow;
 	shared_ptr<ImageUI> statueOkButton;

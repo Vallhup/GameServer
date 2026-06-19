@@ -986,6 +986,14 @@ void GameSceneUIController::InitMapWindow()
 	mapImage->SetHoriLength(WinSize.y * (1140.0f/1080.0f));
 	mapImage->SetVertLength(WinSize.y);
 	widgets.push_back(mapImage);
+
+	const float mapRight = WinSize.x * 0.2031f + WinSize.y * (1140.0f / 1080.0f);
+	mapLegendText = make_shared<TextUI>(uiManager, L"MapLegend", L"VerdanaBold");
+	mapLegendText->SetText(L"");
+	mapLegendText->SetTextColor(Colors::Red);
+	mapLegendText->SetScale(WinSize.y / 1080.0f * 0.6f);
+	mapLegendText->SetPosition(mapRight + WinSize.x * 0.01f, WinSize.y * 0.025f);
+	widgets.push_back(mapLegendText);
 }
 
 void GameSceneUIController::InitEscWindow()
@@ -1188,6 +1196,7 @@ void GameSceneUIController::Update(float deltaTime)
 	UpdateMonsterHpBars();
 	UpdateInteractPrompt();
 	UpdateStatueWindow();
+	UpdateBoardFocus();
 	UpdateBeaconWindow();
 	UpdateHeroChoiceWindow();
 	UpdateRespawnWindow(deltaTime);
@@ -1455,6 +1464,8 @@ void GameSceneUIController::Update(float deltaTime)
 
 			mapBackImage->ChangeState(next);
 			mapImage->ChangeState(next);
+			if (mapLegendText)
+				mapLegendText->SetText(next == ImageUIState::Visible ? L"O - Start Position\nX - Target Position" : L"");
 		}
 	}
 
@@ -1732,6 +1743,14 @@ void GameSceneUIController::SetInteractPrompt(bool active, const XMFLOAT3& world
 	interactWorldAnchor = worldAnchor;
 }
 
+void GameSceneUIController::SetBoardPrompt(bool active, const XMFLOAT3& anchor, const XMFLOAT3& focusEye, const XMFLOAT3& focusLook)
+{
+	boardActive = active;
+	boardAnchor = anchor;
+	boardFocusEye = focusEye;
+	boardFocusLook = focusLook;
+}
+
 void GameSceneUIController::UpdateInteractPrompt()
 {
 	if (!interactCircle) return;
@@ -1740,7 +1759,14 @@ void GameSceneUIController::UpdateInteractPrompt()
 		(statueWindow && statueWindow->GetState() != ImageUIState::Hidden) ||
 		(beaconWindow && beaconWindow->GetState() != ImageUIState::Hidden);
 
-	if (!interactActive || windowOpen || !IsMyPartyLeader())
+	const bool statuePrompt = interactActive && IsMyPartyLeader() && !boardFocused;
+	const bool boardPrompt = boardActive && !boardFocused;
+
+	XMFLOAT3 promptAnchor;
+	if (statuePrompt)       promptAnchor = interactWorldAnchor;
+	else if (boardPrompt)   promptAnchor = boardAnchor;
+
+	if ((!statuePrompt && !boardPrompt) || windowOpen)
 	{
 		interactCircle->ChangeState(ImageUIState::Hidden);
 		interactKeyText->SetText(L"");
@@ -1759,7 +1785,7 @@ void GameSceneUIController::UpdateInteractPrompt()
 	}
 
 	const XMMATRIX viewProj = camera->GetViewMatrix() * camera->GetProjectionMatrix();
-	const XMVECTOR c = XMVector4Transform(XMVectorSetW(XMLoadFloat3(&interactWorldAnchor), 1.0f), viewProj);
+	const XMVECTOR c = XMVector4Transform(XMVectorSetW(XMLoadFloat3(&promptAnchor), 1.0f), viewProj);
 	const float w = XMVectorGetW(c);
 	if (w <= 0.0001f)   
 	{
@@ -1831,7 +1857,7 @@ void GameSceneUIController::UpdateStatueWindow()
 
 	const bool open = statueWindow->GetState() != ImageUIState::Hidden;
 
-	if (!interactActive || !IsMyPartyLeader())
+	if (!interactActive || !IsMyPartyLeader() || boardFocused)
 	{
 		if (open) setWindow(ImageUIState::Hidden);
 		return;
@@ -1865,6 +1891,31 @@ void GameSceneUIController::UpdateStatueWindow()
 	{
 		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 		setWindow(ImageUIState::Hidden);
+	}
+}
+
+void GameSceneUIController::UpdateBoardFocus()
+{
+	if (sceneType != SceneType::Plaza) return;
+
+	Scene* scene = SCENE_MANAGER->GetCurrentScene();
+	Camera* camera = scene ? scene->GetCamera() : nullptr;
+	if (!camera) return;
+
+	if (boardFocused)
+	{
+		if (INPUT.GetKeyDown('F'))
+		{
+			camera->ExitFocusView();
+			boardFocused = false;
+		}
+		return;
+	}
+
+	if (boardActive && INPUT.GetKeyDown('F'))
+	{
+		camera->EnterFocusView(boardFocusEye, boardFocusLook);
+		boardFocused = true;
 	}
 }
 

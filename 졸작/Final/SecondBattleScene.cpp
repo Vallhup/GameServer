@@ -334,7 +334,7 @@ const BeaconCinematicConfig& SecondBattleScene::GetCinematicConfig() const
 		.camYAbove       = 40.0f,                                 
 		.camBack         = 53.0f,                                 
 		.lookTarget      = { 361.306274f, 70.199959f, 348.179993f },
-		.sunMult         = 16.0f,
+		.sunMult         = 10.0f,
 		.skySatMult      = 2.0f,
 		.skyExpMult      = 1.5f,
 		.scatterCenter   = { 350.0f, 383.0f },                    

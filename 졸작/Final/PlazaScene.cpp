@@ -141,6 +141,41 @@ void PlazaScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer)
+	{
+		constexpr float BOARD_CX = 448.693085f;
+		constexpr float BOARD_CY = 5.800520f;
+		constexpr float BOARD_CZ = 492.215576f;
+		constexpr float BOARD_YAW = -1.570796f;   
+
+		constexpr float BOARD_RANGE = 3.0f;       
+		constexpr float BOARD_FRONT_COS = 0.5f;   
+		constexpr float BOARD_FOCUS_DIST = 1.5f;  
+		constexpr float BOARD_TEXT_Y = 1.0f;      
+		constexpr float BOARD_PROMPT_Y = 1.0f;    
+
+		const float nx = -sinf(BOARD_YAW);
+		const float nz = -cosf(BOARD_YAW);
+
+		const XMFLOAT3& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		const float dx = pos.x - BOARD_CX;
+		const float dz = pos.z - BOARD_CZ;
+		const float len = sqrtf(dx * dx + dz * dz);
+
+		const bool inFront = (len > 0.001f) &&
+			(len <= BOARD_RANGE) &&
+			((dx * nx + dz * nz) / len >= BOARD_FRONT_COS);
+
+		auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Plaza);
+		if (controller)
+		{
+			const XMFLOAT3 anchor{ BOARD_CX, BOARD_CY + BOARD_PROMPT_Y, BOARD_CZ };
+			const XMFLOAT3 focusLook{ BOARD_CX, BOARD_CY + BOARD_TEXT_Y, BOARD_CZ };
+			const XMFLOAT3 focusEye{ BOARD_CX + nx * BOARD_FOCUS_DIST, BOARD_CY + BOARD_TEXT_Y, BOARD_CZ + nz * BOARD_FOCUS_DIST };
+			controller->SetBoardPrompt(inFront, anchor, focusEye, focusLook);
+		}
+	}
+
 	for (const auto& obj : gameObjects)
 	{
 		if (!obj->IsStatic())
