@@ -700,7 +700,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 45,
               "minDistance": null,
-              "maxDistance": 2,
+              "maxDistance": 8,
               "verticalTolerance": 1,
               "referenceFrame": "OwnerFacing"
             },

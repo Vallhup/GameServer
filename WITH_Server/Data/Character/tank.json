@@ -14,7 +14,7 @@
     "attackSpeed": 1.0
   },
   "bodyCollision": {
-    "footprintRadiusXZ": 2.0,
+    "footprintRadiusXZ": 1.5,
     "bodyHeight": 3.0,
     "blocksBodyOverlap": true,
     "useNavMeshConstraint": true,
