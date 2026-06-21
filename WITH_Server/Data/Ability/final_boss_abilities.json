@@ -837,7 +837,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 6.666667,
+        "durationSec": 2.47,
         "policy": "FixedDuration",
         "combatWindows": [],
         "movementSegments": [],
