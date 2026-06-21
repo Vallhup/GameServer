@@ -136,6 +136,8 @@ private:
 		WorldId worldId{ WorldId::Invalid() };
 		double startedAtSec{ 0.0 };
 		bool ending{ false };
+		double endingSyncAtSec{ 0.0 };
+		uint64_t winnerNetId{ 0 };
 	};
 
 	struct ActiveBeaconCinematic

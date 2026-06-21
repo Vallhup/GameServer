@@ -32,6 +32,7 @@ namespace
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
 	constexpr double kFinalClearChoiceTimeoutSec = 15.0;
 	constexpr double kFinalClearChoiceBeginDelaySec = 3.0;
+	constexpr double kPvpRoundEndSyncDelaySec = 3.0;
 	constexpr double kBeaconCinematicStartGuardSec = 30.0;
 	constexpr float kBeaconInteractionServerRadius = 3.0f;
 	// 엔딩/페이드 연출 완료를 기다리는 안전 타임아웃. 일부 클라가 연출 완료를
@@ -1393,7 +1394,9 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 						.partyId = completed.partyId,
 						.worldId = completed.targetWorldId,
 						.startedAtSec = _nowSec,
-						.ending = false
+						.ending = false,
+						.endingSyncAtSec = 0.0,
+						.winnerNetId = 0
 					};
 			}
 			if (targetDef != nullptr &&
@@ -2146,6 +2149,33 @@ bool ServerApp::ProcessPvpRoundEndConditions()
 		(void)worldIdRaw;
 		if (round.ending)
 		{
+			if (round.endingSyncAtSec <= 0.0 ||
+				_nowSec < round.endingSyncAtSec)
+			{
+				continue;
+			}
+
+			round.endingSyncAtSec = 0.0;
+
+			std::vector<SessionId> pvpSessions;
+			_sessionSystem.Flow().CollectSessionsInWorld(
+				round.worldId,
+				pvpSessions);
+
+			// Stage result and start ending sync after the post-victory grace time.
+			(void)ServerPacketStager::StagePvpRoundResultPacket(
+				_sessionSystem.Network(),
+				std::span<const SessionId>(pvpSessions.data(), pvpSessions.size()),
+				round.winnerNetId);
+
+			BeginEndingThenTransfer(
+				round.partyId,
+				round.worldId,
+				WorldDefId::Plaza,
+				std::span<const SessionId>(
+					pvpSessions.data(),
+					pvpSessions.size()));
+
 			continue;
 		}
 
@@ -2195,28 +2225,13 @@ bool ServerApp::ProcessPvpRoundEndConditions()
 		{
 			round.ending = true;
 
-			const uint64_t winnerNetId =
+			round.winnerNetId =
 				winnerSessionId != 0
 				? FindControlledNetId(winnerSessionId).GetRaw()
 				: 0;
 
-			std::vector<SessionId> pvpSessions;
-			_sessionSystem.Flow().CollectSessionsInWorld(
-				round.worldId,
-				pvpSessions);
-
-			// 결과(라스트맨) 통지 → 클라 페이드/엔딩 연출 트리거.
-			(void)ServerPacketStager::StagePvpRoundResultPacket(
-				_sessionSystem.Network(),
-				std::span<const SessionId>(pvpSessions.data(), pvpSessions.size()),
-				winnerNetId);
-
-			// 연출 완료(또는 타임아웃) 후 생존자/사망자 전원을 Plaza로 전이.
-			BeginEndingThenTransfer(
-				round.partyId,
-				round.worldId,
-				WorldDefId::Plaza,
-				std::span<const SessionId>(pvpSessions.data(), pvpSessions.size()));
+			// 결과 통지와 엔딩 동기화는 라스트맨 확정 후 유예 시간을 두고 시작한다.
+			round.endingSyncAtSec = _nowSec + kPvpRoundEndSyncDelaySec;
 		}
 	}
 
