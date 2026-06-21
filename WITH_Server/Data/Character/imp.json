@@ -18,7 +18,7 @@
                           "bodyHeight":  1.6,
                           "blocksBodyOverlap":  true,
                           "useNavMeshConstraint":  true,
-                          "pushability":  "Dynamic",
+                          "pushability":  "Kinematic",
                           "overlapYieldWeight":  0.85,
                           "maxOverlapCorrectionPerFrameXZ":  0.16
                       },
