@@ -13,6 +13,7 @@ void LoadingSceneUIController::Init(UIManager* manager)
 	InitBackground();
 	InitLoadBar();
 	InitPressAnyButton();
+	InitShortcutHint();
 }
 
 void LoadingSceneUIController::InitBackground()
@@ -53,6 +54,18 @@ void LoadingSceneUIController::InitPressAnyButton()
 	pab->SetHoriLength(WinSize.x * 0.2f);
 	pab->SetVertLength(WinSize.y * 0.04f);
 	widgets.push_back(pab);
+}
+
+void LoadingSceneUIController::InitShortcutHint()
+{
+	shortcutHint = make_shared<ImageUI>(uiManager, L"ShortcutHint", ImageUIState::Hidden);
+	const float texAspect = 3471.0f / 257.0f;
+	const float hintWidth = WinSize.x * 0.4f;
+	const float hintHeight = hintWidth / texAspect;
+	shortcutHint->SetPosition((WinSize.x - hintWidth) * 0.5f, WinSize.y * 0.68f);
+	shortcutHint->SetHoriLength(hintWidth);
+	shortcutHint->SetVertLength(hintHeight);
+	widgets.push_back(shortcutHint);
 }
 
 void LoadingSceneUIController::Update(float deltaTime)
@@ -99,6 +112,9 @@ void LoadingSceneUIController::SetTargetScene(SceneType type)
 	}
 
 	if (mainImage) mainImage->SetTexture(texName);
+
+	if (shortcutHint)
+		shortcutHint->ChangeState(targetScene == SceneType::Plaza ? ImageUIState::Visible : ImageUIState::Hidden);
 }
 
 void LoadingSceneUIController::Reset()
