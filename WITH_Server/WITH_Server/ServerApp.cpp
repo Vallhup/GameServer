@@ -37,7 +37,7 @@ namespace
 	constexpr float kBeaconInteractionServerRadius = 3.0f;
 	// 엔딩/페이드 연출 완료를 기다리는 안전 타임아웃. 일부 클라가 연출 완료를
 	// 보고하지 않아도 이 시간 후에는 강제로 Plaza 전이한다.
-	constexpr double kEndingCinematicTimeoutSec = 180.0;
+	constexpr double kEndingCinematicTimeoutSec = 150.0;
 
 	struct BeaconCinematicPolicy
 	{
@@ -153,6 +153,7 @@ bool ServerApp::Initialize()
 	_partyCommandQueue.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
+	_activeClientTransitionSessions.clear();
 	_activeBeaconCinematicsByWorld.clear();
 	_nextBeaconCinematicInstanceId = 1;
 	_animationRegistry.Clear();
@@ -216,6 +217,7 @@ void ServerApp::Shutdown() noexcept
 	_partyCommandQueue.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
+	_activeClientTransitionSessions.clear();
 	_activeBeaconCinematicsByWorld.clear();
 	_nextBeaconCinematicInstanceId = 1;
 	_animationRegistry.Clear();
@@ -712,31 +714,16 @@ bool ServerApp::MarkClientWorldTransitionReady(
 		return false;
 	}
 
-	std::vector<NetId> pendingSnapshotExcludedNetIds;
-	pendingSnapshotExcludedNetIds.reserve(_pendingClientTransitions.size());
-	for (const auto& [pendingSessionId, pendingTransition] : _pendingClientTransitions)
-	{
-		if (pendingSessionId == sessionId ||
-			pendingTransition.targetWorldId != pending.targetWorldId ||
-			!pendingTransition.playerNetId.IsValid())
-		{
-			continue;
-		}
-
-		pendingSnapshotExcludedNetIds.push_back(pendingTransition.playerNetId);
-	}
-
 	ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 		_framework,
 		_sessionSystem.Network(),
 		pending.targetWorldId,
-		sessionId,
-		std::span<const NetId>(
-			pendingSnapshotExcludedNetIds.data(),
-			pendingSnapshotExcludedNetIds.size()));
+		sessionId);
 
 	// Transfer-imported players skip the normal EntitySpawned broadcast path,
 	// so notify already-ready sessions in the target world explicitly here.
+	// Sessions in the same transfer cohort receive the full target-world
+	// snapshot on their own READY path, regardless of READY ordering.
 	const NetBindingLocation playerBinding =
 		_framework.FindNetBinding(pending.playerNetId);
 	if (playerBinding.IsValid() &&
@@ -759,10 +746,15 @@ bool ServerApp::MarkClientWorldTransitionReady(
 			_sessionSystem.AppendPendingInitialEntrySessions(
 				pendingTransitionSessions);
 
+			const auto activeTransferIt =
+				_activeClientTransitionSessions.find(pending.transferId);
 			otherReadySessionIds.reserve(worldSessionIds.size());
 			for (SessionId worldSessionId : worldSessionIds)
 			{
 				if (worldSessionId == sessionId ||
+					(activeTransferIt !=
+						_activeClientTransitionSessions.end() &&
+						activeTransferIt->second.contains(worldSessionId)) ||
 					std::find(
 						pendingTransitionSessions.begin(),
 						pendingTransitionSessions.end(),
@@ -802,12 +794,35 @@ bool ServerApp::MarkClientWorldTransitionReady(
 	}
 
 	_pendingClientTransitions.erase(it);
+	if (auto activeTransferIt =
+			_activeClientTransitionSessions.find(transferId);
+		activeTransferIt != _activeClientTransitionSessions.end())
+	{
+		activeTransferIt->second.erase(sessionId);
+		if (activeTransferIt->second.empty())
+		{
+			_activeClientTransitionSessions.erase(activeTransferIt);
+		}
+	}
 	return true;
 }
 
 void ServerApp::OnSessionDisconnected(SessionId sessionId) noexcept
 {
 	_pendingClientTransitions.erase(sessionId);
+	for (auto it = _activeClientTransitionSessions.begin();
+		it != _activeClientTransitionSessions.end();)
+	{
+		it->second.erase(sessionId);
+		if (it->second.empty())
+		{
+			it = _activeClientTransitionSessions.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 	_partyCommandQueue.Submit(PartyCommand{
 		.kind = PartyCommandKind::MarkMemberOffline,
 		.actorSessionId = sessionId,
@@ -1269,6 +1284,15 @@ bool ServerApp::StageWorldTransitionBeginPackets(
 		const WorldDef* const sourceDef = sourceWorld->GetDef();
 		const WorldDef* const targetDef = targetWorld->GetDef();
 
+		auto& activeTransitionSessions =
+			_activeClientTransitionSessions[completed.transferId];
+		activeTransitionSessions.clear();
+		activeTransitionSessions.reserve(completed.importedEntities.size());
+		for (const ImportedTransferEntity& imported : completed.importedEntities)
+		{
+			activeTransitionSessions.insert(imported.sessionId);
+		}
+
 		for (const ImportedTransferEntity& imported : completed.importedEntities)
 		{
 			uint32_t requestId = 0;
@@ -1398,6 +1422,26 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 						.endingSyncAtSec = 0.0,
 						.winnerNetId = 0
 					};
+
+				const PartyDeathCountState pvpDeathCount{
+					.initialCount = 0,
+					.remainingCount = 0,
+					.revision = 0,
+					.initializedAtSec = _nowSec,
+					.updatedAtSec = _nowSec,
+					.initialized = true,
+					.exhausted = false
+				};
+				if (!StagePartyDeathCountSync(
+						completed.partyId,
+						pvpDeathCount))
+				{
+					FWLOG_WARN(kLogCategory,
+						"PVP death count zero sync stage failed "
+						"(partyId=%llu, targetWorldId=%u)",
+						static_cast<unsigned long long>(completed.partyId),
+						completed.targetWorldId.GetRaw());
+				}
 			}
 			if (targetDef != nullptr &&
 				IsDeathCountRunStartWorld(targetDef->id))

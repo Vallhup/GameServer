@@ -259,6 +259,8 @@ private:
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;
 	std::unordered_map<SessionId, PendingClientTransition> _pendingClientTransitions;
+	std::unordered_map<TransferId, std::unordered_set<SessionId>>
+		_activeClientTransitionSessions;
 	std::unordered_map<uint64_t, PendingFinalClearChoiceStart>
 		_pendingFinalClearChoiceStartByWorld;
 	std::unordered_map<uint64_t, FinalClearChoiceVote> _finalClearChoiceVotes;
