@@ -685,11 +685,12 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 	{
 		const SkeletalCombatCollider& sourceCollider =
 			attackerColliders.localColliders[sourceColliderIndex];
-		const bool explicitSourceHitBone =
-			!attackWindow.sourceHitBones.empty() &&
-			IsExplicitSourceHitBone(attackWindow, sourceCollider.boneIndex);
-		if (!explicitSourceHitBone &&
-			!HasRole(sourceCollider.roleMask, SkeletalCombatColliderRoleMask::Hit))
+		const bool sourceHitBonesRestricted =
+			!attackWindow.sourceHitBones.empty();
+		const bool sourceColliderCanHit = sourceHitBonesRestricted
+			? IsExplicitSourceHitBone(attackWindow, sourceCollider.boneIndex)
+			: HasRole(sourceCollider.roleMask, SkeletalCombatColliderRoleMask::Hit);
+		if (!sourceColliderCanHit)
 		{
 			continue;
 		}

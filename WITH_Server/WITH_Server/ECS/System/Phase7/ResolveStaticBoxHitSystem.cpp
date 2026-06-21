@@ -337,15 +337,16 @@ void ResolveStaticBoxHitSystem::Execute(SystemContext& ctx)
 			{
 				const SkeletalCombatCollider& sourceCollider =
 					attackerColliders->localColliders[sourceColliderIndex];
-				const bool explicitSourceHitBone =
-					!attackWindow.sourceHitBones.empty() &&
-					IsExplicitSourceHitBone(
+				const bool sourceHitBonesRestricted =
+					!attackWindow.sourceHitBones.empty();
+				const bool sourceColliderCanHit = sourceHitBonesRestricted
+					? IsExplicitSourceHitBone(
 						attackWindow,
-						sourceCollider.boneIndex);
-				if (!explicitSourceHitBone &&
-					!CombatHitResolutionUtil::HasRole(
+						sourceCollider.boneIndex)
+					: CombatHitResolutionUtil::HasRole(
 						sourceCollider.roleMask,
-						SkeletalCombatColliderRoleMask::Hit))
+						SkeletalCombatColliderRoleMask::Hit);
+				if (!sourceColliderCanHit)
 				{
 					continue;
 				}

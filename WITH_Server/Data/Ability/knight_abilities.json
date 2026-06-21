@@ -499,6 +499,7 @@
                     "applyEffectKey": null,
                     "appliesTo": "FrontPhysical",
                     "spatialFilter": null,
+                    "sourceHitBones": [45],
                     "effect": {
                         "type": "AttackHit",
                         "attackHit": {
