@@ -928,39 +928,30 @@ void GameSceneUIController::InitStatWindow()
 	statusStatText->SetText(L"");
 	widgets.push_back(statusStatText);
 
-	statusTitleText = make_shared<TextUI>(uiManager, L"StatusTitleText", L"MalgunGothic");
-	const float titleScale = WinSize.y / 1080.0f * 0.4f;	
-	statusTitleText->SetScale(titleScale);
-	statusTitleText->SetTextColor(Colors::White);
-	statusTitleText->SetPosition(ribbonX + ribbonWidth * 0.5f, ribbonY + ribbonHeight * 0.5f);
-	statusTitleText->SetText(L"");
-	widgets.push_back(statusTitleText);
+	statusTitleImage = make_shared<ImageUI>(uiManager, L"Title1", ImageUIState::Hidden);
+	statusTitleImage->SetPosition(ribbonX, ribbonY);
+	statusTitleImage->SetHoriLength(ribbonWidth);
+	statusTitleImage->SetVertLength(ribbonHeight);
+	widgets.push_back(statusTitleImage);
 }
 
 void GameSceneUIController::RefreshTitleRibbon()
 {
-	if (!statusTitleText) return;
+	if (!statusTitleImage) return;
 
 	uint32_t titleId = 0;
 	if (ClientTitleState* titleState = ENGINE.GetTitleState())
 		titleId = titleState->GetSelectedTitleId();
 
-	const wstring name = ClientTitleState::GetDisplayName(titleId);
-	statusTitleText->SetText(name);
-
-	const float ribbonWidth  = WinSize.x * 0.21f;
-	const float ribbonHeight = ribbonWidth / 2.65f;	
-	const float ribbonX = WinSize.x * 0.30f - ribbonWidth * 0.5f;
-	const float ribbonY = WinSize.y * 0.78f;
-	const float titleScale = WinSize.y / 1080.0f * 0.4f;	
-
-	float textW = 0.0f;
-	if (auto* fd = uiManager->GetFont(L"MalgunGothic"))
-		textW = XMVectorGetX(fd->font->MeasureString(name.c_str(), false)) * titleScale;
-
-	statusTitleText->SetPosition(
-		ribbonX + (ribbonWidth - textW) * 0.5f,
-		ribbonY + ribbonHeight * 0.5f - 27.0f * titleScale);
+	if (titleId >= 1 && titleId <= 8)
+	{
+		statusTitleImage->SetTexture(L"Title" + std::to_wstring(titleId));
+		statusTitleImage->ChangeState(ImageUIState::Visible);
+	}
+	else
+	{
+		statusTitleImage->ChangeState(ImageUIState::Hidden);
+	}
 }
 
 void GameSceneUIController::InitMapWindow()
@@ -1238,7 +1229,7 @@ void GameSceneUIController::Update(float deltaTime)
 					}
 				}
 
-				statusTitleText->SetText(L"");
+				statusTitleImage->ChangeState(ImageUIState::Hidden);
 			}
 			else
 			{
@@ -2214,7 +2205,7 @@ void GameSceneUIController::HideHudForCinematic()
 	if (localCharDeathCountText) localCharDeathCountText->SetText(L"");
 
 	hide(statusBackImage); hide(statusCharImage); hide(statusImage);
-	hide(statusRibbon); hide(statusArrowLeft); hide(statusArrowRight);
+	hide(statusRibbon); hide(statusArrowLeft); hide(statusArrowRight); hide(statusTitleImage);
 
 	hide(escWindow); hide(escContinueButton); hide(escOptionsButton); hide(escExitButton);
 	hide(settingWindow);

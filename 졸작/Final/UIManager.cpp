@@ -99,6 +99,14 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"StatusRibbon",     L"../Assets/UI/Textures/StatusRibbon.png", core, resourceUpload);
 	RegisterUITexture(L"StatusArrowLeft",  L"../Assets/UI/Textures/StatusArrowLeft.png", core, resourceUpload);
 	RegisterUITexture(L"StatusArrowRight", L"../Assets/UI/Textures/StatusArrowRight.png", core, resourceUpload);
+	RegisterUITexture(L"Title1", L"../Assets/UI/Textures/Title1.png", core, resourceUpload);
+	RegisterUITexture(L"Title2", L"../Assets/UI/Textures/Title2.png", core, resourceUpload);
+	RegisterUITexture(L"Title3", L"../Assets/UI/Textures/Title3.png", core, resourceUpload);
+	RegisterUITexture(L"Title4", L"../Assets/UI/Textures/Title4.png", core, resourceUpload);
+	RegisterUITexture(L"Title5", L"../Assets/UI/Textures/Title5.png", core, resourceUpload);
+	RegisterUITexture(L"Title6", L"../Assets/UI/Textures/Title6.png", core, resourceUpload);
+	RegisterUITexture(L"Title7", L"../Assets/UI/Textures/Title7.png", core, resourceUpload);
+	RegisterUITexture(L"Title8", L"../Assets/UI/Textures/Title8.png", core, resourceUpload);
 
 	RegisterUITexture(L"Black", L"../Assets/UI/Textures/Black.png", core, resourceUpload);
 	RegisterUITexture(L"PlazaMap", L"../Assets/UI/Textures/PlazaMap.png", core, resourceUpload);

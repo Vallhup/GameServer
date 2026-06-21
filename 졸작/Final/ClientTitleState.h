@@ -21,7 +21,6 @@ public:
 	uint32_t GetEquippedTitleId() const { return equippedTitleId; }
 	uint32_t GetSelectedTitleId() const;
 
-	static const wchar_t* GetDisplayName(uint32_t titleId);
 	uint64_t GetRevision() const { return revision; }
 	bool IsLoaded() const { return loaded; }
 

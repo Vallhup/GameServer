@@ -117,9 +117,18 @@ const XMFLOAT3& Transform::GetScale() const
 
 XMMATRIX Transform::GetWorldMatrix() const
 {
+	if (hasWorldOverride)
+		return XMLoadFloat4x4(&worldOverride);
+
 	XMMATRIX S = XMMatrixScaling(scale.x, scale.y, scale.z);
 	XMMATRIX R = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 	XMMATRIX T = XMMatrixTranslation(position.x, position.y, position.z);
 
 	return S * R * T;
+}
+
+void Transform::SetWorldOverride(const XMMATRIX& world)
+{
+	hasWorldOverride = true;
+	XMStoreFloat4x4(&worldOverride, world);
 }

@@ -174,6 +174,34 @@ XMMATRIX Animator::GetBoneMatrix(int boneIndex)
     return XMMatrixMultiply(mBones[boneIndex].matOffset, matBone);
 }
 
+XMMATRIX Animator::GetBoneWorldMatrix(int boneIndex)
+{
+    if (boneIndex < 0 || boneIndex >= mBoneCount)
+        return XMMatrixIdentity();
+
+    XMVECTOR finalS, finalR, finalT;
+    XMVECTOR s1, r1, t1;
+    GetInterpolatedSRT(boneIndex, mClipIndex, mFrame, mNextFrame, mFrameRatio, s1, r1, t1);
+
+    if (mIsBlending && mPrevClipIndex >= 0)
+    {
+        XMVECTOR s2, r2, t2;
+        GetInterpolatedSRT(boneIndex, mPrevClipIndex, mPrevFrame, mPrevNextFrame, mPrevFrameRatio, s2, r2, t2);
+
+        finalS = XMVectorLerp(s2, s1, blendRatio);
+        finalR = QuaternionNlerp(r2, r1, blendRatio);
+        finalT = XMVectorLerp(t2, t1, blendRatio);
+    }
+    else
+    {
+        finalS = s1;
+        finalR = r1;
+        finalT = t1;
+    }
+
+    return XMMatrixAffineTransformation(finalS, XMVectorZero(), finalR, finalT);
+}
+
 XMFLOAT3 Animator::GetBonePosition(int boneIndex)
 {
     XMMATRIX mat = GetBoneMatrix(boneIndex);

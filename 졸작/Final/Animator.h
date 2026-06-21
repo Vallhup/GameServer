@@ -55,6 +55,7 @@ public:
     int GetFrameCount() const;
 
     XMMATRIX GetBoneMatrix(int boneIndex);
+    XMMATRIX GetBoneWorldMatrix(int boneIndex);   
     XMFLOAT3 GetBonePosition(int boneIndex);
     XMVECTOR GetBoneRotation(int boneIndex);
 

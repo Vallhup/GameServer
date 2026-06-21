@@ -51,31 +51,6 @@ void ClientTitleState::ApplyEquipResult(
 	++revision;
 }
 
-const wchar_t* ClientTitleState::GetDisplayName(uint32_t titleId)
-{
-	switch (titleId)
-	{
-		case 1: 
-			return L"임프 사냥꾼";
-		case 2: 
-			return L"악마 처형자";
-		case 3: 
-			return L"탱크 파괴자";
-		case 4: 
-			return L"전설의 사냥꾼";
-		case 5: 
-			return L"임프에게 당한 자";
-		case 6: 
-			return L"최종 보스에게 쓰러진 자";
-		case 7: 
-			return L"거인 격퇴자";
-		case 8: 
-			return L"죽음을 넘은 자";
-		default: 
-			return L""; 
-	}
-}
-
 bool ClientTitleState::SelectPrevious()
 {
 	return SelectOffset(-1);
