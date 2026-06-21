@@ -21,6 +21,7 @@
 #include "ParryStreakComponent.h"
 #include "EffectManager.h"
 #include "SwordSpecialEffectComponent.h"
+#include "PotionAttachComponent.h"
 #include "RunDustEffectComponent.h"
 #include "DissolveComponent.h"
 #include "GimmickDiamond.h"
@@ -282,6 +283,16 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	character->AddComponent<DissolveComponent>();
 	DissolveComponent::RegisterNoiseTexture(*coreRef);
 
+	auto potion = make_shared<GameObject>();
+	potion->SetId(-1);
+	auto potionMesh = potion->AddComponent<Mesh>();
+	potion->AddComponent<Transform>();
+	potionMesh->SetMesh(*coreRef, L"../Assets/FBXModel/Potion/potion");
+	AddGameObject(potion);
+
+	auto potionAttach = character->AddComponent<PotionAttachComponent>();
+	potionAttach->SetPotion(potion);
+
 	return character;
 }
 
@@ -367,6 +378,8 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 
 		auto trail = character->GetComponent<TrailComponent>();
 
+		auto potionAttach = character->GetComponent<PotionAttachComponent>();
+
 		auto sfx = character->AddComponent<AnimationSfxComponent>();
 		switch (type)
 		{
@@ -385,6 +398,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			swordEffect->SetBoneIndices({ 45 });
 			trail->SetBoneIndices({ 45 });
 			trail->SetBladeLength(1.02f);
+			potionAttach->SetBoneIndex(10);
 			break;
 		case CharacterType::Lancer:
 			sfx->AddTrigger("Walk", 9, 11, "../Assets/Music/SFX/Foot.mp3");
@@ -402,6 +416,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			swordEffect->SetBoneIndices({ 25, 45 });
 			trail->SetBoneIndices({ 25, 45 });
 			trail->SetBladeLength(0.81f);
+			potionAttach->SetBoneIndex(9);
 			break;
 		case CharacterType::Paladin:
 			sfx->AddTrigger("Walk", 10, 12, "../Assets/Music/SFX/Foot.mp3");
@@ -418,6 +433,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			swordEffect->SetBoneIndices({ 44 });
 			trail->SetBoneIndices({ 44 });
 			trail->SetBladeLength(0.95f);
+			potionAttach->SetBoneIndex(9);
 			break;
 		}
 

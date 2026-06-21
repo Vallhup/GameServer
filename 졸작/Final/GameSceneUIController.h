@@ -136,7 +136,7 @@ private:
 	shared_ptr<ImageUI> statusArrowLeft;
 	shared_ptr<ImageUI> statusArrowRight;
 	shared_ptr<TextUI>  statusStatText;
-	shared_ptr<TextUI>  statusTitleText;
+	shared_ptr<ImageUI> statusTitleImage;
 	uint64_t            lastTitleRevision = 0;
 	wstring             lastStatText;
 	shared_ptr<ImageUI> localCharBarsBack;

@@ -62,6 +62,7 @@ void TitleScene::PreloadAllCharactersMeshes()
 	  L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner",
 	  L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior",
 	  L"../Assets/FBXModel/Monster/Tank/monster_Tank",
+	  L"../Assets/FBXModel/Potion/potion",
 	};
 
 	vector<shared_ptr<GameObject>> objs;

@@ -280,6 +280,9 @@
     <ClCompile Include="SwordSpecialEffectComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="PotionAttachComponent.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
     <ClCompile Include="RunDustEffectComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
@@ -589,6 +592,9 @@
       <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="SwordSpecialEffectComponent.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="PotionAttachComponent.h">
       <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="RunDustEffectComponent.h">

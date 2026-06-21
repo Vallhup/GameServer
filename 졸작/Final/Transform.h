@@ -30,6 +30,9 @@ public:
 
 	XMMATRIX GetWorldMatrix() const;
 
+	void SetWorldOverride(const XMMATRIX& world);
+	void ClearWorldOverride() { hasWorldOverride = false; }
+
 private:
 	XMFLOAT3 position;
 	XMFLOAT3 rotation;
@@ -37,5 +40,8 @@ private:
 
 	XMFLOAT3 targetPos;
 	float targetRot;
+
+	bool hasWorldOverride = false;
+	XMFLOAT4X4 worldOverride;
 };
 
