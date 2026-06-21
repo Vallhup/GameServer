@@ -16,7 +16,7 @@ inline constexpr uint32_t MaxPartyMembers = 3;
 inline constexpr double PartyJoinRequestTimeoutSec = 60.0;
 inline constexpr double PartyRejectCooldownSec = 15.0;
 inline constexpr size_t PartyListSnapshotLimit = 10;
-inline constexpr uint32_t DeathCountPerPartyMember = 5;
+inline constexpr uint32_t DeathCountPerPartyMember = 3;
 
 using PartyRequestId = uint64_t;
 

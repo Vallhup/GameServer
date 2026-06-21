@@ -534,24 +534,24 @@ namespace
 			service.InitializeDeathCountForRun(create.partyId, 2.0);
 		assert(init.Succeeded());
 		assert(init.deathCount.initialized);
-		assert(init.deathCount.initialCount == 15);
-		assert(init.deathCount.remainingCount == 15);
+		assert(init.deathCount.initialCount == 9);
+		assert(init.deathCount.remainingCount == 9);
 		assert(init.deathCount.revision == 1);
 
 		const PartyDeathCountResult firstDeath =
 			service.ConsumeDeathCount(create.partyId, 201, 3.0);
 		assert(firstDeath.Succeeded());
 		assert(firstDeath.consumed);
-		assert(firstDeath.deathCount.remainingCount == 14);
+		assert(firstDeath.deathCount.remainingCount == 8);
 		assert(firstDeath.deathCount.revision == 2);
 
 		const PartyDeathCountResult invalidDeath =
 			service.ConsumeDeathCount(create.partyId, 999, 4.0);
 		assert(!invalidDeath.Succeeded());
 		assert(invalidDeath.error == PartyError::InvalidSession);
-		assert(service.GetDeathCountSnapshot(create.partyId).remainingCount == 14);
+		assert(service.GetDeathCountSnapshot(create.partyId).remainingCount == 8);
 
-		for (uint32_t i = 0; i < 14; ++i)
+		for (uint32_t i = 0; i < 8; ++i)
 		{
 			const PartyDeathCountResult result =
 				service.ConsumeDeathCount(create.partyId, 200, 5.0 + i);
