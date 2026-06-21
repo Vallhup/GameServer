@@ -1460,7 +1460,7 @@ void GameSceneUIController::Update(float deltaTime)
 		}
 	}
 
-	if (INPUT.GetKeyDown(VK_F2) && keyGuide)
+	if (INPUT.GetKeyDown(VK_F1) && keyGuide)
 	{
 		bool selfOpen = opened(keyGuide);
 		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(partyBook) || opened(mapImage) || opened(settingWindow);

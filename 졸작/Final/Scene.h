@@ -39,6 +39,8 @@ public:
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 
+	void ReturnActiveObjectsToPool();
+
 	virtual SceneSettings GetSceneSettings() const { return {}; }
 
 protected:

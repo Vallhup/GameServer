@@ -12,9 +12,13 @@ void PotionAttachComponent::Init()
 	animMachine = owner->GetComponent<AnimationMachine>();
 	transform = owner->GetComponent<Transform>();
 
-	XMMATRIX adjust =
-		XMMatrixRotationRollPitchYaw(0.252636f, -0.028763f, 2.701817f) *
-		XMMatrixTranslation(4.6f, 2.0f, 4.1f);
+	BuildLocalAdjust(6.7f, 2.0f, 2.8f);   
+}
+
+void PotionAttachComponent::BuildLocalAdjust(float x, float y, float z)
+{
+	XMMATRIX adjust = XMMatrixRotationRollPitchYaw(0.252636f, -0.028763f, 3.151817f) *
+		XMMatrixTranslation(x, y, z);
 	XMStoreFloat4x4(&localAdjust, adjust);
 }
 

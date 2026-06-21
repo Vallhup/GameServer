@@ -127,12 +127,12 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
         }
     }
 
-    if (GetAsyncKeyState('P') & 0x8000)
+    /*if (GetAsyncKeyState('P') & 0x8000)
     {
         string msg = "[Deferred Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
             + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
         OutputDebugStringA(msg.c_str());
-    }
+    }*/
 }
 
 void SceneRenderer::RenderShadowStatic(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)

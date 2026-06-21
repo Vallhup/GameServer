@@ -365,6 +365,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 	EFFECT_MANAGER->PreLoad(L"Attack Increase");
 	EFFECT_MANAGER->PreLoad(L"Max HP Increase");
 	EFFECT_MANAGER->PreLoad(L"Defense Increase");
+	EFFECT_MANAGER->PreLoad(L"Potion");
 
 	for (int i = 0; i < count; ++i)
 	{
@@ -381,6 +382,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		auto potionAttach = character->GetComponent<PotionAttachComponent>();
 
 		auto sfx = character->AddComponent<AnimationSfxComponent>();
+
 		switch (type)
 		{
 		case CharacterType::Knight:
@@ -399,6 +401,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			trail->SetBoneIndices({ 45 });
 			trail->SetBladeLength(1.02f);
 			potionAttach->SetBoneIndex(10);
+			sfx->AddEffectTrigger("Drink", 40, 42, L"Potion");
 			break;
 		case CharacterType::Lancer:
 			sfx->AddTrigger("Walk", 9, 11, "../Assets/Music/SFX/Foot.mp3");
@@ -417,6 +420,8 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			trail->SetBoneIndices({ 25, 45 });
 			trail->SetBladeLength(0.81f);
 			potionAttach->SetBoneIndex(9);
+			potionAttach->SetAttachOffset(10.0f, 2.0f, 2.8f);
+			sfx->AddEffectTrigger("Drink", 35, 37, L"Potion");
 			break;
 		case CharacterType::Paladin:
 			sfx->AddTrigger("Walk", 10, 12, "../Assets/Music/SFX/Foot.mp3");
@@ -434,6 +439,7 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			trail->SetBoneIndices({ 44 });
 			trail->SetBladeLength(0.95f);
 			potionAttach->SetBoneIndex(9);
+			sfx->AddEffectTrigger("Drink", 38, 40, L"Potion");
 			break;
 		}
 
@@ -683,6 +689,20 @@ void Scene::UpdateBreakerShields()
 
 		++it;
 	}
+}
+
+void Scene::ReturnActiveObjectsToPool()
+{
+	for (auto& [id, obj] : activeCharacters)
+		obj->SetId(-1);
+	activeCharacters.clear();
+	activeMonsterTypes.clear();
+
+	for (auto& [id, gimmick] : activeGimmicks)
+		gimmick->SetId(-1);
+	activeGimmicks.clear();
+
+	myPlayer = nullptr;
 }
 
 void Scene::UpdateDissolves()

@@ -11,17 +11,21 @@
 #include <chrono>
 #include <thread>
 #include <timeapi.h>
+#include <wincodec.h>
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "windowscodecs.lib")
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd);
-static void LimitFrameRate(int fpsCap);  
+static void LimitFrameRate(int fpsCap);
+static HCURSOR CreateCursorFromPng(const wchar_t* path, int maxSize, float hotspotU, float hotspotV);
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     TIMER.Initialize();
-    timeBeginPeriod(1);   
+    timeBeginPeriod(1);
+    const HRESULT comInit = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     ClientConnectionListener listener;
 
     AllocConsole();
@@ -61,6 +65,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
             {
                 game.Shutdown();
                 timeEndPeriod(1);
+
+                if (SUCCEEDED(comInit)) 
+                    CoUninitialize();   
+
                 return 0;
             }
         }
@@ -90,6 +98,8 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
 
     const TCHAR* appName = _T("Final");
 
+    HCURSOR customCursor = CreateCursorFromPng(L"../Assets/UI/Textures/Cursor.png", 48, 0.006f, 0.012f);
+
     WNDCLASSEXW wcex = {
         .cbSize = sizeof(WNDCLASSEX),
         .style = CS_HREDRAW | CS_VREDRAW,
@@ -98,7 +108,7 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
         .cbWndExtra = 0,
         .hInstance = hInstance,
         .hIcon = nullptr,
-        .hCursor = LoadCursor(nullptr, IDC_ARROW),
+        .hCursor = customCursor ? customCursor : LoadCursor(nullptr, IDC_ARROW),
         .hbrBackground = nullptr,
         .lpszMenuName = nullptr,
         .lpszClassName = appName,
@@ -137,7 +147,7 @@ void LimitFrameRate(int fpsCap)
                 this_thread::sleep_until(nextFrame - spinMargin);    
             while (chrono::steady_clock::now() < nextFrame) {}       
         }
-        else nextFrame = now;   
+        else nextFrame = now;
     }
     else nextFrame = chrono::steady_clock::now();
 }
@@ -223,7 +233,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_KEYDOWN:
-        if (wParam == VK_F1 && ImGui::GetCurrentContext() != nullptr) {
+        if (wParam == VK_F12 && ImGui::GetCurrentContext() != nullptr) {
             const bool enabled = !IMGUI.IsEnabled();
             IMGUI.SetEnabled(enabled);
             if (Scene* scene = SCENE_MANAGER->GetCurrentScene())
@@ -275,4 +285,78 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+HCURSOR CreateCursorFromPng(const wchar_t* path, int maxSize, float hotspotU, float hotspotV)
+{
+    using Microsoft::WRL::ComPtr;
+
+    ComPtr<IWICImagingFactory> factory;
+    if (FAILED(CoCreateInstance(CLSID_WICImagingFactory, nullptr,
+        CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory))))
+        return nullptr;
+
+    ComPtr<IWICBitmapDecoder> decoder;
+    if (FAILED(factory->CreateDecoderFromFilename(path, nullptr, GENERIC_READ,
+        WICDecodeMetadataCacheOnLoad, &decoder)))
+        return nullptr;
+
+    ComPtr<IWICBitmapFrameDecode> frame;
+    if (FAILED(decoder->GetFrame(0, &frame)))
+        return nullptr;
+
+    UINT srcW = 0, srcH = 0;
+    frame->GetSize(&srcW, &srcH);
+    if (srcW == 0 || srcH == 0)
+        return nullptr;
+
+    const UINT srcMax = (srcW > srcH) ? srcW : srcH;
+    const float scale = static_cast<float>(maxSize) / static_cast<float>(srcMax);
+    int w = static_cast<int>(srcW * scale); if (w < 1) w = 1;
+    int h = static_cast<int>(srcH * scale); if (h < 1) h = 1;
+
+    ComPtr<IWICBitmapScaler> scaler;
+    if (FAILED(factory->CreateBitmapScaler(&scaler)))
+        return nullptr;
+    scaler->Initialize(frame.Get(), w, h, WICBitmapInterpolationModeFant);
+
+    ComPtr<IWICFormatConverter> converter;
+    if (FAILED(factory->CreateFormatConverter(&converter)))
+        return nullptr;
+    converter->Initialize(scaler.Get(), GUID_WICPixelFormat32bppPBGRA,
+        WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom);
+
+    BITMAPINFO bi = {};
+    bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bi.bmiHeader.biWidth = w;
+    bi.bmiHeader.biHeight = -h;     
+    bi.bmiHeader.biPlanes = 1;
+    bi.bmiHeader.biBitCount = 32;
+    bi.bmiHeader.biCompression = BI_RGB;
+
+    void* bits = nullptr;
+    HBITMAP hColor = CreateDIBSection(nullptr, &bi, DIB_RGB_COLORS, &bits, nullptr, 0);
+    if (!hColor)
+        return nullptr;
+
+    if (FAILED(converter->CopyPixels(nullptr, w * 4, w * h * 4, static_cast<BYTE*>(bits))))
+    {
+        DeleteObject(hColor);
+        return nullptr;
+    }
+
+    HBITMAP hMask = CreateBitmap(w, h, 1, 1, nullptr);
+
+    ICONINFO ii = {};
+    ii.fIcon = FALSE;   
+    ii.xHotspot = static_cast<DWORD>(hotspotU * w);
+    ii.yHotspot = static_cast<DWORD>(hotspotV * h);
+    ii.hbmColor = hColor;
+    ii.hbmMask = hMask;
+
+    HCURSOR cursor = static_cast<HCURSOR>(CreateIconIndirect(&ii));
+
+    DeleteObject(hColor);
+    DeleteObject(hMask);
+    return cursor;
 }

@@ -16,8 +16,11 @@ public:
 	void SetBoneIndex(int index) { boneIndex = index; }
 
 	void SetLocalAdjust(const XMMATRIX& m) { XMStoreFloat4x4(&localAdjust, m); }
+	void SetAttachOffset(float x, float y, float z) { BuildLocalAdjust(x, y, z); }
 
 private:
+	void BuildLocalAdjust(float x, float y, float z);
+
 	Animator* animator = nullptr;
 	AnimationMachine* animMachine = nullptr;
 	Transform* transform = nullptr;   

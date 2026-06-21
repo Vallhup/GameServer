@@ -139,8 +139,8 @@ void Engine::Render()
     sceneManager->RenderDeferred();  
     graphics->EndGBufferPass();
 
-    if (INPUT.GetKeyDown(VK_F6))   // 디버그 토글(설정 UI와 같은 플래그)
-        IMGUI.SetSsaoEnabled(!IMGUI.IsSsaoEnabled());
+    //if (INPUT.GetKeyDown(VK_F6))   
+    //    IMGUI.SetSsaoEnabled(!IMGUI.IsSsaoEnabled());
 
     if (IMGUI.IsSsaoEnabled())
     {
@@ -283,7 +283,9 @@ void Engine::EnterPvpReuse()
                 controller->ShowPvpOverlay();
         });
 
-        fade->SetOnFadedOut([fade, doReady]() {
+        fade->SetOnFadedOut([this, fade, doReady]() {
+            if (auto* scene = sceneManager->GetCurrentScene())
+                scene->ReturnActiveObjectsToPool();
             doReady();
             fade->FadeIn(3.0f);
         });

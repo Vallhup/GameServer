@@ -36,6 +36,7 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;   
 
     ImGui::StyleColorsDark();
 

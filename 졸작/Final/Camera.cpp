@@ -97,7 +97,7 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
         zoomDistance = clamp(zoomDistance, minZoomDistance, maxDistance);
     }
 
-    if (INPUT.GetKeyDown(VK_F3))
+    /*if (INPUT.GetKeyDown(VK_F3))
     {
         if (lutIndex == 0xFFFFFFFF)
         {
@@ -139,9 +139,9 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
         lutIndex = 0xFFFFFFFF;
         lutBlendFactor = 1.0f;  
         OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
-    }
+    }*/
 
-    if (INPUT.GetKeyDown('9'))
+    /*if (INPUT.GetKeyDown('9'))
     {
         if (toneSaturationFactor < 2.0f)
             toneSaturationFactor += 0.1f;
@@ -153,7 +153,7 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
         if (toneSaturationFactor > 0.0f)
             toneSaturationFactor -= 0.1f;
         OutputDebugStringA(("toneSaturationFactor: " + to_string(toneSaturationFactor) + "\n").c_str());
-    }
+    }*/
 }
 
 void Camera::UpdateSmoothFollow(float deltaTime)

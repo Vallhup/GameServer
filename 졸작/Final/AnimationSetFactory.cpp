@@ -26,7 +26,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateKnightSet()
 	set->RegisterClip("Hit",	11, AnimCategory::Action);
 
 	set->RegisterClip("Guard",	12, AnimCategory::Special);
-	set->RegisterClip("Drink",	13, AnimCategory::Special);
+	set->RegisterClip("Drink",	13, AnimCategory::Special, 0.05f);
 
 	set->RegisterClip("Death",	14, AnimCategory::Die);
 
@@ -303,7 +303,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 	set->RegisterClip("Hit", 12, AnimCategory::Action);
 
 	set->RegisterClip("Guard", 13, AnimCategory::Special);
-	set->RegisterClip("Drink", 14, AnimCategory::Special);
+	set->RegisterClip("Drink", 14, AnimCategory::Special, 0.05f);
 
 	set->RegisterClip("Death", 15, AnimCategory::Die);
 
@@ -329,7 +329,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreatePaladinSet()
 	set->RegisterClip("Hit", 11, AnimCategory::Action);
 
 	set->RegisterClip("Guard", 12, AnimCategory::Special);
-	set->RegisterClip("Drink", 13, AnimCategory::Special);
+	set->RegisterClip("Drink", 13, AnimCategory::Special, 0.05f);
 
 	set->RegisterClip("Death", 14, AnimCategory::Die);
 
