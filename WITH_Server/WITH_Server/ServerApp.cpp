@@ -32,7 +32,7 @@ namespace
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
 	constexpr double kFinalClearChoiceTimeoutSec = 15.0;
 	constexpr double kFinalClearChoiceBeginDelaySec = 3.0;
-	constexpr double kPvpRoundEndSyncDelaySec = 3.0;
+	constexpr double kPvpRoundEndSyncDelaySec = 6.0;
 	constexpr double kBeaconCinematicStartGuardSec = 30.0;
 	constexpr float kBeaconInteractionServerRadius = 3.0f;
 	// 엔딩/페이드 연출 완료를 기다리는 안전 타임아웃. 일부 클라가 연출 완료를
