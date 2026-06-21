@@ -794,15 +794,20 @@ bool ServerApp::MarkClientWorldTransitionReady(
 	}
 
 	_pendingClientTransitions.erase(it);
-	if (auto activeTransferIt =
-			_activeClientTransitionSessions.find(transferId);
-		activeTransferIt != _activeClientTransitionSessions.end())
+	bool hasPendingSameTransfer = false;
+	for (const auto& [pendingSessionId, pendingTransition] :
+		_pendingClientTransitions)
 	{
-		activeTransferIt->second.erase(sessionId);
-		if (activeTransferIt->second.empty())
+		(void)pendingSessionId;
+		if (pendingTransition.transferId == transferId)
 		{
-			_activeClientTransitionSessions.erase(activeTransferIt);
+			hasPendingSameTransfer = true;
+			break;
 		}
+	}
+	if (!hasPendingSameTransfer)
+	{
+		_activeClientTransitionSessions.erase(transferId);
 	}
 	return true;
 }
