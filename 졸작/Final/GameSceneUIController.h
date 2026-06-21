@@ -257,8 +257,9 @@ private:
 	shared_ptr<TextUI>  respawnCountText;
 	shared_ptr<ImageUI> respawnOkButton;
 	bool                respawnActive = false;
-	bool                localDeadHandled = false;   
+	bool                localDeadHandled = false;
 	float               respawnTimer = 0.0f;
+	uint32_t            deathCount = 0;
 	static constexpr float RESPAWN_SECONDS = 5.0f;  
 
 	shared_ptr<ImageUI> heroChoiceWindow;

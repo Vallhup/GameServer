@@ -137,6 +137,8 @@ void GameSceneUIController::SetPotionCount(uint32_t count)
 
 void GameSceneUIController::SetDeathCount(uint32_t death, uint32_t max)
 {
+	deathCount = death;
+
 	if (!localCharDeathCountText) return;
 	if (sceneType == SceneType::Plaza) return;
 	localCharDeathCountText->SetText(L" x " + to_wstring(death));
@@ -2105,6 +2107,8 @@ void GameSceneUIController::InitRespawnWindow()
 void GameSceneUIController::OnLocalPlayerDied()
 {
 	if (!respawnWindow || respawnActive) return;
+
+	if (deathCount == 0) return;
 
 	respawnActive = true;
 	respawnTimer = RESPAWN_SECONDS;
