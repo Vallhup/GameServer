@@ -26,9 +26,13 @@ namespace
 	// 동시에 시작한다. 두 기믹 패턴 지속(13.4/12.0)보다 작아 패턴 종료 전에 발생한다.
 	constexpr float kGimmickLethalTimeSec = 11.3f;
 
-	constexpr float kFinalSafeZoneRadius = 1.5f;
+	constexpr float kFinalSafeZoneRadius = 2.0f;
+	constexpr float kFinalSafeZoneBossOverlapRadius = 4.0f;
 	constexpr XMFLOAT3 kFinalSafeZonePosition{
 		0.025183f, 0.128176f, -34.714458f
+	};
+	constexpr XMFLOAT3 kFinalSafeZoneFallbackPosition{
+		0.167591f, 0.146487f, -51.499699f
 	};
 	constexpr float kBossLockRefreshSec = 0.25f;
 
@@ -91,6 +95,38 @@ namespace
 		{
 			dirty->MarkDirty(dirtyType);
 		}
+	}
+
+	bool IsFinalSafeZoneOverlappingBossArea(
+		const XMFLOAT3& safeZonePosition,
+		const XMFLOAT3& bossPosition) noexcept
+	{
+		const float dx = safeZonePosition.x - bossPosition.x;
+		const float dz = safeZonePosition.z - bossPosition.z;
+		const float overlapDistance =
+			kFinalSafeZoneBossOverlapRadius + kFinalSafeZoneRadius;
+		return dx * dx + dz * dz <= overlapDistance * overlapDistance;
+	}
+
+	XMFLOAT3 ResolveFinalSafeZonePosition(
+		SystemContext& ctx,
+		Entity boss)
+	{
+		const WorldTransformComp* const bossTransform =
+			ctx.ecs.GetComponent<WorldTransformComp>(boss);
+		if (bossTransform == nullptr)
+		{
+			return kFinalSafeZonePosition;
+		}
+
+		if (IsFinalSafeZoneOverlappingBossArea(
+				kFinalSafeZonePosition,
+				bossTransform->position))
+		{
+			return kFinalSafeZoneFallbackPosition;
+		}
+
+		return kFinalSafeZonePosition;
 	}
 
 	void ApplyGimmickLethalFailure(
@@ -781,7 +817,7 @@ void BossGimmickSystem::TickFinalSafeZone(
 	{
 		if (!gimmick.finalSafeZoneSpawned)
 		{
-			const XMFLOAT3 position = kFinalSafeZonePosition;
+			const XMFLOAT3 position = ResolveFinalSafeZonePosition(ctx, boss);
 			const Entity safeZone = SpawnSafeZone(ctx, boss, position);
 			if (!safeZone.IsNull())
 			{
