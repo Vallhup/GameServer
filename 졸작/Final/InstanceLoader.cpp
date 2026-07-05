@@ -48,7 +48,7 @@ void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileNam
 			data.twoSided = true;
 			data.vertexAnim = true;
 		}
-		else if (ContainsAny(modelName, { "SM_Cart_01" }))
+		else if (ContainsAny(modelName, { "SM_Cart_01", "SM_Flag", "SM_Tent", "SM_WoodHolder", "SM_Dummy" }))
 		{
 			data.distanceCull = false;
 			data.twoSided = true;
