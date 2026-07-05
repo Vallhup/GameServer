@@ -1054,16 +1054,13 @@ void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BE
 
 void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult)
 {
-	const Protocol::FinalClearChoiceOutcome outcome = choiceResult.outcome();
+	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>();
+	if (!controller) return;
 
-	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
-		controller->HideHeroChoice();
+	controller->HideHeroChoice();
 
-	if (outcome == Protocol::FINAL_CLEAR_OUTCOME_ENDING)
-	{
-		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
-			controller->PlayHappyEnding();
-	}
+	if (choiceResult.outcome() == Protocol::FINAL_CLEAR_OUTCOME_ENDING)
+		controller->PlayHappyEnding();
 }
 
 void Scene::HandlePvpRoundResult(const Protocol::SC_PVP_ROUND_RESULT_PACKET& pvpResult)
