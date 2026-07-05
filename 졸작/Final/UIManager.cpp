@@ -94,6 +94,7 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"PVPEndingStory1", L"../Assets/UI/Textures/PVPEndingStory1.png", core, resourceUpload);
 	RegisterUITexture(L"PVPEndingStory2", L"../Assets/UI/Textures/PVPEndingStory2.png", core, resourceUpload);
 	RegisterUITexture(L"PVPEndingStory3", L"../Assets/UI/Textures/PVPEndingStory3.png", core, resourceUpload);
+	RegisterUITexture(L"NSkip", L"../Assets/UI/Textures/NSkip.png", core, resourceUpload);
 
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
 	RegisterUITexture(L"StatusBack", L"../Assets/UI/Textures/StatusBack.png", core, resourceUpload);
