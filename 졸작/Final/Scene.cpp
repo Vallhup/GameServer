@@ -497,6 +497,14 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddEffectTrigger("0per", 28, 30, L"PhantasmMeteor_Single");
 			sfx->AddEffectTrigger("0per", 0, 2, L"Barrior02_HDR");
 			sfx->AddEffectTrigger("0per", 330, 332, L"0per_Bomb");
+
+			auto trail = monster->AddComponent<TrailComponent>();
+			trail->Initialize(coreRef->GetDevice(), 64);
+			trail->SetColor({ 0.85f, 0.88f, 0.9f, 0.15f });
+			trail->SetLifetime(0.3f);
+			trail->SetBoneIndices({ 45 });  
+			trail->SetBladeLength(1.92f);    
+			trail->SetActivationClips({ "Slash", "DashSlash", "JumpSlash", "MultiSlash", "SwordMoonlight", "SwordStorm" });
 		}
 
 		if (type == MonsterType::Tank)
@@ -1046,16 +1054,13 @@ void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BE
 
 void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult)
 {
-	const Protocol::FinalClearChoiceOutcome outcome = choiceResult.outcome();
+	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>();
+	if (!controller) return;
 
-	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
-		controller->HideHeroChoice();
+	controller->HideHeroChoice();
 
-	if (outcome == Protocol::FINAL_CLEAR_OUTCOME_ENDING)
-	{
-		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
-			controller->PlayHappyEnding();
-	}
+	if (choiceResult.outcome() == Protocol::FINAL_CLEAR_OUTCOME_ENDING)
+		controller->PlayHappyEnding();
 }
 
 void Scene::HandlePvpRoundResult(const Protocol::SC_PVP_ROUND_RESULT_PACKET& pvpResult)

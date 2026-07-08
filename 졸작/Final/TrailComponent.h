@@ -8,7 +8,6 @@ struct TrailPoint
 	float age;
 };
 
-// 검 본 하나가 남기는 트레일 한 줄기. 쌍검 캐릭터는 본마다 한 줄기씩 둔다.
 struct TrailStrip
 {
 	int boneIndex = 45;
@@ -20,8 +19,8 @@ class TrailComponent : public EffectComponent
 public:
 	void Update(float deltaTime) override;
 
-	// 검 본 인덱스(스켈레톤마다 다름). 쌍검이면 두 검의 본을 모두 전달
 	void SetBoneIndices(const vector<int>& indices);
+	void SetActivationClips(const vector<string>& clips) { activationClips = clips; }
 	void SetActive(bool active);
 	void Clear();
 
@@ -38,8 +37,9 @@ private:
 	void AddPoint(TrailStrip& strip, const XMFLOAT3& top, const XMFLOAT3& bottom);
 	bool HasPoints() const;
 
-	vector<TrailStrip> trails{ TrailStrip{} };  // 기본 1줄기(본 45)
+	vector<TrailStrip> trails{ TrailStrip{} };  
+	vector<string> activationClips{ "AttackCombo1", "AttackCombo2", "AttackCombo3" };
 	float trailWidth = 1.0f;
-	float bladeLength = 1.0f;  // 검 본 기준 칼날 길이 — 무기마다 다름
+	float bladeLength = 1.0f;  
 	bool isActive = false;
 };

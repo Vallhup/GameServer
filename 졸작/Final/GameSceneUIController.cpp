@@ -210,7 +210,24 @@ void GameSceneUIController::InitEnding()
 	endingBlack->SetVertLength(WinSize.y);
 	widgets.push_back(endingBlack);
 
+	endingSkipHint = make_shared<ImageUI>(uiManager, L"NSkip", ImageUIState::Hidden);
+	endingSkipHint->SetPulseSpeed(2.0f);
+	const float hintW = WinSize.x * 0.12f;
+	const float hintH = hintW * (150.0f / 480.0f);
+	const float hintMargin = WinSize.y * 0.045f;
+	endingSkipHint->SetPosition(WinSize.x - hintW - hintMargin, WinSize.y - hintH - hintMargin);
+	endingSkipHint->SetHoriLength(hintW);
+	endingSkipHint->SetVertLength(hintH);
+	widgets.push_back(endingSkipHint);
+
 	InitCredits();
+
+	skipFadeBlack = make_shared<ImageUI>(uiManager, L"Black", ImageUIState::Hidden);
+	skipFadeBlack->SetFadeDuration(1.0f);
+	skipFadeBlack->SetPosition(0.0f, 0.0f);
+	skipFadeBlack->SetHoriLength(WinSize.x);
+	skipFadeBlack->SetVertLength(WinSize.y);
+	widgets.push_back(skipFadeBlack);
 }
 
 void GameSceneUIController::InitCredits()
@@ -283,6 +300,8 @@ void GameSceneUIController::StartEnding(vector<EndingBeat> beats, const char* bg
 	endingBg->ChangeState(ImageUIState::Hidden);
 	endingStory->ChangeState(ImageUIState::Hidden);
 	endingBlack->ChangeState(ImageUIState::FadingIn);
+	endingSkipHint->ChangeState(ImageUIState::Hidden);
+	skipFadeBlack->ChangeState(ImageUIState::Hidden);
 
 	SOUND_MANAGER->StopBGM(3.0f);
 	SOUND_MANAGER->PlayBGM(bgmPath, 0.0f, false);  
@@ -313,6 +332,14 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 {
 	if (endingPhase == EndingPhase::None) return;
 
+	if (endingPhase != EndingPhase::SkipFadeOut && INPUT.GetKeyDown('N'))
+	{
+		endingSkipHint->ChangeState(ImageUIState::Hidden);
+		skipFadeBlack->ChangeState(ImageUIState::FadingIn);
+		endingPhase = EndingPhase::SkipFadeOut;
+		return;
+	}
+
 	endingTimer -= deltaTime;
 	const bool storyHidden  = endingStory->GetState() == ImageUIState::Hidden;
 	const bool storyVisible = endingStory->GetState() == ImageUIState::Visible;
@@ -331,6 +358,7 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 	case EndingPhase::IntroReveal:
 		if (endingBlack->GetState() == ImageUIState::Hidden)
 		{
+			endingSkipHint->ChangeState(ImageUIState::Pulsing);
 			endingTimer = ENDING_BG_DELAY;
 			endingPhase = EndingPhase::BeatDelay;
 		}
@@ -405,6 +433,7 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 		{
 			if (creditLines.empty())
 			{
+				endingSkipHint->ChangeState(ImageUIState::Hidden);
 				endingPhase = EndingPhase::None;
 				NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
 			}
@@ -440,6 +469,15 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 
 	case EndingPhase::CreditsHold:
 		if (endingTimer <= 0.0f)
+		{
+			endingSkipHint->ChangeState(ImageUIState::Hidden);
+			endingPhase = EndingPhase::None;
+			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
+		}
+		break;
+
+	case EndingPhase::SkipFadeOut:
+		if (skipFadeBlack->GetState() == ImageUIState::Visible)
 		{
 			endingPhase = EndingPhase::None;
 			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);

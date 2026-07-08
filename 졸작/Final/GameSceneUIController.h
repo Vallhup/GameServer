@@ -24,6 +24,7 @@ enum class EndingPhase
 	SwapDelay,
 	EndDelay, EndFade,
 	CreditsRoll, CreditsHold,
+	SkipFadeOut,
 };
 
 struct MonsterBarTarget { 
@@ -169,6 +170,8 @@ private:
 	shared_ptr<ImageUI> endingBg;
 	shared_ptr<ImageUI> endingStory;
 	shared_ptr<ImageUI> endingBlack;
+	shared_ptr<ImageUI> endingSkipHint;
+	shared_ptr<ImageUI> skipFadeBlack;
 	EndingPhase         endingPhase = EndingPhase::None;
 	float               endingTimer = 0.0f;
 	vector<EndingBeat>  endingBeats;
