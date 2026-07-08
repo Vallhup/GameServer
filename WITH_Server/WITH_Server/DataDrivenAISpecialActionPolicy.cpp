@@ -10,8 +10,21 @@ void DataDrivenAISpecialActionPolicy::TickRuntime(
 	AIContext& ctx,
 	const double dtSec) const
 {
-	(void)ctx;
-	(void)dtSec;
+	if (ctx.sysCtx == nullptr)
+		return;
+
+	AIPhaseRuntimeComp* phase =
+		ctx.sysCtx->ecs.GetMutableComponent<AIPhaseRuntimeComp>(ctx.self);
+	if (phase == nullptr ||
+		phase->transitionInvulnerabilityRemainingSec <= 0.0f)
+	{
+		return;
+	}
+
+	phase->transitionInvulnerabilityRemainingSec = std::max(
+		0.0f,
+		phase->transitionInvulnerabilityRemainingSec -
+			static_cast<float>(std::max(0.0, dtSec)));
 }
 
 bool DataDrivenAISpecialActionPolicy::TryIssuePreFSMAction(AIContext& ctx) const
@@ -195,6 +208,17 @@ void DataDrivenAISpecialActionPolicy::ApplyTransitionRuntimeEffects(
 	AIContext& ctx,
 	const AIPhaseTransitionDef& transition) noexcept
 {
+	if (ctx.sysCtx != nullptr)
+	{
+		if (AIPhaseRuntimeComp* phase =
+			ctx.sysCtx->ecs.GetMutableComponent<AIPhaseRuntimeComp>(ctx.self))
+		{
+			phase->transitionInvulnerabilityRemainingSec = std::max(
+				phase->transitionInvulnerabilityRemainingSec,
+				transition.transitionLockSec);
+		}
+	}
+
 	// 1. action runtime 효과 반영
 	{
 		AIActionRuntimeComp* actionRuntime = ctx.actionRuntime;

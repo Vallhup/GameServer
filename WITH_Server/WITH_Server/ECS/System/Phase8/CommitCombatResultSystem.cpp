@@ -19,6 +19,70 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
+	bool IsPhaseTransitionInvulnerable(
+		const AIPhaseRuntimeComp* phase) noexcept
+	{
+		return phase != nullptr &&
+			phase->transitionInvulnerabilityRemainingSec > 0.0f;
+	}
+
+	bool TryClampHpToCrossedPhaseThreshold(
+		const CombatStatStateComp& previousStats,
+		CombatStatStateComp& stats,
+		const AIPhaseRuntimeComp* bossPhase,
+		const AIBehaviorProfileDef* profile) noexcept
+	{
+		if (bossPhase == nullptr ||
+			profile == nullptr ||
+			stats.maxHp <= 0 ||
+			previousStats.currentHp <= stats.currentHp)
+		{
+			return false;
+		}
+
+		const float previousHpRatio =
+			static_cast<float>(previousStats.currentHp) /
+			static_cast<float>(stats.maxHp);
+		const float currentHpRatio =
+			static_cast<float>(stats.currentHp) /
+			static_cast<float>(stats.maxHp);
+
+		for (size_t transitionIndex = 0;
+			transitionIndex < profile->phaseTransitions.size() &&
+			transitionIndex < 32u;
+			++transitionIndex)
+		{
+			const AIPhaseTransitionDef& transition =
+				profile->phaseTransitions[transitionIndex];
+			const uint32_t thresholdMask =
+				1u << static_cast<uint32_t>(transitionIndex);
+			if ((bossPhase->crossedThresholdMask & thresholdMask) != 0 ||
+				(transition.fromPhase.has_value() &&
+					*transition.fromPhase != bossPhase->currentPhase) ||
+				previousHpRatio <= transition.hpRatio ||
+				currentHpRatio > transition.hpRatio)
+			{
+				continue;
+			}
+
+			const int32_t thresholdHp = std::clamp(
+				static_cast<int32_t>(
+					static_cast<float>(stats.maxHp) *
+					transition.hpRatio),
+				1,
+				stats.maxHp);
+			if (stats.currentHp < thresholdHp)
+			{
+				stats.currentHp = thresholdHp;
+				return true;
+			}
+
+			return false;
+		}
+
+		return false;
+	}
+
 	bool RollKillBuffGrant(float grantProbability) noexcept
 	{
 		thread_local std::mt19937 rng{ std::random_device{}() };
@@ -111,9 +175,12 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		const CombatStatStateComp previousStats = stats;
 		const BossGimmickStateComp* bossGimmick =
 			ctx.ecs.GetComponent<BossGimmickStateComp>(entity);
+		const AIPhaseRuntimeComp* phaseForDamage =
+			ctx.ecs.GetComponent<AIPhaseRuntimeComp>(entity);
 		const bool ignoreIncomingHpDamage =
-			bossGimmick != nullptr &&
-			BossGimmickCombatPolicy::ShouldIgnoreIncomingHpDamage(*bossGimmick);
+			IsPhaseTransitionInvulnerable(phaseForDamage) ||
+			(bossGimmick != nullptr &&
+				BossGimmickCombatPolicy::ShouldIgnoreIncomingHpDamage(*bossGimmick));
 		for (const PendingCombatInteractionRecord& interaction :
 			result.receivedInteractions)
 		{
@@ -221,64 +288,27 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			0,
 			stats.maxPoise);
 
-		const AITypeComp* finalGimmickAIType =
+		const AITypeComp* aiType =
 			ctx.ecs.GetComponent<AITypeComp>(entity);
-		const bool supportsFinalSafeZoneGimmick =
-			finalGimmickAIType != nullptr &&
-			finalGimmickAIType->aiType == AIArchetype::FinalBossMonster;
-		if (supportsFinalSafeZoneGimmick &&
-			stats.maxHp > 0 &&
-			previousStats.currentHp > stats.currentHp)
+		AIPhaseRuntimeComp* bossPhase =
+			ctx.ecs.GetMutableComponent<AIPhaseRuntimeComp>(entity);
+		const AIBehaviorProfileDef* profile =
+			aiType != nullptr
+				? GameDataCatalog::Current().AIBehaviors().Find(
+					aiType->aiProfileId)
+				: nullptr;
+		if (TryClampHpToCrossedPhaseThreshold(
+				previousStats,
+				stats,
+				bossPhase,
+				profile))
 		{
-			AIPhaseRuntimeComp* bossPhase =
-				ctx.ecs.GetMutableComponent<AIPhaseRuntimeComp>(entity);
-			const AIBehaviorProfileDef* profile =
-				finalGimmickAIType != nullptr
-					? GameDataCatalog::Current().AIBehaviors().Find(
-						finalGimmickAIType->aiProfileId)
-					: nullptr;
-			if (bossPhase != nullptr && profile != nullptr)
-			{
-				const float previousHpRatio =
-					static_cast<float>(previousStats.currentHp) /
-					static_cast<float>(stats.maxHp);
-				const float currentHpRatio =
-					static_cast<float>(stats.currentHp) /
-					static_cast<float>(stats.maxHp);
-				for (size_t transitionIndex = 0;
-					transitionIndex < profile->phaseTransitions.size() &&
-					transitionIndex < 32u;
-					++transitionIndex)
-				{
-					const AIPhaseTransitionDef& transition =
-						profile->phaseTransitions[transitionIndex];
-					const uint32_t thresholdMask =
-						1u << static_cast<uint32_t>(transitionIndex);
-					if (transition.toPhase != 2 ||
-						(bossPhase->crossedThresholdMask & thresholdMask) != 0 ||
-						(transition.fromPhase.has_value() &&
-							*transition.fromPhase != bossPhase->currentPhase) ||
-						previousHpRatio <= transition.hpRatio ||
-						currentHpRatio > transition.hpRatio)
-					{
-						continue;
-					}
-
-					const int32_t thresholdHp = std::clamp(
-						static_cast<int32_t>(
-							static_cast<float>(stats.maxHp) *
-							transition.hpRatio),
-						1,
-						stats.maxHp);
-					if (stats.currentHp < thresholdHp)
-					{
-						stats.currentHp = thresholdHp;
-						killerEntity = Entity::Null();
-					}
-					break;
-				}
-			}
+			killerEntity = Entity::Null();
 		}
+
+		const bool supportsFinalSafeZoneGimmick =
+			aiType != nullptr &&
+			aiType->aiType == AIArchetype::FinalBossMonster;
 		if (supportsFinalSafeZoneGimmick &&
 			previousStats.currentHp > 0 &&
 			stats.currentHp <= 0)
@@ -413,14 +443,6 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		// Boss phase threshold reaction event.
 		if (stats.maxHp > 0 && previousStats.currentHp > stats.currentHp)
 		{
-			AIPhaseRuntimeComp* bossPhase =
-				ctx.ecs.GetMutableComponent<AIPhaseRuntimeComp>(entity);
-			const AITypeComp* aiType = ctx.ecs.GetComponent<AITypeComp>(entity);
-			const AIBehaviorProfileDef* profile =
-				aiType != nullptr
-					? GameDataCatalog::Current().AIBehaviors().Find(
-						aiType->aiProfileId)
-					: nullptr;
 			if (bossPhase != nullptr && profile != nullptr)
 			{
 				const float previousHpRatio =

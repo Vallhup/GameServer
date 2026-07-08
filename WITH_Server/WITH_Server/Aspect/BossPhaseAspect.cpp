@@ -33,7 +33,8 @@ void BossPhaseAspect::Attach(
 			.currentPhase = 1,
 			.crossedThresholdMask = 0,
 			.transitionRequested = false,
-			.pendingTransitionIndex = AIPhaseRuntimeComp::kInvalidTransitionIndex
+			.pendingTransitionIndex = AIPhaseRuntimeComp::kInvalidTransitionIndex,
+			.transitionInvulnerabilityRemainingSec = 0.0f
 		});
 
 	runtime.DeferredUpsertComponent<BossGimmickStateComp>(

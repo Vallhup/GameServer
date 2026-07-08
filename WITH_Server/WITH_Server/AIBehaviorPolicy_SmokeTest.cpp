@@ -145,29 +145,34 @@ private:
 
 	static void RunCombatRangeHysteresis()
 	{
+		CombatFixture fixture{ 1 };
+		fixture.actions[0] = MakeAction(static_cast<AbilityId>(401));
+
 		AIPerceptionTuningDef tuning{};
 		tuning.attackRange = 12.0;
 		tuning.combatExitRangeBonus = 0.5;
 
-		AIPerceptionComp perception{};
-		perception.hasTarget = true;
-		perception.targetInFront = true;
-		perception.distanceToTarget = 12.2;
+		fixture.context.perceptionTuning = &tuning;
+		fixture.perception.distanceToTarget = 12.2;
+		fixture.perception.targetInFront = true;
 
-		AIContext context{};
-		context.perception = &perception;
-		context.perceptionTuning = &tuning;
+		assert(!AICombatRangePolicy::ShouldEnterCombat(fixture.context));
+		assert(!AICombatRangePolicy::ShouldExitCombat(fixture.context));
 
-		assert(!AICombatRangePolicy::ShouldEnterCombat(context));
-		assert(!AICombatRangePolicy::ShouldExitCombat(context));
+		fixture.perception.distanceToTarget = 11.5;
+		assert(AICombatRangePolicy::ShouldEnterCombat(fixture.context));
 
-		perception.distanceToTarget = 12.6;
-		assert(AICombatRangePolicy::ShouldExitCombat(context));
+		fixture.runtime.globalActionCooldownSec = 1.0f;
+		assert(!AICombatRangePolicy::ShouldEnterCombat(fixture.context));
+		fixture.runtime.globalActionCooldownSec = 0.0f;
 
-		perception.distanceToTarget = 11.9;
-		perception.targetInFront = false;
-		assert(AICombatRangePolicy::ShouldHoldChasePosition(context));
-		assert(!AICombatRangePolicy::ShouldEnterCombat(context));
+		fixture.perception.distanceToTarget = 12.6;
+		assert(AICombatRangePolicy::ShouldExitCombat(fixture.context));
+
+		fixture.perception.distanceToTarget = 11.5;
+		fixture.perception.targetInFront = false;
+		assert(AICombatRangePolicy::ShouldHoldChasePosition(fixture.context));
+		assert(!AICombatRangePolicy::ShouldEnterCombat(fixture.context));
 	}
 
 	static void RunMovementDistanceHysteresis()

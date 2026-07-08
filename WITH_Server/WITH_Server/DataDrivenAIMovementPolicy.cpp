@@ -16,12 +16,6 @@ void DataDrivenAIMovementPolicy::BuildChaseIntent(AIContext& ctx) const
 		ctx.intent->lockFacingToLookTarget = profile->lockFacingToTarget;
 	}
 
-	if (AICombatRangePolicy::ShouldHoldChasePosition(ctx))
-	{
-		AIMovementPolicyUtil::ClearMove(ctx);
-		return;
-	}
-
 	DirectX::XMFLOAT3 targetPos{};
 	if (!AIMovementPolicyUtil::TryGetCurrentTargetPosition(ctx, targetPos))
 		return;
@@ -66,8 +60,16 @@ void DataDrivenAIMovementPolicy::BuildCombatIntent(AIContext& ctx) const
 			*profile,
 			ctx.perception->distanceToTarget,
 			ctx.movementRuntime);
+	const bool canSelectCombatAction =
+		AICombatRangePolicy::CanSelectCombatAction(ctx);
+	const AIMovementBehavior resolvedBehavior =
+		behavior == AIMovementBehavior::Hold &&
+			!canSelectCombatAction &&
+			ctx.perception->distanceToTarget > profile->veryCloseDistance
+			? AIMovementBehavior::Approach
+			: behavior;
 
-	ApplyMovementBehavior(ctx, *profile, toTarget, behavior);
+	ApplyMovementBehavior(ctx, *profile, toTarget, resolvedBehavior);
 }
 
 void DataDrivenAIMovementPolicy::BuildSearchIntent(AIContext& ctx) const

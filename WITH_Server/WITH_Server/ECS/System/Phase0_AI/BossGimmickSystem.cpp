@@ -238,6 +238,7 @@ namespace
 		phase->transitionRequested = false;
 		phase->pendingTransitionIndex =
 			AIPhaseRuntimeComp::kInvalidTransitionIndex;
+		phase->transitionInvulnerabilityRemainingSec = 0.0f;
 	}
 
 	void SetStage(

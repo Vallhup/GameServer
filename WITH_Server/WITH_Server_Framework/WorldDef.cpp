@@ -38,7 +38,7 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 			// TODO(content): replace temporary navmesh path with Plaza map data.
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Plaza_NavMesh_v4.bin",
+				.navMeshBinPath = "../Map/Plaza_NavMesh_v5.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
@@ -568,7 +568,7 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 			},
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Cathedral_NavMesh_v4.bin",
+				.navMeshBinPath = "../Map/Cathedral_NavMesh_v6.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
@@ -669,7 +669,7 @@ WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey)
 			},
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Cathedral_NavMesh_v4.bin",
+				.navMeshBinPath = "../Map/Cathedral_NavMesh_v6.bin",
 				.agentRadius = kUnityNavMeshAgentRadius,
 				.agentHeight = kUnityNavMeshAgentHeight,
 				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,

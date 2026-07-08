@@ -185,6 +185,7 @@ struct AIPhaseRuntimeComp : Component
 
 	bool transitionRequested{ false };
 	uint16_t pendingTransitionIndex{ kInvalidTransitionIndex };
+	float transitionInvulnerabilityRemainingSec{ 0.0f };
 };
 
 enum class BossGimmickType : uint8_t
