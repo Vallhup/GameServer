@@ -516,6 +516,14 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddEffectTrigger("Jump2", 70, 72, L"Tank_Jump");
 			sfx->AddEffectTrigger("Melee4", 25, 27, L"Tank_Attack");
 			sfx->AddEffectTrigger("Melee5", 33, 35, L"Tank_Attack");
+			sfx->AddTrigger("Melee4", 24, 26, "../Assets/Music/SFX/TankBang.mp3");
+			sfx->AddTrigger("Melee5", 32, 34, "../Assets/Music/SFX/TankBang.mp3");
+		}
+
+		if (type == MonsterType::BigDemonWarrior)
+		{
+			auto sfx = monster->AddComponent<AnimationSfxComponent>();
+			sfx->AddTrigger("BattleCry", 1, 3, "../Assets/Music/SFX/VillageBossRoar.mp3");
 		}
 
 		monsterPools[type].push_back(monster);
