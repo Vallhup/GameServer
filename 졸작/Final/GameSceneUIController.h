@@ -75,6 +75,7 @@ public:
 
 	void PlayHappyEnding();
 	void PlayPvpEnding();
+	void ResetEndingOverlays();
 
 	void ShowHeroChoice(uint64_t voteId);
 	void HideHeroChoice();					

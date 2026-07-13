@@ -25,6 +25,13 @@ void FirstBattleScene::Release()
 	monsterPools.clear();
 	activeCharacters.clear();
 	activeMonsterTypes.clear();
+	gimmickPool.clear();
+	activeGimmicks.clear();
+	activeZoneBarriers.clear();
+	activeBreakerShields.clear();
+	activeBuffEffects.clear();
+	activeTitleEffects.clear();
+	titleIdByOwner.clear();
 	myPlayer = nullptr;
 	gameObjects.clear();
 
