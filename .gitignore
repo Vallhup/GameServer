@@ -498,3 +498,4 @@ WITH_Server2/
 졸작/Assets/Movie/
 /NavMesh/Output
 *.txt
+/WITH_Server/docs/superpowers

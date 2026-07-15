@@ -372,8 +372,8 @@
                 "combatWindows": [
                     {
                         "kind": "Attack",
-                        "startNormalized": 0.01,
-                        "endNormalized": 1.0,
+                        "startNormalized": 0.12,
+                        "endNormalized": 0.88,
                         "sourceHitBones": [
                             6, 15
                         ],

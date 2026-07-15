@@ -60,7 +60,7 @@
         {
             "abilityKey": "Ability.Tank_Melee_1",
             "weight": 18,
-            "distanceBucket": "Mid",
+            "distanceBucket": "Close",
             "minDistance": 1.2,
             "maxDistance": 2.8,
             "aiCooldownSec": 1.76,
@@ -143,6 +143,9 @@
         {
             "abilityKey": "Ability.Tank_Jump_Area",
             "weight": 5,
+            "actionRole": "Effect",
+            "requiresBasicActionCount": 3,
+            "resetsBasicActionCount": true,
             "distanceBucket": "Any",
             "minDistance": 3,
             "maxDistance": 10,

@@ -606,14 +606,38 @@
         "movementSegments": [
           {
             "startNormalized": 0,
-            "endNormalized": 1,
+            "endNormalized": 0.14,
             "movementMode": "InputDirectionDistance",
-            "moveDistance": 4.89618,
+            "moveDistance": 0.320756,
             "rotationMode": "FaceMoveDirection",
             "rotationRate": null,
             "verticalMovementMode": "None",
             "verticalAmount": null,
             "directionPolicy": "ActionStartInput",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.14,
+            "endNormalized": 0.8,
+            "movementMode": "InputDirectionDistance",
+            "moveDistance": 4.490578,
+            "rotationMode": "None",
+            "rotationRate": null,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "LockedDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.8,
+            "endNormalized": 1,
+            "movementMode": "InputDirectionDistance",
+            "moveDistance": 0.084846,
+            "rotationMode": "None",
+            "rotationRate": null,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "LockedDirection",
             "directionSampleTiming": "OnSegmentStart"
           }
         ],
