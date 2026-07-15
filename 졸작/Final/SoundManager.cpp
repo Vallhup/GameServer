@@ -197,6 +197,10 @@ void SoundManager::PreloadEverySFX()
     PreloadSFX("../Assets/Music/SFX/Roll.mp3");
     PreloadSFX("../Assets/Music/SFX/Guard.mp3");
     PreloadSFX("../Assets/Music/SFX/CinematicExplosion.mp3");
+    PreloadSFX("../Assets/Music/SFX/FinalBossSword.mp3");
+    PreloadSFX("../Assets/Music/SFX/TankBang.mp3");
+    PreloadSFX("../Assets/Music/SFX/VillageBossRoar.mp3");
+    PreloadSFX("../Assets/Music/SFX/VillageBossSwing.mp3");
 }
 
 void SoundManager::PlaySFX(const char* path)

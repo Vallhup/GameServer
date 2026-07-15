@@ -288,6 +288,20 @@ void GameSceneUIController::CenterStoryImage(const wstring& texName)
 	endingStory->SetVertLength(WinSize.y);
 }
 
+void GameSceneUIController::ResetEndingOverlays()
+{
+	if (sceneType != SceneType::Final) return;
+
+	endingBg->ChangeState(ImageUIState::Hidden);
+	endingStory->ChangeState(ImageUIState::Hidden);
+	endingBlack->ChangeState(ImageUIState::Hidden);
+	endingSkipHint->ChangeState(ImageUIState::Hidden);
+	skipFadeBlack->ChangeState(ImageUIState::Hidden);
+
+	for (auto& line : creditLines)
+		line->SetPosition(line->GetPosX(), WinSize.y);
+}
+
 void GameSceneUIController::StartEnding(vector<EndingBeat> beats, const char* bgmPath, Protocol::FinalEndingCinematicContext doneContext)
 {
 	if (!endingBg || !endingStory || beats.empty()) return;
@@ -435,7 +449,7 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 			{
 				endingSkipHint->ChangeState(ImageUIState::Hidden);
 				endingPhase = EndingPhase::None;
-				NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
+				NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext); 
 			}
 			else
 			{
@@ -472,7 +486,7 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 		{
 			endingSkipHint->ChangeState(ImageUIState::Hidden);
 			endingPhase = EndingPhase::None;
-			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
+			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext); 
 		}
 		break;
 
@@ -480,7 +494,7 @@ void GameSceneUIController::UpdateEnding(float deltaTime)
 		if (skipFadeBlack->GetState() == ImageUIState::Visible)
 		{
 			endingPhase = EndingPhase::None;
-			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext);
+			NETWORK_MANAGER->SendFinalEndingCinematicDone(endingDoneContext); 
 		}
 		break;
 

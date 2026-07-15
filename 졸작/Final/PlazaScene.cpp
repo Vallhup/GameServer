@@ -25,6 +25,9 @@ void PlazaScene::Release()
 	monsterPools.clear();
 	activeCharacters.clear();
 	activeMonsterTypes.clear();
+	activeBuffEffects.clear();
+	activeTitleEffects.clear();
+	titleIdByOwner.clear();
 	myPlayer = nullptr;
 	gameObjects.clear();
 

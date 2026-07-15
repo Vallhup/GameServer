@@ -498,6 +498,15 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddEffectTrigger("0per", 0, 2, L"Barrior02_HDR");
 			sfx->AddEffectTrigger("0per", 330, 332, L"0per_Bomb");
 
+			sfx->AddTrigger("Thrust", 18, 20, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("Slash", 24, 26, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("DashSlash", 14, 16, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("JumpSlash", 25, 27, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("SwordMoonlight", 10, 12, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("SwordMoonlight", 30, 32, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("SwordMoonlight", 55, 57, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("SwordStorm", 65, 67, "../Assets/Music/SFX/FinalBossSword.mp3");
+
 			auto trail = monster->AddComponent<TrailComponent>();
 			trail->Initialize(coreRef->GetDevice(), 64);
 			trail->SetColor({ 0.85f, 0.88f, 0.9f, 0.15f });
@@ -516,6 +525,19 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddEffectTrigger("Jump2", 70, 72, L"Tank_Jump");
 			sfx->AddEffectTrigger("Melee4", 25, 27, L"Tank_Attack");
 			sfx->AddEffectTrigger("Melee5", 33, 35, L"Tank_Attack");
+			sfx->AddTrigger("Melee4", 24, 26, "../Assets/Music/SFX/TankBang.mp3");
+			sfx->AddTrigger("Melee5", 32, 34, "../Assets/Music/SFX/TankBang.mp3");
+		}
+
+		if (type == MonsterType::BigDemonWarrior)
+		{
+			auto sfx = monster->AddComponent<AnimationSfxComponent>();
+			sfx->AddTrigger("BattleCry", 1, 3, "../Assets/Music/SFX/VillageBossRoar.mp3");
+			sfx->AddTrigger("Melee3", 28, 30, "../Assets/Music/SFX/VillageBossSwing.mp3");
+			sfx->AddTrigger("Melee3", 48, 50, "../Assets/Music/SFX/VillageBossSwing.mp3");
+			sfx->AddTrigger("Melee4", 29, 31, "../Assets/Music/SFX/VillageBossSwing.mp3");
+			sfx->AddTrigger("Melee7", 33, 35, "../Assets/Music/SFX/VillageBossSwing.mp3");
+			sfx->AddTrigger("Melee8", 20, 22, "../Assets/Music/SFX/VillageBossSwing.mp3");
 		}
 
 		monsterPools[type].push_back(monster);

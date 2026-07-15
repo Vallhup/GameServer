@@ -23,8 +23,18 @@ void FinalBattleScene::Release()
 	monsterPools.clear();
 	activeCharacters.clear();
 	activeMonsterTypes.clear();
+	gimmickPool.clear();
+	activeGimmicks.clear();
+	activeZoneBarriers.clear();
+	activeBreakerShields.clear();
+	activeBuffEffects.clear();
+	activeTitleEffects.clear();
+	titleIdByOwner.clear();
 	myPlayer = nullptr;
 	gameObjects.clear();
+
+	if (auto* controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Final))
+		controller->ResetEndingOverlays();
 
 	SOUND_MANAGER->StopBGM(1.0f);
 
