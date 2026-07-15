@@ -501,8 +501,7 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddTrigger("Thrust", 18, 20, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("Slash", 24, 26, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("DashSlash", 14, 16, "../Assets/Music/SFX/FinalBossSword.mp3");
-			sfx->AddTrigger("JumpSlash", 10, 12, "../Assets/Music/SFX/FinalBossSword.mp3");
-			//sfx->AddTrigger("BloodLance", 65, 67, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("JumpSlash", 25, 27, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("SwordMoonlight", 10, 12, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("SwordMoonlight", 30, 32, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("SwordMoonlight", 55, 57, "../Assets/Music/SFX/FinalBossSword.mp3");
