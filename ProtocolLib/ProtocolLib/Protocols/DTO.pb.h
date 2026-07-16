@@ -562,6 +562,41 @@ inline bool BeaconCinematicType_Parse(absl::string_view name, BeaconCinematicTyp
   return ::google::protobuf::internal::ParseNamedEnum<BeaconCinematicType>(
       BeaconCinematicType_descriptor(), name, value);
 }
+enum CheatCommandType : int {
+  CHEAT_COMMAND_TYPE_UNSPECIFIED = 0,
+  CHEAT_COMMAND_TYPE_TELEPORT_TO_BOSS = 1,
+  CHEAT_COMMAND_TYPE_KILL_BOSS = 2,
+  CHEAT_COMMAND_TYPE_TRANSFER_PARTY_TO_FINAL = 3,
+  CheatCommandType_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  CheatCommandType_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool CheatCommandType_IsValid(int value);
+extern const uint32_t CheatCommandType_internal_data_[];
+constexpr CheatCommandType CheatCommandType_MIN = static_cast<CheatCommandType>(0);
+constexpr CheatCommandType CheatCommandType_MAX = static_cast<CheatCommandType>(3);
+constexpr int CheatCommandType_ARRAYSIZE = 3 + 1;
+const ::google::protobuf::EnumDescriptor*
+CheatCommandType_descriptor();
+template <typename T>
+const std::string& CheatCommandType_Name(T value) {
+  static_assert(std::is_same<T, CheatCommandType>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to CheatCommandType_Name().");
+  return CheatCommandType_Name(static_cast<CheatCommandType>(value));
+}
+template <>
+inline const std::string& CheatCommandType_Name(CheatCommandType value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<CheatCommandType_descriptor,
+                                                 0, 3>(
+      static_cast<int>(value));
+}
+inline bool CheatCommandType_Parse(absl::string_view name, CheatCommandType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<CheatCommandType>(
+      CheatCommandType_descriptor(), name, value);
+}
 
 // ===================================================================
 
@@ -2941,6 +2976,12 @@ struct is_proto_enum<::Protocol::BeaconCinematicType> : std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor<::Protocol::BeaconCinematicType>() {
   return ::Protocol::BeaconCinematicType_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::CheatCommandType> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::CheatCommandType>() {
+  return ::Protocol::CheatCommandType_descriptor();
 }
 
 }  // namespace protobuf

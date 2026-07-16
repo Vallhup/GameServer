@@ -20,6 +20,7 @@
 #include "ServerWorldTransferCommitter.h"
 #include "AIBehaviorDef.h"
 #include "CharacterDef.h"
+#include "CheatCommandPolicy.h"
 #include "GameDataCatalog.h"
 #include "GameplayDefValidator.h"
 #include "ECS/System/Phase8/PlayerDeathStatePolicy.h"
@@ -117,6 +118,7 @@ ServerApp::ServerApp(Config config)
 		.networkThreadCount = _config.networkThreadCount,
 		.listenPort = _config.listenPort,
 		.maxSessions = _config.maxSessions,
+		.enableCheats = _config.enableCheats,
 		.accountCombatStatOverride = _config.accountCombatStatOverride
 	}, _framework, _startupWorldId, *this)
 	, _transferBinding(_framework, _sessionSystem.Flow())
@@ -414,6 +416,99 @@ TransferId ServerApp::RequestDemoWorldTransition(
 			entryResult.request.sessionIds.size()),
 		sourceWorldId,
 		targetWorldDefId,
+		instanceKey,
+		partyId,
+		true,
+		_nowSec);
+	if (transferId != 0)
+	{
+		(void)_partyService.MarkWorldEntryEnqueued(
+			partyId,
+			transferId,
+			_nowSec);
+		_worldTransitionRequestIds[transferId][sessionId] = requestId;
+	}
+	else
+	{
+		(void)_partyService.FailWorldEntry(partyId, 0, _nowSec);
+	}
+
+	return transferId;
+}
+
+TransferId ServerApp::RequestCheatFinalWorldTransition(
+	SessionId sessionId,
+	uint32_t requestId)
+{
+	if (!IsInitialized() || !_config.enableCheats ||
+		sessionId == 0 || requestId == 0)
+	{
+		return 0;
+	}
+
+	const WorldId sourceWorldId =
+		_sessionSystem.Flow().FindCurrentWorldId(sessionId);
+	const WorldInstanceRecord* const sourceRecord =
+		_framework.FindWorldRecord(sourceWorldId);
+	if (sourceRecord == nullptr ||
+		!CheatCommandPolicy::CanTransferToFinal(sourceRecord->defId) ||
+		_pendingClientTransitions.contains(sessionId))
+	{
+		FWLOG_WARN(kLogCategory,
+			"Cheat final transition rejected (sid=%u, requestId=%u)",
+			sessionId,
+			requestId);
+		return 0;
+	}
+
+	const PartyResult partyResult =
+		_demoPartyPolicy.EnsurePartyForWorldTransition(
+			sessionId,
+			sourceWorldId,
+			_nowSec);
+	if (!partyResult.Succeeded())
+	{
+		FWLOG_WARN(kLogCategory,
+			"Cheat final transition rejected: party formation failed "
+			"(sid=%u, requestId=%u, partyError=%d)",
+			sessionId,
+			requestId,
+			static_cast<int>(partyResult.error));
+		return 0;
+	}
+
+	const PartyId partyId = partyResult.partyId;
+	const uint64_t instanceKey = static_cast<uint64_t>(partyId);
+	WorldTargetSpec target{};
+	target.targetWorldDefId = WorldDefId::Final;
+	target.instanceKey = instanceKey;
+
+	const SessionId leaderSessionId =
+		_partyService.FindLeaderSession(partyId);
+	PartyWorldEntryResult entryResult =
+		_partyService.BeginWorldEntry(
+			leaderSessionId,
+			target,
+			_nowSec,
+			true);
+	if (!entryResult.Succeeded())
+	{
+		FWLOG_WARN(kLogCategory,
+			"Cheat final transition rejected: party entry failed "
+			"(sid=%u, requestId=%u, partyId=%llu, partyError=%d)",
+			sessionId,
+			requestId,
+			static_cast<unsigned long long>(partyId),
+			static_cast<int>(entryResult.error));
+		return 0;
+	}
+
+	const TransferId transferId = _framework.RequestWorldTransfer(
+		std::span<const SessionId>(
+			entryResult.request.sessionIds.data(),
+			entryResult.request.sessionIds.size()),
+		sourceWorldId,
+		WorldDefId::Final,
 		instanceKey,
 		partyId,
 		true,

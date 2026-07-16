@@ -178,3 +178,13 @@ enum BeaconCinematicType
     BEACON_CINEMATIC_TYPE_VILLAGE_EXIT = 1;
     BEACON_CINEMATIC_TYPE_CASTLE_EXIT = 2;
 }
+
+/* ------------------------------------ [ Cheat ] ------------------------------------ */
+
+enum CheatCommandType
+{
+    CHEAT_COMMAND_TYPE_UNSPECIFIED             = 0;
+    CHEAT_COMMAND_TYPE_TELEPORT_TO_BOSS        = 1;
+    CHEAT_COMMAND_TYPE_KILL_BOSS               = 2;
+    CHEAT_COMMAND_TYPE_TRANSFER_PARTY_TO_FINAL = 3;
+}

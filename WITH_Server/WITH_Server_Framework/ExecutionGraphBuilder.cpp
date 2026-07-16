@@ -998,7 +998,15 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
                     newNodeId,
                     existingId);
             }
-            else if (existingBeforeNew || hasConflict)
+            else if (existingBeforeNew)
+            {
+                appendUniqueEdge(
+                    predLists[newNodeId],
+                    succLists[existingId],
+                    existingId,
+                    newNodeId);
+            }
+            else if (hasConflict && !canReach(newNodeId, existingId))
             {
                 appendUniqueEdge(
                     predLists[newNodeId],

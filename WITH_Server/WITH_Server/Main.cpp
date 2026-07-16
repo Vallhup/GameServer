@@ -19,6 +19,8 @@ void RunBossGimmickCombatPolicySmokeTests();
 void RunBossGimmickReplicationSmokeTests();
 void RunRespawnSystemSmokeTests();
 void RunAIBehaviorPolicySmokeTests();
+void RunCharacterOverlapSmokeTests();
+void RunCheatCommandSmokeTests();
 
 namespace
 {
@@ -114,6 +116,16 @@ int main(int argc, char** argv)
 		RunAIBehaviorPolicySmokeTests();
 		return 0;
 	}
+	if (HasArg(argc, argv, "--character-overlap-smoke"))
+	{
+		RunCharacterOverlapSmokeTests();
+		return 0;
+	}
+	if (HasArg(argc, argv, "--cheat-command-smoke"))
+	{
+		RunCheatCommandSmokeTests();
+		return 0;
+	}
 
 	std::filesystem::create_directories("Log");
 
@@ -144,6 +156,7 @@ int main(int argc, char** argv)
 	//   --no-db          DB 연동 비활성화
 	// 예) WITH_Server.exe --db-dsn WITH_Server_DB --db-user sa --db-pass ****
 	ServerApp::Config config{};
+	config.enableCheats = HasArg(argc, argv, "--enable-cheats");
 	config.database.enabled = true; //!HasArg(argc, argv, "--no-db");
 	config.database.dsn = L"WITH_Server_DB";
 	config.database.user = L"sa";

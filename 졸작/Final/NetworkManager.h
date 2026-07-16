@@ -38,6 +38,9 @@ public:
 
 	bool SendWorldTransitionRequestPacket(uint32_t requestId);
 	bool SendWorldTransitionReadyPacket(uint64_t transferId);
+	bool SendCheatCommandPacket(
+		Protocol::CheatCommandType commandType,
+		uint32_t requestId = 0);
 
 	bool SendPartyUiOpenedPacket();
 	bool SendPartyUiClosedPacket();

@@ -146,6 +146,12 @@ message CS_BEACON_CINEMATIC_START_REQUEST_PACKET
     uint32 clientRequestId = 1;
 }
 
+message CS_CHEAT_COMMAND_PACKET
+{
+    CheatCommandType commandType = 1;
+    uint32 requestId = 2;
+}
+
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
 
 message SC_TIME_SYNC_PACKET

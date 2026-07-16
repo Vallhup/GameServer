@@ -77,6 +77,8 @@ void Engine::Update(const float deltaTime)
 
     ProcessWorldTransitionState();
 
+    ProcessCheatHotkeys();
+
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
 
@@ -206,6 +208,75 @@ void Engine::ShowFps()
     WCHAR text[100] = L"";
     wsprintf(text, L"Final      FPS: %d", fps);
     SetWindowText(mHwnd, text);
+}
+
+void Engine::ProcessCheatHotkeys()
+{
+    if (sceneManager == nullptr || networkManager == nullptr)
+    {
+        return;
+    }
+
+    const SceneType sceneType = sceneManager->GetCurrentSceneType();
+    const bool isGameplayScene =
+        sceneType == SceneType::Plaza ||
+        sceneType == SceneType::Village ||
+        sceneType == SceneType::Castle ||
+        sceneType == SceneType::Final;
+    if (!isGameplayScene)
+    {
+        return;
+    }
+
+    const ClientWorldTransitionPhase transitionPhase =
+        worldTransitionController.GetPhase();
+    if (transitionPhase != ClientWorldTransitionPhase::Idle &&
+        transitionPhase != ClientWorldTransitionPhase::Rejected)
+    {
+        return;
+    }
+
+    if (INPUT.GetKeyDown(VK_F6))
+    {
+        if (sceneType == SceneType::Village ||
+            sceneType == SceneType::Castle)
+        {
+            networkManager->SendCheatCommandPacket(
+                Protocol::CHEAT_COMMAND_TYPE_TELEPORT_TO_BOSS);
+        }
+        return;
+    }
+
+    if (INPUT.GetKeyDown(VK_F7))
+    {
+        if (sceneType == SceneType::Village ||
+            sceneType == SceneType::Castle ||
+            sceneType == SceneType::Final)
+        {
+            networkManager->SendCheatCommandPacket(
+                Protocol::CHEAT_COMMAND_TYPE_KILL_BOSS);
+        }
+        return;
+    }
+
+    if (!INPUT.GetKeyDown(VK_F8))
+    {
+        return;
+    }
+
+    const uint32_t requestId =
+        worldTransitionController.CreateRequestId();
+    if (!worldTransitionController.BeginRequest(requestId))
+    {
+        return;
+    }
+
+    if (!networkManager->SendCheatCommandPacket(
+            Protocol::CHEAT_COMMAND_TYPE_TRANSFER_PARTY_TO_FINAL,
+            requestId))
+    {
+        worldTransitionController.Reset();
+    }
 }
 
 void Engine::ProcessWorldTransitionState()

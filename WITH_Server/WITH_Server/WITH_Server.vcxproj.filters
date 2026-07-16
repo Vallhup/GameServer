@@ -2,6 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="CharacterOverlap_SmokeTest.cpp" />
+    <ClCompile Include="CheatCommand_SmokeTest.cpp">
+      <Filter>SessionSystem\Packets</Filter>
+    </ClCompile>
     <ClCompile Include="AbilityDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
@@ -534,6 +538,9 @@
     </ClInclude>
     <ClInclude Include="CharacterIdPolicy.h">
       <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="CheatCommandPolicy.h">
+      <Filter>SessionSystem\Packets</Filter>
     </ClInclude>
     <ClInclude Include="AnimationDef.h">
       <Filter>Data\Definition</Filter>

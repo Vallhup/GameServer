@@ -132,7 +132,8 @@ bool ServerSessionSystem::Initialize()
 		.sessionSystem       = this,
 		.database            = _database,
 		.partyCommandQueue   = _partyCommandQueue,
-		.networkTiming       = &_networkTiming
+		.networkTiming       = &_networkTiming,
+		.cheatsEnabled       = _config.enableCheats
 	};
 	PacketHandlerContext::Initialize(_packetHandlerCtx);
 

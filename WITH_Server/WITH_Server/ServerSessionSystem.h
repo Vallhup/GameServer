@@ -33,6 +33,7 @@ public:
 		uint16_t networkThreadCount{ 4 };
 		uint16_t listenPort{ 7000 };
 		uint32_t maxSessions{ 1024 };
+		bool enableCheats{ false };
 		AccountCombatStatOverride accountCombatStatOverride;
 	};
 

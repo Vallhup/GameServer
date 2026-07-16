@@ -199,6 +199,8 @@
     <ClCompile Include="DataDrivenAIIdleActionPolicy.cpp" />
     <ClCompile Include="DBConn.cpp" />
     <ClCompile Include="CharacterIdPolicy.cpp" />
+    <ClCompile Include="CharacterOverlap_SmokeTest.cpp" />
+    <ClCompile Include="CheatCommand_SmokeTest.cpp" />
     <ClCompile Include="CharacterDataService.cpp" />
     <ClCompile Include="CharacterDef.cpp" />
     <ClCompile Include="CharacterSpawnService.cpp" />
@@ -348,6 +350,7 @@
     <ClInclude Include="CombatAreaProjectileDef.h" />
     <ClInclude Include="CharacterDataService.h" />
     <ClInclude Include="CharacterIdPolicy.h" />
+    <ClInclude Include="CheatCommandPolicy.h" />
     <ClInclude Include="CharacterSpawnService.h" />
     <ClInclude Include="CombatStatisticsCommands.h" />
     <ClInclude Include="DataDrivenAICombatActionPolicy.h" />

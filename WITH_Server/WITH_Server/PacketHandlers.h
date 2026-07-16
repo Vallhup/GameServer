@@ -25,6 +25,7 @@ ExecCallResult HandleDodgePacket(NodeExecContext& ctx);
 ExecCallResult HandleGuardPacket(NodeExecContext& ctx);
 ExecCallResult HandleParryPacket(NodeExecContext& ctx);
 ExecCallResult HandleUseItemPacket(NodeExecContext& ctx);
+ExecCallResult HandleCheatCommandPacket(NodeExecContext& ctx);
 ExecCallResult HandleWorldTransitionRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandleWorldTransitionReadyPacket(NodeExecContext& ctx);
 ExecCallResult HandleBeaconCinematicStartRequestPacket(NodeExecContext& ctx);

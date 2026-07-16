@@ -26,6 +26,7 @@ struct PacketHandlerContext
 	ODBCDatabaseBackend*         database{ nullptr };
 	PartyCommandQueue*          partyCommandQueue{ nullptr };
 	NetworkTimingService*       networkTiming{ nullptr };
+	bool                        cheatsEnabled{ false };
 
 	static void Initialize(PacketHandlerContext& ctx) noexcept;
 	static PacketHandlerContext& Get() noexcept;

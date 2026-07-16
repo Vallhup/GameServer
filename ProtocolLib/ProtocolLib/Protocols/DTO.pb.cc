@@ -185,7 +185,7 @@ struct PartySnapshotDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PartySnapshotDefaultTypeInternal _PartySnapshot_default_instance_;
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[14];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[15];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_DTO_2eproto = nullptr;
 const ::uint32_t
@@ -371,13 +371,17 @@ const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIAB
     "ematicType\022%\n!BEACON_CINEMATIC_TYPE_UNSP"
     "ECIFIED\020\000\022&\n\"BEACON_CINEMATIC_TYPE_VILLA"
     "GE_EXIT\020\001\022%\n!BEACON_CINEMATIC_TYPE_CASTL"
-    "E_EXIT\020\002b\006proto3"
+    "E_EXIT\020\002*\261\001\n\020CheatCommandType\022\"\n\036CHEAT_C"
+    "OMMAND_TYPE_UNSPECIFIED\020\000\022\'\n#CHEAT_COMMA"
+    "ND_TYPE_TELEPORT_TO_BOSS\020\001\022 \n\034CHEAT_COMM"
+    "AND_TYPE_KILL_BOSS\020\002\022.\n*CHEAT_COMMAND_TY"
+    "PE_TRANSFER_PARTY_TO_FINAL\020\003b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DTO_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_DTO_2eproto = {
     false,
     false,
-    3376,
+    3556,
     descriptor_table_protodef_DTO_2eproto,
     "DTO.proto",
     &descriptor_table_DTO_2eproto_once,
@@ -516,6 +520,15 @@ PROTOBUF_CONSTINIT const uint32_t BeaconCinematicType_internal_data_[] = {
     196608u, 0u, };
 bool BeaconCinematicType_IsValid(int value) {
   return 0 <= value && value <= 2;
+}
+const ::google::protobuf::EnumDescriptor* CheatCommandType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[14];
+}
+PROTOBUF_CONSTINIT const uint32_t CheatCommandType_internal_data_[] = {
+    262144u, 0u, };
+bool CheatCommandType_IsValid(int value) {
+  return 0 <= value && value <= 3;
 }
 // ===================================================================
 

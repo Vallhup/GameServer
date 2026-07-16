@@ -41,6 +41,7 @@ public:
 
 		uint32_t maxSessions{ 1024 };
 		uint32_t maxWorlds{ 128 };
+		bool enableCheats{ false };
 
 		AccountCombatStatOverride accountCombatStatOverride;
 		ODBCDatabaseBackend::Config database;
@@ -82,6 +83,10 @@ public:
 	bool RequestPlayerRespawn(SessionId sessionId);
 
 	TransferId RequestDemoWorldTransition(
+		SessionId sessionId,
+		uint32_t requestId) override;
+
+	TransferId RequestCheatFinalWorldTransition(
 		SessionId sessionId,
 		uint32_t requestId) override;
 

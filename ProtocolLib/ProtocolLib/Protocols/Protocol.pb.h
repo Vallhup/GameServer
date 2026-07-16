@@ -62,6 +62,9 @@ extern CS_BEACON_CINEMATIC_START_REQUEST_PACKETDefaultTypeInternal _CS_BEACON_CI
 class CS_CHARACTER_SELECT_PACKET;
 struct CS_CHARACTER_SELECT_PACKETDefaultTypeInternal;
 extern CS_CHARACTER_SELECT_PACKETDefaultTypeInternal _CS_CHARACTER_SELECT_PACKET_default_instance_;
+class CS_CHEAT_COMMAND_PACKET;
+struct CS_CHEAT_COMMAND_PACKETDefaultTypeInternal;
+extern CS_CHEAT_COMMAND_PACKETDefaultTypeInternal _CS_CHEAT_COMMAND_PACKET_default_instance_;
 class CS_DODGE_PACKET;
 struct CS_DODGE_PACKETDefaultTypeInternal;
 extern CS_DODGE_PACKETDefaultTypeInternal _CS_DODGE_PACKET_default_instance_;
@@ -290,7 +293,7 @@ class SC_WORLD_TRANSITION_REJECTED_PACKET final : public ::google::protobuf::Mes
     return reinterpret_cast<const SC_WORLD_TRANSITION_REJECTED_PACKET*>(
         &_SC_WORLD_TRANSITION_REJECTED_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 34;
+  static constexpr int kIndexInFileMessages = 35;
   friend void swap(SC_WORLD_TRANSITION_REJECTED_PACKET& a, SC_WORLD_TRANSITION_REJECTED_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_REJECTED_PACKET* other) {
     if (other == this) return;
@@ -492,7 +495,7 @@ class SC_WORLD_TRANSITION_BEGIN_PACKET final : public ::google::protobuf::Messag
     return reinterpret_cast<const SC_WORLD_TRANSITION_BEGIN_PACKET*>(
         &_SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 33;
+  static constexpr int kIndexInFileMessages = 34;
   friend void swap(SC_WORLD_TRANSITION_BEGIN_PACKET& a, SC_WORLD_TRANSITION_BEGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_BEGIN_PACKET* other) {
     if (other == this) return;
@@ -814,7 +817,7 @@ class SC_TITLE_REPLICATION_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_TITLE_REPLICATION_PACKET*>(
         &_SC_TITLE_REPLICATION_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 51;
+  static constexpr int kIndexInFileMessages = 52;
   friend void swap(SC_TITLE_REPLICATION_PACKET& a, SC_TITLE_REPLICATION_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_TITLE_REPLICATION_PACKET* other) {
     if (other == this) return;
@@ -1016,7 +1019,7 @@ class SC_TITLE_EQUIP_RESULT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_TITLE_EQUIP_RESULT_PACKET*>(
         &_SC_TITLE_EQUIP_RESULT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 48;
+  static constexpr int kIndexInFileMessages = 49;
   friend void swap(SC_TITLE_EQUIP_RESULT_PACKET& a, SC_TITLE_EQUIP_RESULT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_TITLE_EQUIP_RESULT_PACKET* other) {
     if (other == this) return;
@@ -1242,7 +1245,7 @@ class SC_TIME_SYNC_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_TIME_SYNC_PACKET*>(
         &_SC_TIME_SYNC_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 24;
+  static constexpr int kIndexInFileMessages = 25;
   friend void swap(SC_TIME_SYNC_PACKET& a, SC_TIME_SYNC_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_TIME_SYNC_PACKET* other) {
     if (other == this) return;
@@ -1456,7 +1459,7 @@ class SC_TEAM_DEATH_COUNT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_TEAM_DEATH_COUNT_PACKET*>(
         &_SC_TEAM_DEATH_COUNT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 42;
+  static constexpr int kIndexInFileMessages = 43;
   friend void swap(SC_TEAM_DEATH_COUNT_PACKET& a, SC_TEAM_DEATH_COUNT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_TEAM_DEATH_COUNT_PACKET* other) {
     if (other == this) return;
@@ -1658,7 +1661,7 @@ class SC_STAT_UI_BOOTSTRAP_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_STAT_UI_BOOTSTRAP_PACKET*>(
         &_SC_STAT_UI_BOOTSTRAP_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 47;
+  static constexpr int kIndexInFileMessages = 48;
   friend void swap(SC_STAT_UI_BOOTSTRAP_PACKET& a, SC_STAT_UI_BOOTSTRAP_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_STAT_UI_BOOTSTRAP_PACKET* other) {
     if (other == this) return;
@@ -1881,7 +1884,7 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_STAT_CHANGE_PACKET*>(
         &_SC_STAT_CHANGE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 32;
+  static constexpr int kIndexInFileMessages = 33;
   friend void swap(SC_STAT_CHANGE_PACKET& a, SC_STAT_CHANGE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_STAT_CHANGE_PACKET* other) {
     if (other == this) return;
@@ -2167,7 +2170,7 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REMOVE_PACKET*>(
         &_SC_REMOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 29;
+  static constexpr int kIndexInFileMessages = 30;
   friend void swap(SC_REMOVE_PACKET& a, SC_REMOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REMOVE_PACKET* other) {
     if (other == this) return;
@@ -2357,7 +2360,7 @@ class SC_PVP_ROUND_RESULT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_PVP_ROUND_RESULT_PACKET*>(
         &_SC_PVP_ROUND_RESULT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 52;
+  static constexpr int kIndexInFileMessages = 53;
   friend void swap(SC_PVP_ROUND_RESULT_PACKET& a, SC_PVP_ROUND_RESULT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_PVP_ROUND_RESULT_PACKET* other) {
     if (other == this) return;
@@ -2547,7 +2550,7 @@ class SC_PARTY_JOIN_REQUEST_CLOSED_PACKET final : public ::google::protobuf::Mes
     return reinterpret_cast<const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET*>(
         &_SC_PARTY_JOIN_REQUEST_CLOSED_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 40;
+  static constexpr int kIndexInFileMessages = 41;
   friend void swap(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& a, SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET* other) {
     if (other == this) return;
@@ -2773,7 +2776,7 @@ class SC_PARTY_COMMAND_RESULT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_PARTY_COMMAND_RESULT_PACKET*>(
         &_SC_PARTY_COMMAND_RESULT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 37;
+  static constexpr int kIndexInFileMessages = 38;
   friend void swap(SC_PARTY_COMMAND_RESULT_PACKET& a, SC_PARTY_COMMAND_RESULT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_PARTY_COMMAND_RESULT_PACKET* other) {
     if (other == this) return;
@@ -3011,7 +3014,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MOVE_PACKET*>(
         &_SC_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 28;
+  static constexpr int kIndexInFileMessages = 29;
   friend void swap(SC_MOVE_PACKET& a, SC_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MOVE_PACKET* other) {
     if (other == this) return;
@@ -3249,7 +3252,7 @@ class SC_MONSTER_COMBAT_STATE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MONSTER_COMBAT_STATE_PACKET*>(
         &_SC_MONSTER_COMBAT_STATE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 43;
+  static constexpr int kIndexInFileMessages = 44;
   friend void swap(SC_MONSTER_COMBAT_STATE_PACKET& a, SC_MONSTER_COMBAT_STATE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MONSTER_COMBAT_STATE_PACKET* other) {
     if (other == this) return;
@@ -3451,7 +3454,7 @@ class SC_LOGIN_SUCCESS_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_SUCCESS_PACKET*>(
         &_SC_LOGIN_SUCCESS_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 25;
+  static constexpr int kIndexInFileMessages = 26;
   friend void swap(SC_LOGIN_SUCCESS_PACKET& a, SC_LOGIN_SUCCESS_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_SUCCESS_PACKET* other) {
     if (other == this) return;
@@ -3641,7 +3644,7 @@ class SC_LOGIN_FAIL_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_FAIL_PACKET*>(
         &_SC_LOGIN_FAIL_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 26;
+  static constexpr int kIndexInFileMessages = 27;
   friend void swap(SC_LOGIN_FAIL_PACKET& a, SC_LOGIN_FAIL_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_FAIL_PACKET* other) {
     if (other == this) return;
@@ -3831,7 +3834,7 @@ class SC_ITEM_COUNT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ITEM_COUNT_PACKET*>(
         &_SC_ITEM_COUNT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 41;
+  static constexpr int kIndexInFileMessages = 42;
   friend void swap(SC_ITEM_COUNT_PACKET& a, SC_ITEM_COUNT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ITEM_COUNT_PACKET* other) {
     if (other == this) return;
@@ -4021,7 +4024,7 @@ class SC_FINAL_CLEAR_CHOICE_RESULT_PACKET final : public ::google::protobuf::Mes
     return reinterpret_cast<const SC_FINAL_CLEAR_CHOICE_RESULT_PACKET*>(
         &_SC_FINAL_CLEAR_CHOICE_RESULT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 50;
+  static constexpr int kIndexInFileMessages = 51;
   friend void swap(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& a, SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_FINAL_CLEAR_CHOICE_RESULT_PACKET* other) {
     if (other == this) return;
@@ -4259,7 +4262,7 @@ class SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET final : public ::google::protobuf::Mess
     return reinterpret_cast<const SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET*>(
         &_SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 49;
+  static constexpr int kIndexInFileMessages = 50;
   friend void swap(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& a, SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET* other) {
     if (other == this) return;
@@ -4485,7 +4488,7 @@ class SC_COMBAT_IMPACT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_COMBAT_IMPACT_PACKET*>(
         &_SC_COMBAT_IMPACT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 30;
+  static constexpr int kIndexInFileMessages = 31;
   friend void swap(SC_COMBAT_IMPACT_PACKET& a, SC_COMBAT_IMPACT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_COMBAT_IMPACT_PACKET* other) {
     if (other == this) return;
@@ -4771,7 +4774,7 @@ class SC_BOSS_GIMMICK_ZONE_SYNC_PACKET final : public ::google::protobuf::Messag
     return reinterpret_cast<const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET*>(
         &_SC_BOSS_GIMMICK_ZONE_SYNC_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 46;
+  static constexpr int kIndexInFileMessages = 47;
   friend void swap(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& a, SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* other) {
     if (other == this) return;
@@ -5045,7 +5048,7 @@ class SC_BOSS_GIMMICK_STATE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_BOSS_GIMMICK_STATE_PACKET*>(
         &_SC_BOSS_GIMMICK_STATE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 44;
+  static constexpr int kIndexInFileMessages = 45;
   friend void swap(SC_BOSS_GIMMICK_STATE_PACKET& a, SC_BOSS_GIMMICK_STATE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_BOSS_GIMMICK_STATE_PACKET* other) {
     if (other == this) return;
@@ -5295,7 +5298,7 @@ class SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET final : public ::google::protobuf::Mess
     return reinterpret_cast<const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET*>(
         &_SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 45;
+  static constexpr int kIndexInFileMessages = 46;
   friend void swap(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& a, SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* other) {
     if (other == this) return;
@@ -5605,7 +5608,7 @@ class SC_BEACON_CINEMATIC_START_PACKET final : public ::google::protobuf::Messag
     return reinterpret_cast<const SC_BEACON_CINEMATIC_START_PACKET*>(
         &_SC_BEACON_CINEMATIC_START_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 54;
+  static constexpr int kIndexInFileMessages = 55;
   friend void swap(SC_BEACON_CINEMATIC_START_PACKET& a, SC_BEACON_CINEMATIC_START_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_BEACON_CINEMATIC_START_PACKET* other) {
     if (other == this) return;
@@ -5855,7 +5858,7 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ANIMATION_TRANSITION_PACKET*>(
         &_SC_ANIMATION_TRANSITION_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 31;
+  static constexpr int kIndexInFileMessages = 32;
   friend void swap(SC_ANIMATION_TRANSITION_PACKET& a, SC_ANIMATION_TRANSITION_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ANIMATION_TRANSITION_PACKET* other) {
     if (other == this) return;
@@ -6081,7 +6084,7 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ADD_PACKET*>(
         &_SC_ADD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 27;
+  static constexpr int kIndexInFileMessages = 28;
   friend void swap(SC_ADD_PACKET& a, SC_ADD_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ADD_PACKET* other) {
     if (other == this) return;
@@ -10448,6 +10451,208 @@ class CS_DODGE_PACKET final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
+class CS_CHEAT_COMMAND_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_CHEAT_COMMAND_PACKET) */ {
+ public:
+  inline CS_CHEAT_COMMAND_PACKET() : CS_CHEAT_COMMAND_PACKET(nullptr) {}
+  ~CS_CHEAT_COMMAND_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_CHEAT_COMMAND_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_CHEAT_COMMAND_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_CHEAT_COMMAND_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_CHEAT_COMMAND_PACKET(const CS_CHEAT_COMMAND_PACKET& from) : CS_CHEAT_COMMAND_PACKET(nullptr, from) {}
+  inline CS_CHEAT_COMMAND_PACKET(CS_CHEAT_COMMAND_PACKET&& from) noexcept
+      : CS_CHEAT_COMMAND_PACKET(nullptr, std::move(from)) {}
+  inline CS_CHEAT_COMMAND_PACKET& operator=(const CS_CHEAT_COMMAND_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_CHEAT_COMMAND_PACKET& operator=(CS_CHEAT_COMMAND_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_CHEAT_COMMAND_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_CHEAT_COMMAND_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_CHEAT_COMMAND_PACKET*>(
+        &_CS_CHEAT_COMMAND_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 24;
+  friend void swap(CS_CHEAT_COMMAND_PACKET& a, CS_CHEAT_COMMAND_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_CHEAT_COMMAND_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_CHEAT_COMMAND_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_CHEAT_COMMAND_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_CHEAT_COMMAND_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_CHEAT_COMMAND_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_CHEAT_COMMAND_PACKET& from) { CS_CHEAT_COMMAND_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_CHEAT_COMMAND_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_CHEAT_COMMAND_PACKET"; }
+
+ protected:
+  explicit CS_CHEAT_COMMAND_PACKET(::google::protobuf::Arena* arena);
+  CS_CHEAT_COMMAND_PACKET(::google::protobuf::Arena* arena, const CS_CHEAT_COMMAND_PACKET& from);
+  CS_CHEAT_COMMAND_PACKET(::google::protobuf::Arena* arena, CS_CHEAT_COMMAND_PACKET&& from) noexcept
+      : CS_CHEAT_COMMAND_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kCommandTypeFieldNumber = 1,
+    kRequestIdFieldNumber = 2,
+  };
+  // .Protocol.CheatCommandType commandType = 1;
+  void clear_commandtype() ;
+  ::Protocol::CheatCommandType commandtype() const;
+  void set_commandtype(::Protocol::CheatCommandType value);
+
+  private:
+  ::Protocol::CheatCommandType _internal_commandtype() const;
+  void _internal_set_commandtype(::Protocol::CheatCommandType value);
+
+  public:
+  // uint32 requestId = 2;
+  void clear_requestid() ;
+  ::uint32_t requestid() const;
+  void set_requestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_requestid() const;
+  void _internal_set_requestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_CHEAT_COMMAND_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_CHEAT_COMMAND_PACKET& from_msg);
+    int commandtype_;
+    ::uint32_t requestid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class CS_CHARACTER_SELECT_PACKET final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.CS_CHARACTER_SELECT_PACKET) */ {
  public:
@@ -11137,7 +11342,7 @@ class SC_PARTY_LIST_SNAPSHOT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_PARTY_LIST_SNAPSHOT_PACKET*>(
         &_SC_PARTY_LIST_SNAPSHOT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 36;
+  static constexpr int kIndexInFileMessages = 37;
   friend void swap(SC_PARTY_LIST_SNAPSHOT_PACKET& a, SC_PARTY_LIST_SNAPSHOT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_PARTY_LIST_SNAPSHOT_PACKET* other) {
     if (other == this) return;
@@ -11346,7 +11551,7 @@ class SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET final : public ::google::protobuf::M
     return reinterpret_cast<const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET*>(
         &_SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 39;
+  static constexpr int kIndexInFileMessages = 40;
   friend void swap(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& a, SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET* other) {
     if (other == this) return;
@@ -11554,7 +11759,7 @@ class SC_GAMEPLAY_EFFECT_SYNC_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_GAMEPLAY_EFFECT_SYNC_PACKET*>(
         &_SC_GAMEPLAY_EFFECT_SYNC_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 53;
+  static constexpr int kIndexInFileMessages = 54;
   friend void swap(SC_GAMEPLAY_EFFECT_SYNC_PACKET& a, SC_GAMEPLAY_EFFECT_SYNC_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_GAMEPLAY_EFFECT_SYNC_PACKET* other) {
     if (other == this) return;
@@ -11794,7 +11999,7 @@ class SC_PARTY_UI_BOOTSTRAP_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_PARTY_UI_BOOTSTRAP_PACKET*>(
         &_SC_PARTY_UI_BOOTSTRAP_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 35;
+  static constexpr int kIndexInFileMessages = 36;
   friend void swap(SC_PARTY_UI_BOOTSTRAP_PACKET& a, SC_PARTY_UI_BOOTSTRAP_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_PARTY_UI_BOOTSTRAP_PACKET* other) {
     if (other == this) return;
@@ -12033,7 +12238,7 @@ class SC_PARTY_SNAPSHOT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_PARTY_SNAPSHOT_PACKET*>(
         &_SC_PARTY_SNAPSHOT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 38;
+  static constexpr int kIndexInFileMessages = 39;
   friend void swap(SC_PARTY_SNAPSHOT_PACKET& a, SC_PARTY_SNAPSHOT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_PARTY_SNAPSHOT_PACKET* other) {
     if (other == this) return;
@@ -13299,6 +13504,54 @@ inline ::uint32_t CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_internal_clientrequ
 inline void CS_BEACON_CINEMATIC_START_REQUEST_PACKET::_internal_set_clientrequestid(::uint32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.clientrequestid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_CHEAT_COMMAND_PACKET
+
+// .Protocol.CheatCommandType commandType = 1;
+inline void CS_CHEAT_COMMAND_PACKET::clear_commandtype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.commandtype_ = 0;
+}
+inline ::Protocol::CheatCommandType CS_CHEAT_COMMAND_PACKET::commandtype() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_CHEAT_COMMAND_PACKET.commandType)
+  return _internal_commandtype();
+}
+inline void CS_CHEAT_COMMAND_PACKET::set_commandtype(::Protocol::CheatCommandType value) {
+  _internal_set_commandtype(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_CHEAT_COMMAND_PACKET.commandType)
+}
+inline ::Protocol::CheatCommandType CS_CHEAT_COMMAND_PACKET::_internal_commandtype() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::CheatCommandType>(_impl_.commandtype_);
+}
+inline void CS_CHEAT_COMMAND_PACKET::_internal_set_commandtype(::Protocol::CheatCommandType value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.commandtype_ = value;
+}
+
+// uint32 requestId = 2;
+inline void CS_CHEAT_COMMAND_PACKET::clear_requestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = 0u;
+}
+inline ::uint32_t CS_CHEAT_COMMAND_PACKET::requestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_CHEAT_COMMAND_PACKET.requestId)
+  return _internal_requestid();
+}
+inline void CS_CHEAT_COMMAND_PACKET::set_requestid(::uint32_t value) {
+  _internal_set_requestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_CHEAT_COMMAND_PACKET.requestId)
+}
+inline ::uint32_t CS_CHEAT_COMMAND_PACKET::_internal_requestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.requestid_;
+}
+inline void CS_CHEAT_COMMAND_PACKET::_internal_set_requestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = value;
 }
 
 // -------------------------------------------------------------------

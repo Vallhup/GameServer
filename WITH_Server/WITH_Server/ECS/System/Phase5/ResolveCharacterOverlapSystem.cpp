@@ -197,10 +197,6 @@ void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 				lhs.shape->pushability == BodyPushability::Dynamic;
 			const bool rhsDynamic =
 				rhs.shape->pushability == BodyPushability::Dynamic;
-			if (!lhsDynamic && !rhsDynamic)
-			{
-				continue;
-			}
 
 			float lhsShare = 0.0f;
 			float rhsShare = 0.0f;
@@ -213,7 +209,7 @@ void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 			{
 				rhsShare = 1.0f;
 			}
-			else if (lhsMoved != rhsMoved)
+			else if (lhsDynamic && rhsDynamic && lhsMoved != rhsMoved)
 			{
 				lhsShare = lhsMoved ? 1.0f : 0.0f;
 				rhsShare = rhsMoved ? 1.0f : 0.0f;

@@ -3,6 +3,7 @@
 
 #include "CharacterDataService.h"
 #include "CharacterSpawnService.h"
+#include "CheatCommandPolicy.h"
 #include "DynamicTaskTypes.h"
 #include "ECS/System/Phase2/ResolveAbilityStateSystem.h"
 #include "ECS/System/Phase2/ResolveLocomotionStateSystem.h"
@@ -42,6 +43,10 @@
 
 #include "Protocol.pb.h"
 #include "SendBuffer.h"
+
+#include "Library/Recast/Recast.h"
+#include "Library/Detour/DetourNavMesh.h"
+#include "Library/Detour/DetourNavMeshQuery.h"
 
 #include <algorithm>
 #include <cctype>
@@ -418,6 +423,312 @@ namespace
     }
 
     // 방향 패킷 파싱 헬퍼
+    Entity FindCheatTarget(
+        ECSView& ecs,
+        CharacterId characterId,
+        bool requireAlive) noexcept
+    {
+        for (auto [entity, spawnType] : ecs.View<SpawnTypeComp>())
+        {
+            if (spawnType.characterId != characterId ||
+                ecs.GetComponent<PendingDespawnTag>(entity) != nullptr)
+            {
+                continue;
+            }
+
+            const CombatStatStateComp* const stats =
+                ecs.GetComponent<CombatStatStateComp>(entity);
+            if (requireAlive && (stats == nullptr || stats->currentHp <= 0))
+            {
+                continue;
+            }
+            return entity;
+        }
+        return Entity::Null();
+    }
+
+    bool TryProjectCheatTeleportPosition(
+        const WorldRuntime& runtime,
+        const XMFLOAT3& desired,
+        XMFLOAT3& outPosition,
+        uint64_t& outPolyRef) noexcept
+    {
+        const NavMeshRuntime* const navMesh = runtime.GetNavMeshRuntime();
+        const NavigationProfileDef* const profile =
+            runtime.GetNavigationProfile();
+        if (navMesh == nullptr || !navMesh->IsReady() ||
+            navMesh->GetQuery() == nullptr)
+        {
+            return false;
+        }
+
+        dtQueryFilter filter;
+        if (profile != nullptr)
+        {
+            filter.setIncludeFlags(profile->queryFilter.includeFlags);
+            filter.setExcludeFlags(profile->queryFilter.excludeFlags);
+            filter.setAreaCost(
+                RC_WALKABLE_AREA,
+                profile->queryFilter.walkableAreaCost);
+        }
+
+        const float extentXZ =
+            profile != nullptr ? profile->nearestPolyExtentXZ : 2.0f;
+        const float extentY =
+            profile != nullptr ? profile->nearestPolyExtentY : 4.0f;
+        const float center[3] = { desired.x, desired.y, desired.z };
+        const float extents[3] = { extentXZ, extentY, extentXZ };
+        float nearest[3]{};
+        dtPolyRef polyRef{ 0 };
+        const dtStatus status = navMesh->GetQuery()->findNearestPoly(
+            center,
+            extents,
+            &filter,
+            &polyRef,
+            nearest);
+        if (dtStatusFailed(status) || polyRef == 0)
+        {
+            return false;
+        }
+
+        outPosition = XMFLOAT3{
+            nearest[0],
+            nearest[1] + (profile != nullptr
+                ? profile->navMeshSurfaceYOffset
+                : 0.0f),
+            nearest[2]
+        };
+        outPolyRef = static_cast<uint64_t>(polyRef);
+        return true;
+    }
+
+    bool TeleportPlayerNearBoss(
+        WorldRuntime& runtime,
+        Entity player,
+        Entity boss) noexcept
+    {
+        ECSView ecs = runtime.MakeView();
+        WorldTransformComp* const playerTransform =
+            ecs.GetMutableComponent<WorldTransformComp>(player);
+        const WorldTransformComp* const bossTransform =
+            ecs.GetComponent<WorldTransformComp>(boss);
+        if (playerTransform == nullptr || bossTransform == nullptr ||
+            ecs.GetComponent<PendingWorldTransferTag>(player) != nullptr)
+        {
+            return false;
+        }
+
+        constexpr float kBossTeleportDistance = 3.5f;
+        float dx = playerTransform->position.x - bossTransform->position.x;
+        float dz = playerTransform->position.z - bossTransform->position.z;
+        const float lengthSq = dx * dx + dz * dz;
+        if (lengthSq <= 1.0e-6f)
+        {
+            dx = 0.0f;
+            dz = -1.0f;
+        }
+        else
+        {
+            const float invLength = 1.0f / std::sqrt(lengthSq);
+            dx *= invLength;
+            dz *= invLength;
+        }
+
+        const XMFLOAT3 desired{
+            bossTransform->position.x + dx * kBossTeleportDistance,
+            bossTransform->position.y,
+            bossTransform->position.z + dz * kBossTeleportDistance
+        };
+        XMFLOAT3 destination{};
+        uint64_t polyRef{ 0 };
+        if (!TryProjectCheatTeleportPosition(
+                runtime,
+                desired,
+                destination,
+                polyRef))
+        {
+            return false;
+        }
+
+        playerTransform->position = destination;
+        if (PreCollisionTransformComp* const preCollision =
+            ecs.GetMutableComponent<PreCollisionTransformComp>(player))
+        {
+            preCollision->prevPosition = destination;
+            preCollision->candidatePosition = destination;
+            preCollision->movedThisFrame = false;
+            preCollision->preserveAbilityVerticalAboveNavMesh = false;
+        }
+        if (LocomotionMoveDeltaComp* const movement =
+            ecs.GetMutableComponent<LocomotionMoveDeltaComp>(player))
+        {
+            *movement = {};
+        }
+        if (AbilityMoveDeltaComp* const movement =
+            ecs.GetMutableComponent<AbilityMoveDeltaComp>(player))
+        {
+            *movement = {};
+        }
+        if (NavMeshAgentStateComp* const navAgent =
+            ecs.GetMutableComponent<NavMeshAgentStateComp>(player))
+        {
+            navAgent->currentPolyRef = polyRef;
+        }
+        if (BodyCollisionResolveComp* const resolve =
+            ecs.GetMutableComponent<BodyCollisionResolveComp>(player))
+        {
+            *resolve = {};
+            resolve->navResolvedPosition = destination;
+        }
+        if (PortalTriggerStateComp* const portal =
+            ecs.GetMutableComponent<PortalTriggerStateComp>(player))
+        {
+            *portal = {};
+        }
+        if (ActorInputComp* const input =
+            ecs.GetMutableComponent<ActorInputComp>(player))
+        {
+            input->move.inputX = 0.0f;
+            input->move.inputZ = 0.0f;
+            input->move.wantsRun = false;
+            input->move.lastUpdatedFrame = runtime.FrameIndex();
+        }
+        if (DirtyFlagsComp* const dirty =
+            ecs.GetMutableComponent<DirtyFlagsComp>(player))
+        {
+            dirty->MarkDirty(WorldDirtyType::Transform);
+        }
+        return true;
+    }
+
+    void CleanupBossGimmickForCheat(
+        WorldRuntime& runtime,
+        ECSView& ecs,
+        Entity boss,
+        BossGimmickStateComp& gimmick)
+    {
+        PendingBossGimmickReplicationComp* const pending =
+            ecs.GetMutableComponent<PendingBossGimmickReplicationComp>(boss);
+
+        for (Entity object : gimmick.phaseTransitionObjectEntities)
+        {
+            if (object.IsNull() ||
+                ecs.GetComponent<PendingDespawnTag>(object) != nullptr)
+            {
+                continue;
+            }
+            const GimmickObjectComp* const objectState =
+                ecs.GetComponent<GimmickObjectComp>(object);
+            const WorldTransformComp* const transform =
+                ecs.GetComponent<WorldTransformComp>(object);
+            const CombatStatStateComp* const stats =
+                ecs.GetComponent<CombatStatStateComp>(object);
+            if (pending != nullptr && transform != nullptr && stats != nullptr &&
+                (objectState == nullptr || !objectState->broken))
+            {
+                pending->objectEvents.push_back(
+                    PendingBossGimmickObjectSyncEvent{
+                        .boss = boss,
+                        .gimmickSeq = gimmick.gimmickSeq,
+                        .objectNetId = static_cast<uint64_t>(object.id),
+                        .state = BossGimmickObjectSyncState::Despawned,
+                        .position = transform->position,
+                        .radius = 0.75f,
+                        .curHp = static_cast<uint32_t>(std::max(0, stats->currentHp)),
+                        .maxHp = static_cast<uint32_t>(std::max(0, stats->maxHp))
+                    });
+            }
+            runtime.DeferredDestroyEntityIfAlive(object);
+        }
+
+        for (Entity zone : gimmick.finalSafeZoneEntities)
+        {
+            if (zone.IsNull() ||
+                ecs.GetComponent<PendingDespawnTag>(zone) != nullptr)
+            {
+                continue;
+            }
+            const WorldTransformComp* const transform =
+                ecs.GetComponent<WorldTransformComp>(zone);
+            const SafeZoneComp* const safeZone =
+                ecs.GetComponent<SafeZoneComp>(zone);
+            if (pending != nullptr && transform != nullptr && safeZone != nullptr)
+            {
+                pending->zoneEvents.push_back(
+                    PendingBossGimmickZoneSyncEvent{
+                        .boss = boss,
+                        .gimmickSeq = gimmick.gimmickSeq,
+                        .zoneNetId = static_cast<uint64_t>(zone.id),
+                        .state = BossGimmickObjectSyncState::Despawned,
+                        .position = transform->position,
+                        .radius = safeZone->radius
+                    });
+            }
+            runtime.DeferredDestroyEntityIfAlive(zone);
+        }
+
+        for (auto [entity, immunity] : ecs.View<BossGimmickImmunityComp>())
+        {
+            if (immunity.ownerBoss == boss)
+            {
+                runtime.DeferredRemoveComponent<BossGimmickImmunityComp>(entity);
+            }
+        }
+
+        gimmick.Complete();
+        gimmick.phaseTransitionGimmickRequested = false;
+        gimmick.phaseTransitionGimmickCompleted = true;
+        gimmick.finalGimmickRequested = false;
+        gimmick.finalGimmickCompleted = true;
+    }
+
+    bool KillBossForCheat(
+        WorldRuntime& runtime,
+        Entity boss,
+        CharacterId characterId)
+    {
+        ECSView ecs = runtime.MakeView();
+        CombatStatStateComp* const stats =
+            ecs.GetMutableComponent<CombatStatStateComp>(boss);
+        if (stats == nullptr || stats->currentHp <= 0)
+        {
+            return false;
+        }
+
+        if (BossGimmickStateComp* const gimmick =
+            ecs.GetMutableComponent<BossGimmickStateComp>(boss))
+        {
+            CleanupBossGimmickForCheat(runtime, ecs, boss, *gimmick);
+        }
+
+        stats->currentHp = 0;
+        if (DirtyFlagsComp* const dirty =
+            ecs.GetMutableComponent<DirtyFlagsComp>(boss))
+        {
+            dirty->MarkDirty(WorldDirtyType::Stat);
+        }
+
+        if (PendingFinalBossDefeatedEventComp* const finalDefeated =
+            ecs.GetMutableComponent<PendingFinalBossDefeatedEventComp>(boss))
+        {
+            finalDefeated->awaitingDeathAnimation =
+                characterId == CharacterId::FinalBoss;
+            finalDefeated->pending = false;
+        }
+
+        if (AbilityInterruptQueueComp* const interruptQueue =
+            ecs.GetMutableComponent<AbilityInterruptQueueComp>(boss))
+        {
+            interruptQueue->events.push_back(AbilityInterruptEvent{
+                .cause = AbilityTransitionCause::OnAttributeZero,
+                .instigator = Entity::Null(),
+                .frameIndex = runtime.FrameIndex(),
+                .priority = 1000
+            });
+        }
+        return true;
+    }
+
     template<typename T>
     bool ParseProto(const SendBuffer& buf, T& out)
     {
@@ -728,6 +1039,35 @@ namespace
             WriteImmediate(ComponentRes<PlayerDeathStateComp>()));
     }
 
+    void AddCheatCommandAccesses(DynamicTaskTypeDesc& desc)
+    {
+        desc.accesses.push_back(ReadImmediate(ExternalRes<SessionFlowController>()));
+        desc.accesses.push_back(ReadImmediate(ExternalRes<IWorldNetBindingResolver>()));
+        desc.accesses.push_back(ReadImmediate(ComponentRes<PlayerControlIdentityComp>()));
+        desc.accesses.push_back(ReadImmediate(ComponentRes<SpawnTypeComp>()));
+        desc.accesses.push_back(ReadImmediate(ComponentRes<PendingDespawnTag>()));
+        desc.accesses.push_back(ReadImmediate(ComponentRes<PendingWorldTransferTag>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<ActorInputComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<PlayerNetworkTimingComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<WorldTransformComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<PreCollisionTransformComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<AbilityMoveDeltaComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<NavMeshAgentStateComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<BodyCollisionResolveComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<PortalTriggerStateComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<CombatStatStateComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<DirtyFlagsComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<BossGimmickStateComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<BossGimmickImmunityComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<GimmickObjectComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<SafeZoneComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<PendingBossGimmickReplicationComp>()));
+        desc.accesses.push_back(WriteImmediate(ComponentRes<PendingFinalBossDefeatedEventComp>()));
+        desc.accesses.push_back(WriteDeferred(CommandBufferRes()));
+    }
+
     DynamicTaskTypeId RegisterPacketDynamicTask(
         DynamicTaskTypeRegistry& taskRegistry,
         ExecutionSourceRegistry& sourceRegistry,
@@ -737,7 +1077,8 @@ namespace
         const char* debugName,
         DynamicTaskTargetKind targetKind = DynamicTaskTargetKind::ExplicitScope,
         bool gameplayInput = false,
-        bool respawnRequest = false)
+        bool respawnRequest = false,
+        bool cheatCommand = false)
     {
         DynamicTaskTypeDesc desc{};
         desc.tag               = InvalidExecTag;
@@ -757,6 +1098,10 @@ namespace
         {
             AddRespawnRequestOrdering(desc);
             AddRespawnRequestAccesses(desc);
+        }
+        if (cheatCommand)
+        {
+            AddCheatCommandAccesses(desc);
         }
 
         const DynamicTaskTypeId typeId =
@@ -824,6 +1169,9 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_USE_ITEM,                 &HandleUseItemPacket,                "Pkt_CS_USE_ITEM",
         DynamicTaskTargetKind::SessionCurrentWorld, true);
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_CHEAT_COMMAND,            &HandleCheatCommandPacket,           "Pkt_CS_CHEAT_COMMAND",
+        DynamicTaskTargetKind::SessionCurrentWorld, false, false, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
@@ -1808,6 +2156,115 @@ ExecCallResult HandleUseItemPacket(NodeExecContext& ctx)
         pkt.dirx(),
         pkt.dirz(),
         *target.input);
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleCheatCommandPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+    Protocol::CS_CHEAT_COMMAND_PACKET pkt{};
+    if (!ParseProto(*buf, pkt) || !svc.cheatsEnabled ||
+        svc.sessionFlow == nullptr)
+    {
+        return ExecCallResult::Success;
+    }
+
+    if (pkt.commandtype() ==
+        Protocol::CHEAT_COMMAND_TYPE_TRANSFER_PARTY_TO_FINAL)
+    {
+        if (pkt.requestid() == 0 || svc.worldTransitionSink == nullptr)
+        {
+            return ExecCallResult::Success;
+        }
+
+        const TransferId transferId =
+            svc.worldTransitionSink->RequestCheatFinalWorldTransition(
+                sessionId,
+                pkt.requestid());
+        if (transferId == 0 && svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageWorldTransitionRejectedPacket(
+                *svc.network,
+                sessionId,
+                pkt.requestid(),
+                kWorldTransitionRejectReasonRequestRejected);
+        }
+        return ExecCallResult::Success;
+    }
+
+    if (pkt.requestid() != 0)
+    {
+        return ExecCallResult::Success;
+    }
+
+    WorldRuntime* const runtime =
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
+    if (runtime == nullptr || runtime->GetDef() == nullptr)
+    {
+        return ExecCallResult::Success;
+    }
+
+    const WorldDefId worldDefId = runtime->GetDef()->id;
+    if (pkt.commandtype() ==
+        Protocol::CHEAT_COMMAND_TYPE_TELEPORT_TO_BOSS)
+    {
+        const CharacterId targetCharacterId =
+            CheatCommandPolicy::ResolveTeleportBoss(worldDefId);
+        if (targetCharacterId == CharacterId::None)
+        {
+            return ExecCallResult::Success;
+        }
+
+        PlayerInputTarget player{};
+        if (!TryResolvePlayerInputTarget(
+                ctx,
+                sessionId,
+                *svc.sessionFlow,
+                player))
+        {
+            return ExecCallResult::Success;
+        }
+
+        ECSView ecs = runtime->MakeView();
+        const Entity boss =
+            FindCheatTarget(ecs, targetCharacterId, false);
+        if (boss.IsNull() ||
+            !TeleportPlayerNearBoss(*runtime, player.entity, boss))
+        {
+            FWLOG_WARN(kLogCategory,
+                "Cheat boss teleport rejected (sid=%u, worldDefId=%d)",
+                sessionId,
+                static_cast<int>(worldDefId));
+        }
+        return ExecCallResult::Success;
+    }
+
+    if (pkt.commandtype() == Protocol::CHEAT_COMMAND_TYPE_KILL_BOSS)
+    {
+        const CharacterId targetCharacterId =
+            CheatCommandPolicy::ResolveKillBoss(worldDefId);
+        if (targetCharacterId == CharacterId::None)
+        {
+            return ExecCallResult::Success;
+        }
+
+        ECSView ecs = runtime->MakeView();
+        const Entity boss =
+            FindCheatTarget(ecs, targetCharacterId, true);
+        if (boss.IsNull() ||
+            !KillBossForCheat(*runtime, boss, targetCharacterId))
+        {
+            FWLOG_WARN(kLogCategory,
+                "Cheat boss kill rejected (sid=%u, worldDefId=%d)",
+                sessionId,
+                static_cast<int>(worldDefId));
+        }
+    }
     return ExecCallResult::Success;
 }
 

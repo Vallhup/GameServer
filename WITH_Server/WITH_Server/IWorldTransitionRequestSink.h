@@ -13,6 +13,10 @@ public:
 		SessionId sessionId,
 		uint32_t requestId) = 0;
 
+	virtual TransferId RequestCheatFinalWorldTransition(
+		SessionId sessionId,
+		uint32_t requestId) = 0;
+
 	virtual bool MarkClientWorldTransitionReady(
 		SessionId sessionId,
 		TransferId transferId) = 0;

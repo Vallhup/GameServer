@@ -156,6 +156,22 @@ bool NetworkManager::SendWorldTransitionReadyPacket(uint64_t transferId)
 	return TrySendInternal(data);
 }
 
+bool NetworkManager::SendCheatCommandPacket(
+	Protocol::CheatCommandType commandType,
+	uint32_t requestId)
+{
+	Protocol::CS_CHEAT_COMMAND_PACKET packet;
+	packet.set_commandtype(commandType);
+	packet.set_requestid(requestId);
+
+	SendBuffer* data = PacketFactory::Serialize<
+		Protocol::CS_CHEAT_COMMAND_PACKET>(
+			PacketType::CS_CHEAT_COMMAND,
+			packet);
+
+	return TrySendInternal(data);
+}
+
 bool NetworkManager::SendPartyUiOpenedPacket()
 {
 	Protocol::CS_PARTY_UI_OPENED_PACKET uiOpen;

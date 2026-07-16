@@ -42,6 +42,7 @@ public:
     }
 
 private:
+    void ProcessCheatHotkeys();
     void ProcessWorldTransitionState();
     void EnterPvpReuse();
 
