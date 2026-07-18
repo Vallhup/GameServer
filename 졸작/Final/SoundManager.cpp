@@ -201,6 +201,15 @@ void SoundManager::PreloadEverySFX()
     PreloadSFX("../Assets/Music/SFX/TankBang.mp3");
     PreloadSFX("../Assets/Music/SFX/VillageBossRoar.mp3");
     PreloadSFX("../Assets/Music/SFX/VillageBossSwing.mp3");
+    PreloadSFX("../Assets/Music/SFX/0perExplosion.mp3");
+    PreloadSFX("../Assets/Music/SFX/0perGathering.mp3");
+    PreloadSFX("../Assets/Music/SFX/50perExplosion.mp3");
+    PreloadSFX("../Assets/Music/SFX/50perGathering.mp3");
+    PreloadSFX("../Assets/Music/SFX/BloodlanceSound.mp3");
+    PreloadSFX("../Assets/Music/SFX/HolySandstormSound.mp3");
+    PreloadSFX("../Assets/Music/SFX/SwordMoonlightSound.mp3");
+    PreloadSFX("../Assets/Music/SFX/SwordStormSound.mp3");
+    PreloadSFX("../Assets/Music/SFX/TankJump.mp3");
 }
 
 void SoundManager::PlaySFX(const char* path)

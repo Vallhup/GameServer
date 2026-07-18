@@ -66,6 +66,10 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 
     ApplyFullscreen(fullscreen);
 
+    masterVol = 100.0f;
+    bgmVol = SOUND_MANAGER->GetBaseBGMVolume() * 100.0f;
+    sfxVol = SOUND_MANAGER->GetBaseSFXVolume() * 100.0f;
+
     OutputDebugStringA("ImGui initialized!\n");
 }
 

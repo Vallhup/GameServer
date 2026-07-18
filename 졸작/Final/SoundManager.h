@@ -25,14 +25,17 @@ public:
     void StopAllSFX();
     void SetSFXVolume(float volume);
 
+    float GetBaseBGMVolume() const { return BGM_BASE_VOLUME; }
+    float GetBaseSFXVolume() const { return SFX_BASE_VOLUME; }
+
 private:
     bool GetListenerPosition(XMFLOAT3& outPos) const;
 
     static constexpr float SFX3D_MIN_DISTANCE = 3.0f;
     static constexpr float SFX3D_MAX_DISTANCE = 20.0f;
 
-    static constexpr float BGM_BASE_VOLUME = 0.3f;
-    static constexpr float SFX_BASE_VOLUME = 0.5f;
+    static constexpr float BGM_BASE_VOLUME = 0.2f;
+    static constexpr float SFX_BASE_VOLUME = 1.0f;
 
     System* system = nullptr;
     ChannelGroup* bgmGroup = nullptr;  

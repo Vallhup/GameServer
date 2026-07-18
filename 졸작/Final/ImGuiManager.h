@@ -92,8 +92,8 @@ private:
 
     // 시스템 페이지 상태
     float masterVol  = 100.0f;   
-    float bgmVol     = 30.0f;    
-    float sfxVol     = 50.0f;    
+    float bgmVol     = 0.0f;    
+    float sfxVol     = 0.0f;    
     bool  fullscreen = true;     
     float brightness = 100.0f;   
     float saturation = 100.0f;   
