@@ -500,8 +500,8 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 
 			sfx->AddTrigger("Thrust", 18, 20, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("Slash", 24, 26, "../Assets/Music/SFX/FinalBossSword.mp3");
-			sfx->AddTrigger("DashSlash", 14, 16, "../Assets/Music/SFX/FinalBossSword.mp3");
-			sfx->AddTrigger("JumpSlash", 25, 27, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("DashSlash", 16, 18, "../Assets/Music/SFX/FinalBossSword.mp3");
+			sfx->AddTrigger("JumpSlash", 27, 29, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("SwordMoonlight", 10, 12, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("SwordMoonlight", 30, 32, "../Assets/Music/SFX/FinalBossSword.mp3");
 			sfx->AddTrigger("SwordMoonlight", 55, 57, "../Assets/Music/SFX/FinalBossSword.mp3");
@@ -516,7 +516,7 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddTrigger("50per", 70, 72, "../Assets/Music/SFX/50perGathering.mp3");
 			sfx->AddTrigger("50per", 346, 348, "../Assets/Music/SFX/50perExplosion.mp3");
 			sfx->AddTrigger("0per", 28, 30, "../Assets/Music/SFX/0perGathering.mp3");
-			sfx->AddTrigger("0per", 330, 332, "../Assets/Music/SFX/0perExplosion.mp3");
+			sfx->AddTrigger("0per", 329, 331, "../Assets/Music/SFX/0perExplosion.mp3");
 
 			auto trail = monster->AddComponent<TrailComponent>();
 			trail->Initialize(coreRef->GetDevice(), 64);
