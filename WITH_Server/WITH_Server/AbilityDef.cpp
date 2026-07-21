@@ -127,6 +127,7 @@ namespace
 		float endNormalized{ 0.0f };
 		AbilityMovementMode movementMode{ AbilityMovementMode::None };
 		std::optional<float> moveDistance;
+		std::optional<float> targetStopDistanceOffset;
 		AbilityRotationMode rotationMode{ AbilityRotationMode::None };
 		std::optional<float> rotationRate;
 		AbilityVerticalMovementMode verticalMovementMode{
@@ -1071,6 +1072,11 @@ namespace
 				"moveDistance",
 				outDto.moveDistance,
 				outError) &&
+			ReadNullableNumber(
+				node,
+				"targetStopDistanceOffset",
+				outDto.targetStopDistanceOffset,
+				outError) &&
 			ReadTypedString(
 				node,
 				"rotationMode",
@@ -1562,6 +1568,7 @@ namespace
 		outDef.endNormalized = dto.endNormalized;
 		outDef.movementMode = dto.movementMode;
 		outDef.moveDistance = dto.moveDistance;
+		outDef.targetStopDistanceOffset = dto.targetStopDistanceOffset;
 		outDef.rotationMode = dto.rotationMode;
 		outDef.rotationRate = dto.rotationRate;
 		outDef.verticalMovementMode = dto.verticalMovementMode;

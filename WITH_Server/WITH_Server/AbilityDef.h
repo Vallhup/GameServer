@@ -151,6 +151,7 @@ struct AbilityMovementSegmentDef
 
 	AbilityMovementMode movementMode{ AbilityMovementMode::None };
 	std::optional<float> moveDistance;
+	std::optional<float> targetStopDistanceOffset;
 
 	AbilityRotationMode rotationMode{ AbilityRotationMode::None };
 	std::optional<float> rotationRate;

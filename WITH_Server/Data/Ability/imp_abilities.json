@@ -60,8 +60,8 @@
           {
             "startNormalized": 0.1,
             "endNormalized": 0.36,
-            "movementMode": "None",
-            "moveDistance": null,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 0.2,
             "rotationMode": "FaceTarget",
             "rotationRate": 5.5,
             "verticalMovementMode": "None",

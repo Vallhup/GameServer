@@ -166,6 +166,12 @@ private:
 		double deadlineSec{ 0.0 };
 	};
 
+	struct PendingDeathCountTransfer
+	{
+		WorldId sourceWorldId{ WorldId::Invalid() };
+		double deadlineSec{ 0.0 };
+	};
+
 private:
 	bool InitializeFrameworkRuntime();
 	bool InitializeDatabaseRuntime();
@@ -190,6 +196,7 @@ private:
 	bool IsPartyWipedInWorld(
 		PartyId partyId,
 		WorldId sourceWorldId);
+	void TickPendingDeathCountTransfers();
 	bool ApplyFinalBossDefeatedEvents(
 		const FrameworkRuntime::FrameResult& frameResult);
 	void TickPendingFinalClearChoiceStarts();
@@ -275,6 +282,9 @@ private:
 		_activeBeaconCinematicsByWorld;
 	// 키: partyId. 엔딩 연출 완료 대기 중인 파티들.
 	std::unordered_map<uint64_t, PendingEndingTransfer> _pendingEndingTransfers;
+	// Key: partyId. Parties waiting after exhausting DeathCount before Plaza transfer.
+	std::unordered_map<uint64_t, PendingDeathCountTransfer>
+		_pendingDeathCountTransfers;
 	uint64_t _nextFinalClearChoiceVoteId{ 1 };
 	uint64_t _nextBeaconCinematicInstanceId{ 1 };
 

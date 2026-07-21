@@ -21,6 +21,7 @@ void RunRespawnSystemSmokeTests();
 void RunAIBehaviorPolicySmokeTests();
 void RunCharacterOverlapSmokeTests();
 void RunCheatCommandSmokeTests();
+void RunTargetDashMovementPolicySmokeTests();
 
 namespace
 {
@@ -124,6 +125,11 @@ int main(int argc, char** argv)
 	if (HasArg(argc, argv, "--cheat-command-smoke"))
 	{
 		RunCheatCommandSmokeTests();
+		return 0;
+	}
+	if (HasArg(argc, argv, "--target-dash-policy-smoke"))
+	{
+		RunTargetDashMovementPolicySmokeTests();
 		return 0;
 	}
 

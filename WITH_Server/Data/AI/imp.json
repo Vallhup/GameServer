@@ -53,17 +53,6 @@
       "lockMovementSec": 0.15
     },
     {
-      "abilityKey": "Ability.Imp_melee4",
-      "weight": 30,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 1.8,
-      "globalCooldownSec": 1.6,
-      "patternGroup": "Imp_Poke",
-      "groupCooldownSec": 1.1,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.2
-    },
-    {
       "abilityKey": "Ability.Imp_melee5",
       "weight": 20,
       "distanceBucket": "Close",

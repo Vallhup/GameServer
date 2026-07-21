@@ -201,6 +201,12 @@
     <ClCompile Include="CharacterIdPolicy.cpp" />
     <ClCompile Include="CharacterOverlap_SmokeTest.cpp" />
     <ClCompile Include="CheatCommand_SmokeTest.cpp" />
+    <ClCompile Include="TargetDashMovementPolicy_SmokeTest.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="CharacterDataService.cpp" />
     <ClCompile Include="CharacterDef.cpp" />
     <ClCompile Include="CharacterSpawnService.cpp" />
@@ -403,6 +409,7 @@
     <ClInclude Include="ECS\System\Phase4\ApplyMovementDeltaSystem.h" />
     <ClInclude Include="ECS\System\Phase4\ComputeAbilityMoveDeltaSystem.h" />
     <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h" />
+    <ClInclude Include="ECS\System\Phase4\TargetDashMovementPolicy.h" />
     <ClInclude Include="ECS\System\Phase5\BodyCollisionSlide.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveGimmickObjectOverlapSystem.h" />

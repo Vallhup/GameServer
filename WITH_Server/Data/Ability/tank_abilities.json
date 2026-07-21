@@ -593,6 +593,7 @@
                         "endNormalized": 0.35,
                         "movementMode": "DashToTarget",
                         "moveDistance": null,
+                        "targetStopDistanceOffset": 0.2,
                         "rotationMode": "FaceTarget",
                         "rotationRate": 2.5,
                         "verticalMovementMode": "None",

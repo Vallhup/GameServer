@@ -1267,6 +1267,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 		Stop();
 		return;
 	}
+	TickPendingDeathCountTransfers();
 
 	if (!ApplyFinalBossDefeatedEvents(frameResult))
 	{
@@ -1686,25 +1687,66 @@ bool ServerApp::ApplyPartyDeathCountEvents(
 			continue;
 		}
 
+		const bool inserted = _pendingDeathCountTransfers.try_emplace(
+			static_cast<uint64_t>(partyId),
+			PendingDeathCountTransfer{
+				.sourceWorldId = sourceWorldId,
+				.deadlineSec = _nowSec +
+					PlayerDeathStatePolicy::ExhaustedPartyTransferDelaySec
+			}).second;
+		if (inserted)
+		{
+			FWLOG_INFO(kLogCategory,
+				"Exhausted party wiped; Plaza transfer scheduled (partyId=%llu, sourceWorldId=%u, delaySec=%.1f)",
+				static_cast<unsigned long long>(partyId),
+				sourceWorldId.GetRaw(),
+				PlayerDeathStatePolicy::ExhaustedPartyTransferDelaySec);
+		}
+	}
+
+	return true;
+}
+
+void ServerApp::TickPendingDeathCountTransfers()
+{
+	std::vector<uint64_t> readyPartyIds;
+	for (const auto& [partyIdRaw, pending] : _pendingDeathCountTransfers)
+	{
+		if (PlayerDeathStatePolicy::ShouldTransferExhaustedParty(
+				_nowSec,
+				pending.deadlineSec))
+		{
+			readyPartyIds.push_back(partyIdRaw);
+		}
+	}
+
+	for (const uint64_t partyIdRaw : readyPartyIds)
+	{
+		const auto it = _pendingDeathCountTransfers.find(partyIdRaw);
+		if (it == _pendingDeathCountTransfers.end())
+		{
+			continue;
+		}
+
+		const WorldId sourceWorldId = it->second.sourceWorldId;
+		_pendingDeathCountTransfers.erase(it);
 		if (!ForcePartyGroupTransfer(
-				partyId,
+				static_cast<PartyId>(partyIdRaw),
 				sourceWorldId,
 				WorldDefId::Plaza))
 		{
 			FWLOG_WARN(kLogCategory,
-				"Exhausted party wipe transfer failed (partyId=%llu, sourceWorldId=%u)",
-				static_cast<unsigned long long>(partyId),
+				"Delayed exhausted party transfer failed (partyId=%llu, sourceWorldId=%u)",
+				static_cast<unsigned long long>(partyIdRaw),
 				sourceWorldId.GetRaw());
 			continue;
 		}
 
 		FWLOG_INFO(kLogCategory,
-			"Exhausted party wiped; returning to Plaza (partyId=%llu, sourceWorldId=%u)",
-			static_cast<unsigned long long>(partyId),
+			"Exhausted party delay elapsed; returning to Plaza (partyId=%llu, sourceWorldId=%u)",
+			static_cast<unsigned long long>(partyIdRaw),
 			sourceWorldId.GetRaw());
 	}
-
-	return true;
 }
 
 bool ServerApp::IsPartyWipedInWorld(

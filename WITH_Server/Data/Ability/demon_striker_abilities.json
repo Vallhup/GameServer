@@ -28,6 +28,10 @@
             "kind": "Attack",
             "startNormalized": 0.31,
             "endNormalized": 0.36,
+            "sourceHitBones": [
+              27,
+              31
+            ],
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ComputeAbilityMoveDeltaSystem.h"
+#include "TargetDashMovementPolicy.h"
 
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
@@ -11,8 +12,6 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	inline constexpr float kTargetDashContactPadding = 0.05f;
-
 	const std::array<AccessSpec, 6> kComputeAbilityMoveDeltaAccesses{
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
@@ -160,12 +159,13 @@ namespace
 	float ResolveTargetDashStopDistance(
 		SystemContext& ctx,
 		Entity owner,
-		Entity target) noexcept
+		Entity target,
+		float stopDistanceOffset) noexcept
 	{
-		return
-			ResolveBodyRadiusXZ(ctx, owner) +
-			ResolveBodyRadiusXZ(ctx, target) +
-			kTargetDashContactPadding;
+		return TargetDashMovementPolicy::ResolveStopDistance(
+			ResolveBodyRadiusXZ(ctx, owner),
+			ResolveBodyRadiusXZ(ctx, target),
+			stopDistanceOffset);
 	}
 
 	bool EnsureTargetDashLock(
@@ -174,7 +174,8 @@ namespace
 		const AbilityStateComp& abilityState,
 		const WorldTransformComp& transform,
 		AbilityMoveRuntimeComp& moveRuntime,
-		float segmentStartSec)
+		float segmentStartSec,
+		float stopDistanceOffset)
 	{
 		const bool needsLock =
 			!moveRuntime.hasLockedTargetDash ||
@@ -214,7 +215,8 @@ namespace
 				ResolveTargetDashStopDistance(
 					ctx,
 					owner,
-					abilityState.target);
+					abilityState.target,
+					stopDistanceOffset);
 			const float dashDistance =
 				std::max(targetDistance - stopDistance, 0.0f);
 
@@ -364,7 +366,8 @@ void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 					abilityState,
 					transform,
 					moveRuntime,
-					startSec))
+					startSec,
+					segment.targetStopDistanceOffset.value_or(0.0f)))
 				{
 					ApplyTargetDashDelta(
 						moveDelta,

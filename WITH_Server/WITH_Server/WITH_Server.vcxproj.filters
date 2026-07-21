@@ -3,6 +3,9 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="CharacterOverlap_SmokeTest.cpp" />
+    <ClCompile Include="TargetDashMovementPolicy_SmokeTest.cpp">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClCompile>
     <ClCompile Include="CheatCommand_SmokeTest.cpp">
       <Filter>SessionSystem\Packets</Filter>
     </ClCompile>
@@ -663,6 +666,9 @@
       <Filter>ECS\System\Phase4</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase4\TargetDashMovementPolicy.h">
       <Filter>ECS\System\Phase4</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase5\BodyCollisionSlide.h">

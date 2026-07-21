@@ -249,6 +249,15 @@ void RunRespawnSystemSmokeTests()
 			true,
 			3,
 			0));
+
+		const double transferDeadline =
+			PlayerDeathStatePolicy::ExhaustedPartyTransferDelaySec;
+		assert(!PlayerDeathStatePolicy::ShouldTransferExhaustedParty(
+			transferDeadline - 0.001,
+			transferDeadline));
+		assert(PlayerDeathStatePolicy::ShouldTransferExhaustedParty(
+			transferDeadline,
+			transferDeadline));
 	}
 
 	GameplayContentCatalogSnapshot catalog;

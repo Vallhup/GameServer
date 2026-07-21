@@ -418,6 +418,20 @@ bool ValidateAbilityDefs(
 				outError = "Ability movement segment range is invalid.";
 				return false;
 			}
+
+			if (segment.targetStopDistanceOffset.has_value() &&
+				*segment.targetStopDistanceOffset < 0.0f)
+			{
+				outError = "Ability target stop distance offset cannot be negative.";
+				return false;
+			}
+
+			if (segment.targetStopDistanceOffset.has_value() &&
+				segment.movementMode != AbilityMovementMode::DashToTarget)
+			{
+				outError = "Ability target stop distance offset requires DashToTarget movement.";
+				return false;
+			}
 		}
 
 		for (const AbilityEventDef& eventDef : def.timeline.events)

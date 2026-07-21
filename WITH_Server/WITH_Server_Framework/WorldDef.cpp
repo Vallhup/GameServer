@@ -255,7 +255,7 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 				.height = 2049,
 				.originX = 0.0f,
 				.originZ = 0.0f,
-				.rotationYDegrees = 90.0f,
+				.rotationYDegrees = 0.0f,
 				.cellSizeX = 1023.0f / 2048.0f,
 				.cellSizeZ = 1023.0f / 2048.0f,
 				.heightScale = 159.4766f / 65535.0f,

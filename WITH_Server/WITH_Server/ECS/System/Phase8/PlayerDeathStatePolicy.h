@@ -5,6 +5,8 @@
 
 namespace PlayerDeathStatePolicy
 {
+	inline constexpr double ExhaustedPartyTransferDelaySec = 5.0;
+
 	inline bool IsRespawnWorld(WorldDefId worldDefId) noexcept
 	{
 		return
@@ -28,6 +30,13 @@ namespace PlayerDeathStatePolicy
 			deathCountExhausted &&
 			partyMemberCount > 0 &&
 			aliveMemberCount == 0;
+	}
+
+	inline bool ShouldTransferExhaustedParty(
+		double nowSec,
+		double deadlineSec) noexcept
+	{
+		return nowSec >= deadlineSec;
 	}
 
 	inline bool ApplyDeathCountDecision(
