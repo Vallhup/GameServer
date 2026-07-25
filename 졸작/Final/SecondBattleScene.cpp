@@ -110,7 +110,7 @@ void SecondBattleScene::InitializeSceneEnvironments()
 	water->Initialize(*coreRef);
 	water->SetPosition(378.874207f, 53.3f, 367.952576f);
 	water->SetScale(170.0f, 1.0f, 170.0f);
-	XMFLOAT4 color = { 0.0f, 0.6f, 0.85f, 0.7f };
+	XMFLOAT4 color = { 0.0f, 0.7f, 0.85f, 0.25f };
 	water->SetColor(color);
 #pragma endregion
 
