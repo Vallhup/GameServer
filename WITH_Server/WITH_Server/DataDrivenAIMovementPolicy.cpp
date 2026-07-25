@@ -8,6 +8,47 @@
 #include "System.h"
 #include "TransformHelper.h"
 
+namespace
+{
+	constexpr float kChaseContactPaddingXZ = 0.05f;
+
+	bool HasReachedChaseBodyContact(
+		const AIContext& ctx,
+		const DirectX::XMFLOAT3& targetPosition) noexcept
+	{
+		if (ctx.sysCtx == nullptr ||
+			ctx.selfTr == nullptr ||
+			ctx.blackboard == nullptr ||
+			ctx.blackboard->currentTarget.IsNull())
+		{
+			return false;
+		}
+
+		const BodyCollisionShapeComp* selfShape =
+			ctx.sysCtx->ecs.GetComponent<BodyCollisionShapeComp>(ctx.self);
+		const BodyCollisionShapeComp* targetShape =
+			ctx.sysCtx->ecs.GetComponent<BodyCollisionShapeComp>(
+				ctx.blackboard->currentTarget);
+		if (selfShape == nullptr ||
+			targetShape == nullptr ||
+			!selfShape->blocksBodyOverlap ||
+			!targetShape->blocksBodyOverlap ||
+			selfShape->pushability == BodyPushability::None ||
+			targetShape->pushability == BodyPushability::None)
+		{
+			return false;
+		}
+
+		const float contactDistance =
+			std::max(selfShape->bodyRadiusXZ, 0.0f) +
+			std::max(targetShape->bodyRadiusXZ, 0.0f) +
+			kChaseContactPaddingXZ;
+		const float dx = targetPosition.x - ctx.selfTr->position.x;
+		const float dz = targetPosition.z - ctx.selfTr->position.z;
+		return dx * dx + dz * dz <= contactDistance * contactDistance;
+	}
+}
+
 void DataDrivenAIMovementPolicy::BuildChaseIntent(AIContext& ctx) const
 {
 	const AIMovementProfileDef* profile = SelectMovementProfile(ctx);
@@ -19,6 +60,12 @@ void DataDrivenAIMovementPolicy::BuildChaseIntent(AIContext& ctx) const
 	DirectX::XMFLOAT3 targetPos{};
 	if (!AIMovementPolicyUtil::TryGetCurrentTargetPosition(ctx, targetPos))
 		return;
+
+	if (HasReachedChaseBodyContact(ctx, targetPos))
+	{
+		AIMovementPolicyUtil::ClearMove(ctx);
+		return;
+	}
 
 	const bool wantsRun =
 		profile == nullptr ||

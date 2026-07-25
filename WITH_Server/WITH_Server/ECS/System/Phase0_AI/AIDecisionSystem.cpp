@@ -19,13 +19,14 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<14, 1, 2> AIDecisionSystem::kMetaStorage =
+const StaticSystemMetaStorage<15, 1, 2> AIDecisionSystem::kMetaStorage =
 MakeMetaStorage(
 	SysTag<AIDecisionSystem>(),
 	"AIDecisionSystem",
-	std::array<AccessSpec, 14>
+	std::array<AccessSpec, 15>
 	{
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<AIPerceptionComp>()),
 		ReadImmediate(ComponentRes<AITypeComp>()),

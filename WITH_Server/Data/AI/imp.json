@@ -31,17 +31,6 @@
   },
   "combatActions": [
     {
-      "abilityKey": "Ability.Imp_melee1",
-      "weight": 15,
-      "distanceBucket": "VeryClose",
-      "aiCooldownSec": 1.0,
-      "globalCooldownSec": 1.2,
-      "patternGroup": "Imp_Poke",
-      "groupCooldownSec": 0.9,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.15
-    },
-    {
       "abilityKey": "Ability.Imp_melee3",
       "weight": 35,
       "distanceBucket": "Close",
