@@ -80,7 +80,7 @@ bool VideoPlayer::Open(ID3D12Device* device, D3D12_CPU_DESCRIPTOR_HANDLE srvCpu,
         {
             mEngine->SetAutoPlay(TRUE);   
             mEngine->SetMuted(FALSE);
-            mEngine->SetVolume(0.15);
+            mEngine->SetVolume(0.2);
             BSTR url = SysAllocString(abs.c_str());
             mEngine->SetSource(url);
             SysFreeString(url);
