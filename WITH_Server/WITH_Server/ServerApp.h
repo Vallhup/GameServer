@@ -215,6 +215,16 @@ private:
 		PartyId partyId,
 		WorldId sourceWorldId,
 		WorldDefId targetWorldDefId);
+	TransferId EnqueueWorldTransferWithReuseReset(
+		std::span<const SessionId> sessionIds,
+		WorldId sourceWorldId,
+		WorldDefId targetWorldDefId,
+		uint64_t instanceKey,
+		PartyId partyId,
+		bool allowFallback);
+	bool PrepareFinalWorldForEntry(uint64_t instanceKey);
+	bool ResetReusedFinalWorld(WorldId worldId);
+	void ClearFinalWorldReuseState(WorldId worldId);
 	// 엔딩 연출 핸드셰이크: 신호 송신 후 전원 완료/타임아웃 시 전이.
 	void BeginEndingThenTransfer(
 		PartyId partyId,

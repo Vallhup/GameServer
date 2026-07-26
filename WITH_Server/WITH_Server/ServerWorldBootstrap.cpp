@@ -26,6 +26,21 @@ namespace
 {
 	constexpr WorldExecutionModelKey kGameplayBootstrapExecutionModelKey = 1;
 
+	const SpawnPointDef* FindSpawnPoint(
+		const WorldDef& worldDef,
+		SpawnPointId spawnPointId) noexcept
+	{
+		for (const SpawnPointDef& candidate : worldDef.map.spawnPoints)
+		{
+			if (candidate.id == spawnPointId)
+			{
+				return &candidate;
+			}
+		}
+
+		return nullptr;
+	}
+
 	class ServerGameplayRuntimeBootstrap final {
 	public:
 		static bool RegisterRuntime(
@@ -99,84 +114,12 @@ namespace
 				return true;
 			}
 
-			const SpawnSetDef* const spawnSet =
-				_catalog->SpawnSets().Find(_worldDef->spawn.initialSpawnSetId);
-			if (spawnSet == nullptr)
-			{
-				return true;
-			}
-
-			for (const SpawnEntryDef& entry : spawnSet->entries)
-			{
-				if (entry.type != SpawnConditionType::Always &&
-					entry.type != SpawnConditionType::OnWorldStart)
-				{
-					continue;
-				}
-
-				const SpawnPointDef* spawnPoint = nullptr;
-				for (const SpawnPointDef& candidate : _worldDef->map.spawnPoints)
-				{
-					if (candidate.id == entry.spawnPointId)
-					{
-						spawnPoint = &candidate;
-						break;
-					}
-				}
-
-				if (spawnPoint == nullptr)
-				{
-					continue;
-				}
-
-				const CharacterDef* characterDef =
-					_catalog->Characters().Find(entry.characterId);
-				if (characterDef == nullptr ||
-					!characterDef->ai.has_value() ||
-					!AIFSMRegistry::IsArchetypeSupported(characterDef->ai->aiType))
-				{
-					continue;
-				}
-
-				for (uint8_t i = 0; i < entry.count; ++i)
-				{
-					const Entity aiEntity = runtime.ReserveEntity();
-					if (aiEntity.IsNull())
-					{
-						continue;
-					}
-
-					const NetId netId =
-						_framework->BindEntityToNet(_worldId, aiEntity);
-					if (!netId.IsValid())
-					{
-						runtime.DeferredDestroyEntity(aiEntity);
-						continue;
-					}
-
-					AssembleParams params{};
-					params.position = {
-						spawnPoint->position.x,
-						spawnPoint->position.y,
-						spawnPoint->position.z
-					};
-					params.rotation = {
-						spawnPoint->rotation.x,
-						spawnPoint->rotation.y,
-						spawnPoint->rotation.z,
-						spawnPoint->rotation.w
-					};
-					params.netId = netId;
-
-					GetGlobalCharacterAspectRegistry().Assemble(
-						runtime,
-						aiEntity,
-						*characterDef,
-						params);
-				}
-			}
-
-			return true;
+			return SpawnInitialWorldPopulation(
+				runtime,
+				*_framework,
+				*_catalog,
+				_worldId,
+				*_worldDef);
 		}
 
 		void OnStop(WorldRuntime& runtime) override
@@ -191,6 +134,89 @@ namespace
 		WorldId _worldId{ WorldId::Invalid() };
 		const WorldDef* _worldDef{ nullptr };
 	};
+}
+
+bool SpawnInitialWorldPopulation(
+	WorldRuntime& runtime,
+	FrameworkRuntime& framework,
+	const GameDataCatalog& catalog,
+	WorldId worldId,
+	const WorldDef& worldDef)
+{
+	if (!worldId.IsValid())
+	{
+		return false;
+	}
+
+	const SpawnSetDef* const spawnSet =
+		catalog.SpawnSets().Find(worldDef.spawn.initialSpawnSetId);
+	if (spawnSet == nullptr)
+	{
+		return true;
+	}
+
+	for (const SpawnEntryDef& entry : spawnSet->entries)
+	{
+		if (entry.type != SpawnConditionType::Always &&
+			entry.type != SpawnConditionType::OnWorldStart)
+		{
+			continue;
+		}
+
+		const SpawnPointDef* const spawnPoint =
+			FindSpawnPoint(worldDef, entry.spawnPointId);
+		if (spawnPoint == nullptr)
+		{
+			continue;
+		}
+
+		const CharacterDef* characterDef =
+			catalog.Characters().Find(entry.characterId);
+		if (characterDef == nullptr ||
+			!characterDef->ai.has_value() ||
+			!AIFSMRegistry::IsArchetypeSupported(characterDef->ai->aiType))
+		{
+			continue;
+		}
+
+		for (uint8_t i = 0; i < entry.count; ++i)
+		{
+			const Entity aiEntity = runtime.ReserveEntity();
+			if (aiEntity.IsNull())
+			{
+				continue;
+			}
+
+			const NetId netId = framework.BindEntityToNet(worldId, aiEntity);
+			if (!netId.IsValid())
+			{
+				runtime.DeferredDestroyEntity(aiEntity);
+				continue;
+			}
+
+			AssembleParams params{};
+			params.position = {
+				spawnPoint->position.x,
+				spawnPoint->position.y,
+				spawnPoint->position.z
+			};
+			params.rotation = {
+				spawnPoint->rotation.x,
+				spawnPoint->rotation.y,
+				spawnPoint->rotation.z,
+				spawnPoint->rotation.w
+			};
+			params.netId = netId;
+
+			GetGlobalCharacterAspectRegistry().Assemble(
+				runtime,
+				aiEntity,
+				*characterDef,
+				params);
+		}
+	}
+
+	return true;
 }
 
 void ServerWorldBootstrapFactory::SetAnimationRegistry(

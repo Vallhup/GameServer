@@ -8,6 +8,15 @@ class AnimationRegistry;
 class FrameworkRuntime;
 class GameDataCatalog;
 class ServerApp;
+class WorldRuntime;
+struct WorldDef;
+
+bool SpawnInitialWorldPopulation(
+	WorldRuntime& runtime,
+	FrameworkRuntime& framework,
+	const GameDataCatalog& catalog,
+	WorldId worldId,
+	const WorldDef& worldDef);
 
 class ServerWorldBootstrapFactory final : public IWorldInstanceFactory {
 public:

@@ -25,6 +25,7 @@
 #include "GameplayDefValidator.h"
 #include "ECS/System/Phase8/PlayerDeathStatePolicy.h"
 #include "SpawnSetDef.h"
+#include "WorldInstance.h"
 #include "WorldInstanceRecord.h"
 
 namespace
@@ -249,14 +250,13 @@ TransferId ServerApp::RequestSessionWorldTransfer(
 
 	const SessionId sessions[] = { sessionId };
 
-	return _framework.RequestWorldTransfer(
+	return EnqueueWorldTransferWithReuseReset(
 		std::span<const SessionId>(sessions, 1),
 		sourceWorldId,
 		targetWorldDefId,
 		instanceKey,
 		partyId,
-		allowFallback,
-		_nowSec);
+		allowFallback);
 }
 
 TransferId ServerApp::RequestDebugWorldTransfer(
@@ -330,6 +330,186 @@ bool ServerApp::RequestPlayerRespawn(SessionId sessionId)
 
 	deathState->respawnRequested = true;
 	return true;
+}
+
+TransferId ServerApp::EnqueueWorldTransferWithReuseReset(
+	std::span<const SessionId> sessionIds,
+	WorldId sourceWorldId,
+	WorldDefId targetWorldDefId,
+	uint64_t instanceKey,
+	PartyId partyId,
+	bool allowFallback)
+{
+	const uint64_t resolvedInstanceKey =
+		targetWorldDefId == WorldDefId::Final &&
+		instanceKey == 0 &&
+		partyId != 0
+			? static_cast<uint64_t>(partyId)
+			: instanceKey;
+
+	if (targetWorldDefId == WorldDefId::Final &&
+		!PrepareFinalWorldForEntry(resolvedInstanceKey))
+	{
+		FWLOG_WARN(kLogCategory,
+			"Final world transfer rejected: reuse reset prepare failed "
+			"(sourceWorld=%llu, instanceKey=%llu, partyId=%llu)",
+			static_cast<unsigned long long>(sourceWorldId.GetRaw()),
+			static_cast<unsigned long long>(resolvedInstanceKey),
+			static_cast<unsigned long long>(partyId));
+		return 0;
+	}
+
+	return _framework.RequestWorldTransfer(
+		sessionIds,
+		sourceWorldId,
+		targetWorldDefId,
+		resolvedInstanceKey,
+		partyId,
+		allowFallback,
+		_nowSec);
+}
+
+bool ServerApp::PrepareFinalWorldForEntry(uint64_t instanceKey)
+{
+	if (instanceKey == 0)
+	{
+		return false;
+	}
+
+	const WorldId worldId =
+		_framework.ResolveOrCreateWorld(WorldDefId::Final, instanceKey);
+	if (!worldId.IsValid())
+	{
+		return false;
+	}
+
+	const WorldInstance* const world = _framework.FindWorld(worldId);
+	const WorldInstanceRecord* const record =
+		_framework.FindWorldRecord(worldId);
+	const WorldDef* const worldDef = world != nullptr ? world->GetDef() : nullptr;
+	if (world == nullptr || record == nullptr || worldDef == nullptr)
+	{
+		return false;
+	}
+
+	if (worldDef->id != WorldDefId::Final)
+	{
+		return false;
+	}
+
+	if (!world->IsInitialized())
+	{
+		return true;
+	}
+
+	if (record->activePlayers != 0)
+	{
+		return true;
+	}
+
+	return ResetReusedFinalWorld(worldId);
+}
+
+bool ServerApp::ResetReusedFinalWorld(WorldId worldId)
+{
+	WorldInstance* const world = _framework.FindWorld(worldId);
+	const WorldDef* const worldDef = world != nullptr ? world->GetDef() : nullptr;
+	if (world == nullptr || worldDef == nullptr || worldDef->id != WorldDefId::Final)
+	{
+		return false;
+	}
+
+	WorldRuntime& runtime = world->GetRuntime();
+	ECSView view = runtime.MakeView();
+
+	for (auto [entity, spawnType] : view.View<SpawnTypeComp>())
+	{
+		(void)spawnType;
+		if (view.GetComponent<PlayerControlIdentityComp>(entity) != nullptr)
+		{
+			continue;
+		}
+
+		runtime.DeferredDestroyEntityIfAlive(entity);
+	}
+
+	for (auto [entity, gimmickObject] : view.View<GimmickObjectComp>())
+	{
+		(void)gimmickObject;
+		runtime.DeferredDestroyEntityIfAlive(entity);
+	}
+
+	for (auto [entity, safeZone] : view.View<SafeZoneComp>())
+	{
+		(void)safeZone;
+		runtime.DeferredDestroyEntityIfAlive(entity);
+	}
+
+	for (auto [entity, projectile] : view.View<ProjectileStateComp>())
+	{
+		(void)projectile;
+		runtime.DeferredDestroyEntityIfAlive(entity);
+	}
+
+	for (auto [entity, areaVolume] : view.View<AreaVolumeStateComp>())
+	{
+		(void)areaVolume;
+		runtime.DeferredDestroyEntityIfAlive(entity);
+	}
+
+	for (auto [entity, immunity] : view.View<BossGimmickImmunityComp>())
+	{
+		(void)immunity;
+		runtime.DeferredRemoveComponent<BossGimmickImmunityComp>(entity);
+	}
+
+	ClearFinalWorldReuseState(worldId);
+	return SpawnInitialWorldPopulation(
+		runtime,
+		_framework,
+		_gameDataCatalog,
+		worldId,
+		*worldDef);
+}
+
+void ServerApp::ClearFinalWorldReuseState(WorldId worldId)
+{
+	const uint64_t worldKey = worldId.GetRaw();
+	_pendingFinalClearChoiceStartByWorld.erase(worldKey);
+	_activeBeaconCinematicsByWorld.erase(worldKey);
+
+	if (const auto voteByWorldIt = _finalClearChoiceVoteByWorld.find(worldKey);
+		voteByWorldIt != _finalClearChoiceVoteByWorld.end())
+	{
+		_finalClearChoiceVotes.erase(voteByWorldIt->second);
+		_finalClearChoiceVoteByWorld.erase(voteByWorldIt);
+	}
+
+	for (auto it = _finalClearChoiceVotes.begin();
+		it != _finalClearChoiceVotes.end();)
+	{
+		if (it->second.sourceWorldId == worldId)
+		{
+			it = _finalClearChoiceVotes.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	for (auto it = _pendingEndingTransfers.begin();
+		it != _pendingEndingTransfers.end();)
+	{
+		if (it->second.sourceWorldId == worldId)
+		{
+			it = _pendingEndingTransfers.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }
 
 TransferId ServerApp::RequestDemoWorldTransition(
@@ -410,7 +590,7 @@ TransferId ServerApp::RequestDemoWorldTransition(
 		return 0;
 	}
 
-	const TransferId transferId = _framework.RequestWorldTransfer(
+	const TransferId transferId = EnqueueWorldTransferWithReuseReset(
 		std::span<const SessionId>(
 			entryResult.request.sessionIds.data(),
 			entryResult.request.sessionIds.size()),
@@ -418,8 +598,7 @@ TransferId ServerApp::RequestDemoWorldTransition(
 		targetWorldDefId,
 		instanceKey,
 		partyId,
-		true,
-		_nowSec);
+		true);
 	if (transferId != 0)
 	{
 		(void)_partyService.MarkWorldEntryEnqueued(
@@ -503,7 +682,7 @@ TransferId ServerApp::RequestCheatFinalWorldTransition(
 		return 0;
 	}
 
-	const TransferId transferId = _framework.RequestWorldTransfer(
+	const TransferId transferId = EnqueueWorldTransferWithReuseReset(
 		std::span<const SessionId>(
 			entryResult.request.sessionIds.data(),
 			entryResult.request.sessionIds.size()),
@@ -511,8 +690,7 @@ TransferId ServerApp::RequestCheatFinalWorldTransition(
 		WorldDefId::Final,
 		instanceKey,
 		partyId,
-		true,
-		_nowSec);
+		true);
 	if (transferId != 0)
 	{
 		(void)_partyService.MarkWorldEntryEnqueued(
@@ -2106,7 +2284,7 @@ bool ServerApp::RequestPartyWorldTransfer(
 		return false;
 	}
 
-	const TransferId transferId = _framework.RequestWorldTransfer(
+	const TransferId transferId = EnqueueWorldTransferWithReuseReset(
 		std::span<const SessionId>(
 			entryResult.request.sessionIds.data(),
 			entryResult.request.sessionIds.size()),
@@ -2114,8 +2292,7 @@ bool ServerApp::RequestPartyWorldTransfer(
 		targetWorldDefId,
 		target.instanceKey,
 		partyId,
-		true,
-		_nowSec);
+		true);
 	if (transferId == 0)
 	{
 		(void)_partyService.FailWorldEntry(partyId, 0, _nowSec);
@@ -2166,7 +2343,7 @@ bool ServerApp::ForcePartyGroupTransfer(
 		return false;
 	}
 
-	const TransferId transferId = _framework.RequestWorldTransfer(
+	const TransferId transferId = EnqueueWorldTransferWithReuseReset(
 		std::span<const SessionId>(
 			entryResult.request.sessionIds.data(),
 			entryResult.request.sessionIds.size()),
@@ -2174,8 +2351,7 @@ bool ServerApp::ForcePartyGroupTransfer(
 		targetWorldDefId,
 		target.instanceKey,
 		partyId,
-		true,
-		_nowSec);
+		true);
 	if (transferId == 0)
 	{
 		(void)_partyService.FailWorldEntry(partyId, 0, _nowSec);
