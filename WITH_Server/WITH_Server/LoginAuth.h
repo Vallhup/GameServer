@@ -20,7 +20,14 @@ enum class LoginAuthFailReason : uint32_t
 	DatabaseError       = 6,
 	Timeout             = 7,
 	AccountNotFound     = 8,
+	InvalidCredentialFormat = 9,
 };
+
+constexpr bool IsRetryableLoginFailReason(uint32_t reason) noexcept
+{
+	return reason == static_cast<uint32_t>(LoginAuthFailReason::AuthRejected) ||
+		reason == static_cast<uint32_t>(LoginAuthFailReason::InvalidCredentialFormat);
+}
 
 struct LoginAuthPayload
 {

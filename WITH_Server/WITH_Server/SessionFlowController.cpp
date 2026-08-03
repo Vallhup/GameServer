@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SessionFlowController.h"
+#include "LoginAuth.h"
 
 #include <algorithm>
 
@@ -362,7 +363,10 @@ void SessionFlowController::RegisterDefaultTransitions()
 		[](SessionFlowContext& ctx, const LoginFailed& command)
 		{
 			(void)ctx;
-			(void)command;
+
+			if (IsRetryableLoginFailReason(command.reason))
+				return TransitionResult::To(SessionStateId::Connected);
+
 			return TransitionResult::Close(SessionCloseReason::ProtocolError);
 		});
 

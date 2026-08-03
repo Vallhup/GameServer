@@ -589,17 +589,15 @@ void Scene::HandleLoginSuccess(const Protocol::SC_LOGIN_SUCCESS_PACKET& success)
 	NetId nid{ success.netid() };
 	int id = nid.GetId();
 	INPUT.SetClientID(id);
-	IMGUI.SetLoginSuccess(true);
+	IMGUI.OnLoginSucceeded();
 	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
 }
 
 void Scene::HandleLoginFail(const Protocol::SC_LOGIN_FAIL_PACKET& fail)
 {
-	// TODO : 실패 이유에 따라서 Log 띄워주기? 그냥 Dialog 처리?
-	switch (fail.reason()) {
-	default:
-		OutputDebugStringA(("Login Fail, Reason : " + to_string(fail.reason())).c_str());
-	}
+	OutputDebugStringA(("Login Fail, Reason : " + to_string(fail.reason()) + "\n").c_str());
+
+	IMGUI.OnLoginFailed(fail.reason());
 }
 
 void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)

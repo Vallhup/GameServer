@@ -46,9 +46,10 @@ public:
     void SetMyPlayer(MainCharacter* player) { myPlayer = player; }
     void SetSkyBox(SkyBox* sky) { skyBox = sky; }
     void SetCamera(Camera* cam) { camera = cam; }
-    void SetLoginSuccess(bool canLogin) { loginSuccess = canLogin; }
 
-    void ShowLoginWindow() { showLoginWindow = true; }
+    void ShowLoginWindow();
+    void OnLoginSucceeded();
+    void OnLoginFailed(uint32_t reason);
     bool IsLoginSuccess() const { return loginSuccess; }
     void ResetLoginSuccess() { loginSuccess = false; }
 
@@ -106,7 +107,12 @@ private:
     bool  ssaoEnabled   = true;
     float shadowDarkness = 70.0f;
     float fogPickX = 0.0f, fogPickY = 0.0f;  
+
+    // 로그인
     bool loginSuccess = false;
+    bool loginPending = false;          
+    bool loginRetryable = true;         
+    string loginFailMessage;            
     char loginId[64] = "";
     char loginPw[64] = "";
 };

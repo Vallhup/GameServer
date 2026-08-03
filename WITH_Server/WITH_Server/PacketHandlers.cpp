@@ -74,6 +74,7 @@ namespace
     constexpr uint32_t kLoginFailReasonDatabaseUnavailable = 5;
     constexpr uint32_t kLoginFailReasonDatabaseError = 6;
     constexpr uint32_t kLoginFailReasonTimeout = 7;
+    constexpr uint32_t kLoginFailReasonInvalidCredentialFormat = 9;
     constexpr uint32_t kTitleEquipReasonSuccess = 0;
     constexpr uint32_t kTitleEquipReasonInvalidTitle = 3;
     constexpr uint32_t kTitleEquipReasonDatabaseError = 4;
@@ -865,6 +866,27 @@ namespace
         }
     }
 
+    void StageLoginFailureForRetry(
+        PacketHandlerContext& svc,
+        SessionId sessionId,
+        uint32_t failReason) noexcept
+    {
+        if (svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageLoginFail(
+                *svc.network,
+                sessionId,
+                failReason);
+        }
+
+        if (svc.sessionFlow != nullptr)
+        {
+            LoginFailed failedCommand{};
+            failedCommand.reason = failReason;
+            (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
+        }
+    }
+
     void ReleaseDBCompletionPayload(uint64_t payloadKey) noexcept
     {
         if (payloadKey == 0)
@@ -1385,10 +1407,10 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
         FWLOG_WARN(kLogCategory,
             "Login rejected: invalid credentials format (sid=%u)",
             sessionId);
-        StageAndCloseLoginFailure(
+        StageLoginFailureForRetry(
             svc,
             sessionId,
-            kLoginFailReasonMalformedPacket);
+            kLoginFailReasonInvalidCredentialFormat);
         return ExecCallResult::Success;
     }
 
@@ -1536,7 +1558,12 @@ ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx)
             "Login rejected: auth failed (sid=%u, reason=%u)",
             sessionId,
             failReason);
-        StageAndCloseLoginFailure(svc, sessionId, failReason);
+
+        if (IsRetryableLoginFailReason(failReason))
+            StageLoginFailureForRetry(svc, sessionId, failReason);
+        else
+            StageAndCloseLoginFailure(svc, sessionId, failReason);
+
         return ExecCallResult::Success;
     }
 
@@ -1674,7 +1701,7 @@ ExecCallResult HandleRegisterAccountResult(NodeExecContext& ctx)
             "Register rejected: duplicate id or error (sid=%u, reason=%u)",
             sessionId,
             payload.failReason);
-        StageAndCloseLoginFailure(svc, sessionId, kLoginFailReasonAuthRejected);
+        StageLoginFailureForRetry(svc, sessionId, kLoginFailReasonAuthRejected);
         return ExecCallResult::Success;
     }
 

@@ -394,13 +394,76 @@ void ImGuiManager::DrawDebugUI()
     }
 }
 
+void ImGuiManager::ShowLoginWindow()
+{
+    showLoginWindow = true;
+    loginPending = false;
+    loginRetryable = true;
+    loginFailMessage.clear();
+}
+
+void ImGuiManager::OnLoginSucceeded()
+{
+    loginSuccess = true;
+    loginPending = false;
+    showLoginWindow = false;
+    loginFailMessage.clear();
+
+    memset(loginId, 0, sizeof(loginId));
+    memset(loginPw, 0, sizeof(loginPw));
+}
+
+void ImGuiManager::OnLoginFailed(uint32_t reason)
+{
+    constexpr uint32_t kMalformedPacket = 1;
+    constexpr uint32_t kDuplicateLogin = 2;
+    constexpr uint32_t kEntryStartFailed = 3;
+    constexpr uint32_t kAuthRejected = 4;
+    constexpr uint32_t kDatabaseUnavailable = 5;
+    constexpr uint32_t kDatabaseError = 6;
+    constexpr uint32_t kTimeout = 7;
+    constexpr uint32_t kInvalidCredentialFormat = 9;
+
+    const wchar_t* message = nullptr;
+    switch (reason)
+    {
+    case kInvalidCredentialFormat: message = L"ID는 4자, 비밀번호는 8자 이상이어야 합니다."; break;
+    case kAuthRejected:            message = L"ID 또는 비밀번호가 올바르지 않습니다."; break;
+    case kDuplicateLogin:          message = L"이미 접속 중인 계정입니다."; break;
+    case kDatabaseUnavailable:     message = L"서버에 연결할 수 없습니다."; break;
+    case kTimeout:                 message = L"서버 응답이 지연되었습니다."; break;
+    case kDatabaseError:           message = L"서버 오류가 발생했습니다."; break;
+    case kEntryStartFailed:        message = L"서버 입장에 실패했습니다."; break;
+    case kMalformedPacket:         message = L"잘못된 로그인 요청입니다."; break;
+    default:                       message = L"로그인에 실패했습니다."; break;
+    }
+
+    loginRetryable =
+        (reason == kAuthRejected || reason == kInvalidCredentialFormat);
+
+    wstring text = message;
+    if (!loginRetryable)
+        text += L"\n클라이언트를 다시 실행해 주세요.";
+
+    const int len = WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    loginFailMessage.assign(len > 0 ? len - 1 : 0, '\0');
+    if (len > 0)
+        WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, loginFailMessage.data(), len, nullptr, nullptr);
+
+    loginPending = false;
+    showLoginWindow = true;
+    memset(loginPw, 0, sizeof(loginPw));
+}
+
 void ImGuiManager::DrawLoginUI()
 {
     if (!showLoginWindow) return;
 
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 center(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
-    ImVec2 windowSize(350, 180);
+    const float messageHeight =
+        loginFailMessage.empty() ? 0.0f : (loginRetryable ? 46.0f : 70.0f);
+    ImVec2 windowSize(350, 180.0f + messageHeight);
 
     ImGui::SetNextWindowPos(ImVec2(center.x - windowSize.x * 0.5f, center.y - windowSize.y * 0.5f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
@@ -434,6 +497,16 @@ void ImGuiManager::DrawLoginUI()
         ImGui::SetNextItemWidth(contentWidth);
         ImGui::InputTextWithHint("##pw", "Password", loginPw, 64, ImGuiInputTextFlags_Password);
 
+        if (!loginFailMessage.empty())
+        {
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.42f, 0.42f, 1.0f));
+            ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + contentWidth);
+            ImGui::TextUnformatted(loginFailMessage.c_str());
+            ImGui::PopTextWrapPos();
+            ImGui::PopStyleColor();
+        }
+
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20);
 
         float buttonWidth = 100;
@@ -441,26 +514,27 @@ void ImGuiManager::DrawLoginUI()
         float totalWidth = buttonWidth * 2 + spacing;
         ImGui::SetCursorPosX((windowSize.x - totalWidth) * 0.5f);
 
-        if (ImGui::Button("Login", ImVec2(buttonWidth, 30)))
+        ImGui::BeginDisabled(loginPending || !loginRetryable);
+        if (ImGui::Button(loginPending ? "..." : "Login", ImVec2(buttonWidth, 30)))
         {
             OutputDebugStringA("Login attempted!\n");
             OutputDebugStringA(("ID: " + string(loginId) + "\n").c_str());
-            OutputDebugStringA(("Password: " + string(loginPw) + "\n").c_str());
 
             NETWORK_MANAGER->SendLoginPacket(string(loginId), string(loginPw));
             OutputDebugStringA("CSLoginPacket has sent!!\n");
 
-            showLoginWindow = false;
-
-            memset(loginId, 0, sizeof(loginId));
-            memset(loginPw, 0, sizeof(loginPw));
+            loginPending = true;
+            loginFailMessage.clear();
         }
+        ImGui::EndDisabled();
 
         ImGui::SameLine(0, spacing);
 
         if (ImGui::Button("Cancel", ImVec2(buttonWidth, 30)))
         {
             showLoginWindow = false;
+            loginPending = false;
+            loginFailMessage.clear();
             memset(loginId, 0, sizeof(loginId));
             memset(loginPw, 0, sizeof(loginPw));
         }
