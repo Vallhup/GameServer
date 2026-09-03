@@ -1,68 +1,6 @@
 #include "pch.h"
 #include "Texture.h"
 
-void Texture::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath)
-{
-    ScratchImage image;
-    HRESULT hr = LoadFromWICFile(filePath.c_str(), WIC_FLAGS_NONE, nullptr, image);
-    MASSERT(SUCCEEDED(hr), "Failed to load texture file");
-
-    const Image* img = image.GetImage(0, 0, 0);
-
-    OutputDebugStringA(("Texture size: " + to_string(img->width) + "x" + to_string(img->height) + "\n").c_str());
-    OutputDebugStringA(("Texture memory: " + to_string(img->slicePitch) + " bytes\n").c_str());
-
-    D3D12_RESOURCE_DESC textureDesc = {};
-    textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-    textureDesc.Width = static_cast<UINT>(img->width);
-    textureDesc.Height = static_cast<UINT>(img->height);
-    textureDesc.DepthOrArraySize = 1;
-    textureDesc.MipLevels = 1;
-    textureDesc.Format = img->format;
-    textureDesc.SampleDesc.Count = 1;
-    textureDesc.SampleDesc.Quality = 0;
-    textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-    textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
-
-    CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
-    hr = device->CreateCommittedResource(
-        &defaultHeap,
-        D3D12_HEAP_FLAG_NONE,
-        &textureDesc,
-        D3D12_RESOURCE_STATE_COPY_DEST,
-        nullptr,
-        IID_PPV_ARGS(&texture));
-    MASSERT(SUCCEEDED(hr), "Failed to create texture resource");
-
-    UINT64 uploadBufferSize = GetRequiredIntermediateSize(texture.Get(), 0, 1);
-    OutputDebugStringA(("Upload buffer size: " + to_string(uploadBufferSize) + " bytes\n").c_str());
-
-    CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
-    CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-
-    hr = device->CreateCommittedResource(
-        &uploadHeap,
-        D3D12_HEAP_FLAG_NONE,
-        &bufferDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS(&uploadBuffer));
-    MASSERT(SUCCEEDED(hr), "Failed to create upload buffer");
-
-    D3D12_SUBRESOURCE_DATA textureData = {};
-    textureData.pData = img->pixels;
-    textureData.RowPitch = img->rowPitch;
-    textureData.SlicePitch = img->slicePitch;
-
-    UpdateSubresources(cmdList, texture.Get(), uploadBuffer.Get(), 0, 0, 1, &textureData);
-
-    CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-        texture.Get(),
-        D3D12_RESOURCE_STATE_COPY_DEST,
-        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-    cmdList->ResourceBarrier(1, &barrier);
-}
-
 void Texture::InitializeDDS(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath)
 {
     ScratchImage image;

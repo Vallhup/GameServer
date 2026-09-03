@@ -139,13 +139,3 @@ struct Vertex
 	XMFLOAT4 indices;
 	XMFLOAT4 color;
 };
-
-inline static float GetAngleBetweenNormals(const XMVECTOR& v0, const XMVECTOR& v1)
-{
-	return XMConvertToDegrees(XMVectorGetX(XMVector3AngleBetweenNormals(v0, v1)));
-}
-
-inline static float GetAngleBetweenVectors(const XMVECTOR& v0, const XMVECTOR& v1)
-{
-	return GetAngleBetweenNormals(XMVector3Normalize(v0), XMVector3Normalize(v1));
-}

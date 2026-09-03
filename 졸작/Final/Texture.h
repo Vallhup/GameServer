@@ -3,7 +3,6 @@
 class Texture
 {
 public:
-    void Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath);
     void InitializeDDS(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath);
     void InitializeCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
     void InitializeLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath);
@@ -15,5 +14,4 @@ public:
 private:
     ComPtr<ID3D12Resource> texture;
     ComPtr<ID3D12Resource> uploadBuffer;
-    D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
 };

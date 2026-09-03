@@ -1,7 +1,6 @@
 #pragma once
 #include "Scene.h"
 
-class NetworkManager;
 class SkyBox;
 class Terrain;
 
@@ -34,8 +33,6 @@ private:
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 private:
-	NetworkManager* _nManager{ nullptr };
-
 	shared_ptr<SkyBox> skyBox;
 	shared_ptr<Terrain> terrain;
 };
