@@ -23,6 +23,8 @@ public:
 
 	SceneSettings GetSceneSettings() const override;
 
+	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
+
 protected:
 	void InitializeLogic() override;
 	void InitializeSceneEnvironments() override;

@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 	// 예) WITH_Server.exe --db-dsn WITH_Server_DB --db-user sa --db-pass ****
 	ServerApp::Config config{};
 	config.enableCheats = HasArg(argc, argv, "--enable-cheats");
-	config.database.enabled = false; //!HasArg(argc, argv, "--no-db");
+	config.database.enabled = true; //!HasArg(argc, argv, "--no-db");
 	config.database.dsn = L"WITH_Server_DB";
 	config.database.user = L"sa";
 	config.database.password = L"sdong8426A";
