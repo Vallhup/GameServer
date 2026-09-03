@@ -28,8 +28,6 @@ public:
 	void SetScale(float x, float y, float z);
 	
 	void SetColor(const XMFLOAT4& color) { waterColor = color; }
-	void SetWaveSpeed(float speed) { waveSpeed = speed; }
-	void SetWaveStrength(float strength) { waveStrength = strength; }
 
 private:
 	void BuildVertices();

@@ -12,7 +12,6 @@
 #include "LightManager.h"
 #include "ShadowMappingManager.h"
 #include "Terrain.h"
-#include "EffectRenderer.h"
 #include "EffectManager.h"
 #include "UIManager.h"
 #include "GameSceneUIController.h"
