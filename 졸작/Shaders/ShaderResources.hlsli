@@ -88,16 +88,7 @@ cbuffer ShadowFrameCB : register(b5)
     float pointShadowNear;      // 베이크 시 near plane (ref depth 복원용)
 };
 
-cbuffer FogConstants : register(b6)
-{
-    float4 fogColor;
-    float fogStart;     
-    float fogRange;     
-    float fogZoneStart; 
-    float fogZoneEnd;   
-    float fogZoneFade;  
-    float3 fogPadding;
-};
+// b6 reserved (legacy distance FogCB removed; 안개는 b11 VolumetricFogCB + fogTexture(t10)로 대체)
 
 cbuffer CascadeShadowIndex : register(b7)
 {

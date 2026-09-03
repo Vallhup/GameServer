@@ -13,15 +13,6 @@ void Timer::Update()
 	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
 
 	deltaTime = (currentCount - prevCount) / static_cast<float>(frequency);
-	
-	float targetFrameTime = 1.0f / targetFPS;
-	constexpr float epsilon = 0.0001f;
-
-	while (deltaTime < targetFrameTime - epsilon)
-	{
-		QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
-		deltaTime = (currentCount - prevCount) / static_cast<float>(frequency);
-	}
 
 	prevCount = currentCount;
 
@@ -46,11 +37,4 @@ void Timer::Reset()
 
 	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&prevCount));
 	deltaTime = 0.f;
-}
-
-void Timer::SetTargetFPS(float fps)
-{
-	targetFPS = fps;
-	string msg = "TargetFPS: " + to_string(targetFPS) + "\n";
-	OutputDebugStringA(msg.c_str());
 }

@@ -15,8 +15,6 @@ public:
 	float GetDeltaTime() const { return deltaTime; }
 	float GetTotalTime() const { return totalTime; }
 
-	void SetTargetFPS(float fps);
-
 private:
 	UINT64	frequency = 0;
 	UINT64	prevCount = 0;
@@ -27,6 +25,4 @@ private:
 	float	frameTime = 0.f;
 	UINT32	fps = 0;
 	float	totalTime = 0.f;
-
-	float targetFPS = 60.0f;
 };

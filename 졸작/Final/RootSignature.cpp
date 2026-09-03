@@ -66,7 +66,7 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddSRV(0, 2);           // [12] t0, space2 - Instance
     AddSRVTable(4, 7, 0);   // [13] t4-t10 - G-Buffer
 
-    AddCBV(6);              // [14] b6 - Fog Constants
+    AddCBV(6);              // [14] b6 reserved (legacy Fog Constants 제거, 인덱스 유지를 위해 슬롯만 존치)
 
     AddBindlessTable(3);    // [15] t0, space3 - Bindless CubeMaps
 

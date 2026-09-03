@@ -1,7 +1,6 @@
 #include "Shadow.hlsli"
 #include "InOutFormats.hlsli"
 #include "PBR.hlsli"
-#include "Fog.hlsli"
 
 float LinearizeDepth(float ndcZ, float zNear, float zFar)
 {

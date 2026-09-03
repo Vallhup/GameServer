@@ -31,17 +31,6 @@ struct ObjectConstants
 	float brightness = 1.0f;              // unlit 정점색에 곱하는 밝기(1=원색)
 };
 
-struct FogConstants
-{
-	XMFLOAT4 fogColor;
-	float fogStart;
-	float fogRange;
-	float fogZoneStart;
-	float fogZoneEnd;
-	float fogZoneFade;
-	XMFLOAT3 fogPadding;
-};
-
 struct VolumetricFogConstants
 {
 	float density;           // 안개 밀도
@@ -67,7 +56,6 @@ class SwapChain;
 class ShadowMappingManager;
 class RenderTargets;
 class LightManager;
-class FroxelManager;
 class ClusterLightManager;
 class SSAO;
 class LookUpTextures;
@@ -139,7 +127,6 @@ public:
 	ShadowMappingManager* GetShadowMgr() { return shadowMgr.get(); }
 	RenderTargets* GetRenderTargetMgr() { return rtMgr.get(); }
 	LightManager* GetLightMgr() { return lightMgr.get(); }
-	FroxelManager* GetFroxelMgr() { return froxelMgr.get(); }
 	ClusterLightManager* GetClusterLightMgr() { return clusterLightMgr.get(); }
 	SSAO* GetSsaoMgr() { return ssaoMgr.get(); }
 	LookUpTextures* GetLUTMgr() { return lutMgr.get(); }
@@ -151,7 +138,6 @@ public:
 	Shader* GetShader() const;
 	UploadBuffer* GetFrameCB() const;
 	UploadBuffer* GetSceneCB() const;
-	UploadBuffer* GetFogCB() const;
 	UploadBuffer* GetVolumetricFogCB() const;
 
 	VolumetricFogConstants& GetVolumetricFogData() { return volumetricFogData; }
@@ -166,7 +152,6 @@ private:
 	unique_ptr<ShadowMappingManager> shadowMgr;
 	unique_ptr<RenderTargets> rtMgr;
 	unique_ptr<LightManager> lightMgr;
-	unique_ptr<FroxelManager> froxelMgr;
 	unique_ptr<ClusterLightManager> clusterLightMgr;
 	unique_ptr<SSAO> ssaoMgr;
 	unique_ptr<LookUpTextures> lutMgr;
@@ -177,7 +162,6 @@ private:
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
-	unique_ptr<UploadBuffer> fogCB;
 	unique_ptr<UploadBuffer> volumetricFogCB;
 
 	VolumetricFogConstants volumetricFogData = {

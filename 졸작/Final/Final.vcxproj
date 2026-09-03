@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -238,7 +238,6 @@ exit 0</Command>
     <ClCompile Include="DissolveComponent.cpp" />
     <ClCompile Include="FlameComponent.cpp" />
     <ClCompile Include="FootDustComponent.cpp" />
-    <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="GimmickDiamond.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
@@ -265,7 +264,6 @@ exit 0</Command>
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
-    <ClCompile Include="ObjectPoolManager.cpp" />
     <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
@@ -347,7 +345,6 @@ exit 0</Command>
     <ClInclude Include="DissolveComponent.h" />
     <ClInclude Include="FlameComponent.h" />
     <ClInclude Include="FootDustComponent.h" />
-    <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="GimmickDiamond.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
@@ -375,7 +372,6 @@ exit 0</Command>
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="NetworkManager.h" />
-    <ClInclude Include="ObjectPoolManager.h" />
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneRenderer.h" />
@@ -421,7 +417,6 @@ exit 0</Command>
     <None Include="..\Shaders\ClusterCullCS.hlsli" />
     <None Include="..\Shaders\EffectVS.hlsli" />
     <None Include="..\Shaders\FlamePS.hlsli" />
-    <None Include="..\Shaders\Fog.hlsli" />
     <None Include="..\Shaders\GlowPS.hlsli" />
     <None Include="..\Shaders\ShaderResources.hlsli" />
     <None Include="..\Shaders\Constants.hlsli" />

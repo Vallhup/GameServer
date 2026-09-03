@@ -10,7 +10,6 @@
 #include "RenderTargets.h"
 #include "LightManager.h"
 #include "SkyBox.h"
-#include "FroxelManager.h"
 #include "ClusterLightManager.h"
 #include "SSAO.h"
 #include "LookUpTextures.h"
@@ -33,13 +32,11 @@ void DX12Core::Initialize(HWND hwnd)
 	shader = make_unique<Shader>();
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
-	fogCB = make_unique<UploadBuffer>();
 	volumetricFogCB = make_unique<UploadBuffer>();
 
 	shadowMgr = make_unique<ShadowMappingManager>();
 	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
-	froxelMgr = make_unique<FroxelManager>();
 	clusterLightMgr = make_unique<ClusterLightManager>();
 	ssaoMgr = make_unique<SSAO>();
 	lutMgr = make_unique<LookUpTextures>();
@@ -48,7 +45,6 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
 	frameCB->Initialize(GetDevice(), sizeof(FrameConstants));
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
-	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
 	volumetricFogCB->Initialize(GetDevice(), sizeof(VolumetricFogConstants));
 	volumetricFogData.texelSize = { 1.0f / WinSize.x, 1.0f / WinSize.y };
 	volumetricFogCB->CopyData(&volumetricFogData, sizeof(VolumetricFogConstants));
@@ -56,7 +52,6 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowMgr->Initialize(GetDevice());
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
 	lightMgr->Initialize(GetDevice());
-	froxelMgr->Initialize(GetDevice());
 	clusterLightMgr->Initialize(GetDevice());
 	ssaoMgr->Initialize(GetDevice(), GetGraphicsCmdList(), GetRenderTargetMgr());
 	rtMgr->AddSsaoSRV(GetDevice(), ssaoMgr->GetSsaoBlurRT());
@@ -1030,11 +1025,6 @@ UploadBuffer* DX12Core::GetFrameCB() const
 UploadBuffer* DX12Core::GetSceneCB() const
 {
 	return sceneCB.get();
-}
-
-UploadBuffer* DX12Core::GetFogCB() const
-{
-	return fogCB.get();
 }
 
 UploadBuffer* DX12Core::GetVolumetricFogCB() const

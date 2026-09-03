@@ -67,7 +67,6 @@ void SwapChain::CreateSwapChain(IDXGIFactory7* dxgi, ID3D12CommandQueue* cmdQueu
 		to_string(bestMode.RefreshRate.Numerator) + "/" +
 		to_string(bestMode.RefreshRate.Denominator) + ")\n").c_str());
 
-	TIMER.SetTargetFPS(bestRefreshRate);
 	nativeRefresh = static_cast<int>(bestRefreshRate + 0.5f);
 
 	DXGI_SWAP_CHAIN_DESC sd = {

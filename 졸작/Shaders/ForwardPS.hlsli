@@ -1,7 +1,6 @@
 #include "ShaderResources.hlsli"
 #include "InOutFormats.hlsli"
 #include "PBR.hlsli"
-#include "Fog.hlsli"
 
 float4 PSMain(FORWARD_PS_IN input) : SV_Target
 {

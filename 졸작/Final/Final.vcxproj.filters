@@ -43,9 +43,6 @@
     <ClCompile Include="EffectRenderer.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectPoolManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
@@ -211,9 +208,6 @@
     <ClCompile Include="ShadowMappingManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="FroxelManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="SSAO.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -347,9 +341,6 @@
     </ClInclude>
     <ClInclude Include="EffectRenderer.h">
       <Filter>Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectPoolManager.h">
-      <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>Manager</Filter>
@@ -522,9 +513,6 @@
     <ClInclude Include="ShadowMappingManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="FroxelManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
     <ClInclude Include="SSAO.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -657,9 +645,6 @@
       <Filter>Shaders\Animation</Filter>
     </None>
     <None Include="..\Shaders\Shadow.hlsli">
-      <Filter>Shaders\Lighting</Filter>
-    </None>
-    <None Include="..\Shaders\Fog.hlsli">
       <Filter>Shaders\Lighting</Filter>
     </None>
     <None Include="..\Shaders\Skinning.hlsli">

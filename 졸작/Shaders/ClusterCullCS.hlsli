@@ -82,8 +82,7 @@ void CSMain(uint3 groupID : SV_GroupID, uint groupIndex : SV_GroupIndex)
         sClusterMax = mx;
     }
     GroupMemoryBarrierWithGroupSync();
-
-    // 각 thread가 LIGHTS_PER_THREAD 개 라이트 sweep — 64 * 4 = 256 (LightManager::MAX_LIGHTS 와 동일)
+    
     uint activeCount = (uint)lightCount;
 
     [unroll]

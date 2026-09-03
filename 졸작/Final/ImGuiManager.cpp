@@ -70,6 +70,10 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
     bgmVol = SOUND_MANAGER->GetBaseBGMVolume() * 100.0f;
     sfxVol = SOUND_MANAGER->GetBaseSFXVolume() * 100.0f;
 
+    // 프레임 제한 기본값 = 모니터 주사율. 설정 창을 한 번도 열지 않아도 적용된다.
+    if (SwapChain* sc = core.GetSwapChainMgr())
+        frameLimitFps = sc->GetNativeRefresh();
+
     OutputDebugStringA("ImGui initialized!\n");
 }
 
@@ -858,8 +862,9 @@ void ImGuiManager::DrawSettingsUI()
 
             fpsOpt[nOpt++] = 0;      
 
-            if (frameLimitIdx < 0 || frameLimitIdx >= nOpt) 
-                frameLimitIdx = nOpt - 1;   
+            // 최초 진입 시 주사율 항목(무제한 바로 앞)을 가리킨다. Initialize의 기본값과 일치.
+            if (frameLimitIdx < 0 || frameLimitIdx >= nOpt)
+                frameLimitIdx = nOpt - 2;
 
             if (arrowBtn("##fpsL", ImGuiDir_Left))  
                 frameLimitIdx = (frameLimitIdx + nOpt - 1) % nOpt; 
