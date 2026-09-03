@@ -215,7 +215,6 @@ exit 0</Command>
     <ClCompile Include="AnimationSet.cpp" />
     <ClCompile Include="AnimationSetFactory.cpp" />
     <ClCompile Include="Animator.cpp" />
-    <ClCompile Include="BarUI.cpp" />
     <ClCompile Include="BeaconCinematicScene.cpp" />
     <ClCompile Include="BeaconLightComponent.cpp" />
     <ClCompile Include="BloodImpactComponent.cpp" />
@@ -233,7 +232,6 @@ exit 0</Command>
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="EffectComponent.cpp" />
     <ClCompile Include="EffectManager.cpp" />
-    <ClCompile Include="EffectRenderer.cpp" />
     <ClCompile Include="FinalBattleScene.cpp" />
     <ClCompile Include="DissolveComponent.cpp" />
     <ClCompile Include="FlameComponent.cpp" />
@@ -264,7 +262,6 @@ exit 0</Command>
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
-    <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="SSAO.cpp" />
@@ -322,7 +319,6 @@ exit 0</Command>
     <ClInclude Include="AnimationSet.h" />
     <ClInclude Include="AnimationSetFactory.h" />
     <ClInclude Include="Animator.h" />
-    <ClInclude Include="BarUI.h" />
     <ClInclude Include="BeaconCinematicScene.h" />
     <ClInclude Include="BeaconLightComponent.h" />
     <ClInclude Include="BloodImpactComponent.h" />
@@ -340,7 +336,6 @@ exit 0</Command>
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="EffectComponent.h" />
     <ClInclude Include="EffectManager.h" />
-    <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="FinalBattleScene.h" />
     <ClInclude Include="DissolveComponent.h" />
     <ClInclude Include="FlameComponent.h" />
@@ -372,7 +367,6 @@ exit 0</Command>
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="NetworkManager.h" />
-    <ClInclude Include="PanelUI.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="SSAO.h" />

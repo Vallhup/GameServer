@@ -40,9 +40,6 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="EffectRenderer.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
@@ -136,13 +133,7 @@
     <ClCompile Include="GameSceneUIController.cpp">
       <Filter>UI\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="BarUI.cpp">
-      <Filter>UI\UIType</Filter>
-    </ClCompile>
     <ClCompile Include="ImageUI.cpp">
-      <Filter>UI\UIType</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelUI.cpp">
       <Filter>UI\UIType</Filter>
     </ClCompile>
     <ClCompile Include="TextUI.cpp">
@@ -339,9 +330,6 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="EffectRenderer.h">
-      <Filter>Component</Filter>
-    </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -438,13 +426,7 @@
     <ClInclude Include="GameSceneUIController.h">
       <Filter>UI\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="BarUI.h">
-      <Filter>UI\UIType</Filter>
-    </ClInclude>
     <ClInclude Include="ImageUI.h">
-      <Filter>UI\UIType</Filter>
-    </ClInclude>
-    <ClInclude Include="PanelUI.h">
       <Filter>UI\UIType</Filter>
     </ClInclude>
     <ClInclude Include="TextUI.h">
