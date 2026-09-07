@@ -46,7 +46,7 @@ SceneSettings FirstBattleScene::GetSceneSettings() const
 	return {
 		  .light = { .sunIntensity = 1.0f },
 		  .lut = { .lutIndex = 14, .saturation = 1.5f },
-		  .fog = { .density = 0.03f, .scattering = 1.4f, .maxSteps = 128, .maxDistance = 50.0f,
+		  .fog = { .density = 0.03f, .scattering = 1.4f, .maxSteps = 32, .maxDistance = 50.0f,
 					  .jitterStrength = 1.0f, .groundHeight = 48.0f, .lightColor = { 0.7764f, 0.6313f, 0.6313f }, .lightIntensity = 1.0f},
 		  .skybox = { .tintColor = { 0.9058f, 0.7411f, 0.7411f }, .exposure = 0.6f, .saturation = 1.0f },
 		  .shadow = {.shadowAmbientMin = 1.0f, .shadowFloor = 0.0f },
